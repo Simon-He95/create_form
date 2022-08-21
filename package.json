@@ -1,0 +1,78 @@
+{
+  "name": "@simon_he/create_form",
+  "version": "0.0.1",
+  "description": "@simon_he/create_form",
+  "author": "Simon He",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git + git@github.com:Simon-He95/@simon_he/create_form.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Simon-He95/@simon_he/create_form/issues"
+  },
+  "keywords": [
+    "@simon_he/create_form",
+    "vue"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/exports.d.ts",
+      "require": "./dist/index.umd.js",
+      "import": "./dist/index.es.js"
+    }
+  },
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/exports.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite --open",
+    "test": "vitest",
+    "build-js": "vite build --emptyOutDir",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test:ui": "vitest --ui",
+    "test:update": "vitest -u",
+    "typecheck": "vue-tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "play": "pnpm run -C playground dev",
+    "play:build": "pnpm run -C playground build",
+    "build-types": "vue-tsc -p tsconfig.build.json",
+    "preview": "pnpm run -C playground preview",
+    "build": "npm-run-all --parallel build-js build-types",
+    "release": "bumpp --commit --push --tag && npm publish"
+  },
+  "peerDependencies": {
+    "vue": ">=3.0.0"
+  },
+  "dependencies": {
+    "@vueuse/core": "^8.1.1",
+    "element-plus": "^2.2.14",
+    "vue": "^3.2.36"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.25.2",
+    "@simon_he/create_form": "workspace:^0.0.1",
+    "@types/node": "^18.0.0",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "@vitest/ui": "^0.15.1",
+    "bumpp": "^8.2.1",
+    "eslint": "^8.22.0",
+    "json-editor-vue": "^0.5.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^4.7.4",
+    "unocss": "^0.39.3",
+    "vanilla-jsoneditor": "^0.6.4",
+    "vite": "^3.0.9",
+    "vite-plugin-pages": "^0.25.0",
+    "vitest": "^0.15.1",
+    "vue": "^3.2.37",
+    "vue-tsc": "^0.38.1"
+  },
+  "eslintConfig": {
+    "extends": "@antfu"
+  }
+}
