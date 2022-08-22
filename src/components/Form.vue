@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { defineProps, ref, watch } from 'vue'
 import JsonEditorVue from 'json-editor-vue'
-import { ElButton, ElCard, ElCheckbox, ElColorPicker, ElDialog, ElFormItem, ElInput, ElInputNumber, ElOption, ElSelect, ElTabPane, ElTable, ElTableColumn, ElTabs } from 'element-plus'
+import { ElButton, ElCard, ElCheckbox, ElColorPicker, ElDialog, ElFormItem, ElInput, ElInputNumber, ElMessage, ElOption, ElSelect, ElTabPane, ElTable, ElTableColumn, ElTabs } from 'element-plus'
 const props = defineProps<{ name?: String; data: Record<string, any> }>()
-watch(props, () => {
-  restoreData()
-})
+watch(props, restoreData)
 const dialogVisible = ref(false)
 const cardShow = ref(true)
 const type = ref('add')
@@ -15,7 +13,6 @@ function add() {
   dialogVisible.value = true
 }
 const cardType = ref('')
-
 const input = ref('')
 const placeholder = ref('')
 const activeName = ref('first')
@@ -38,6 +35,7 @@ const buttonType = ref<string[]>([])
 const limit = ref(1)
 const cascaderType = ref(false)
 const showType = ['Radio', 'RadioButton', 'Checkbox', 'CheckboxButton']
+const mode = ref('text')
 const jsonTemp = JSON.stringify({
   options: [],
 }, undefined, 2)
@@ -59,18 +57,24 @@ function choose(e: any) {
       buttonType.value = ['Checkbox', 'CheckboxButton']
     if (cardType.value === 'Radio')
       buttonType.value = ['Radio', 'RadioButton']
-    nameEl.value.focus()
+    focusName()
   }
   catch (error) {
   }
 }
 function confirm() {
   if (current.value !== input.value && getAllname().includes(input.value)) {
-    alert('该字段名已存在')
-    return
+    return ElMessage({
+      message: '该字段名已存在.',
+      type: 'error',
+    })
   }
-  if (!input.value)
-    return
+  if (!input.value) {
+    return ElMessage({
+      message: 'Name 是必输项',
+      type: 'error',
+    })
+  }
   const t = textarea.value.replace(/ /g, '').split('\n').filter(Boolean)
   const r = controllers.value.map(item => ({
     relevancy: item.relevancy,
@@ -84,7 +88,7 @@ function confirm() {
     json: JSON.parse(json.value),
     placeholder: placeholder.value,
     description: description.value,
-    name: input.value,
+    label: input.value,
     type: cardType.value,
     errMsg: errMsg.value,
     default: defaultvalue.value || null,
@@ -103,8 +107,8 @@ function confirm() {
   }
   if (type.value === 'add') { tableData.value = [...tableData.value, data] }
   else {
-    const idx = tableData.value.findIndex(item => item.name === current.value)
-    tableData.value[idx] = data
+    const idx = tableData.value.findIndex(item => item.label === current.value)
+    tableData.value[idx] = Object.assign(data, { position: tableData.value[idx].position })
     current.value = null
   }
   dialogVisible.value = false
@@ -116,10 +120,6 @@ function cancel() {
   resetData()
 }
 
-function save() {
-  console.log(transformToJson())
-}
-
 function transformToJson() {
   const result = {
     name,
@@ -127,8 +127,7 @@ function transformToJson() {
     attribs: {},
   }
   tableData.value.reduce((result, item) => {
-    const key = item.name
-    result[key] = item
+    result[item.label] = item
     return result
   }, result.attribs)
   return result
@@ -162,8 +161,10 @@ function editHandler(row: any) {
   json.value = JSON.stringify(row.json, undefined, 2)
   type.value = 'edit'
   limit.value = row.limit
-  current.value = input.value = row.name
+  current.value = input.value = row.label
   cascaderType.value = row.cascaderType
+  if (row.options)
+    textarea.value = row.options.join('\n')
   cardShow.value = false
   cardType.value = row.type
   defaultvalue.value = row.default
@@ -184,16 +185,13 @@ function editHandler(row: any) {
   required.value = row.required
   activeName.value = 'first'
   dialogVisible.value = true
-  nameEl.value.focus()
+  focusName()
 }
 function getAllname() {
-  return tableData.value.reduce((result, item) => {
-    result.push(item.name)
-    return result
-  }, [])
+  return tableData.value.map(item => item.label)
 }
 function deleteHandler(row: any) {
-  tableData.value = tableData.value.filter(item => item.name !== row.name)
+  tableData.value = tableData.value.filter(item => item.label !== row.label)
 }
 const types = ['Text', 'Radio', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Boolean', 'Checkbox', 'Upload', 'Cascader', 'Relation']
 function handleClose(done: () => void) {
@@ -206,7 +204,10 @@ function selectChange() {
   for (let i = 0; i < controllers.value.length; i++) {
     const item = controllers.value[i]
     if (map[item.relevancy]) {
-      alert('相同关联字段不能重复')
+      ElMessage({
+        message: '相同关联字段不能重复.',
+        type: 'error',
+      })
       return item.relevancy = ''
     }
     map[item.relevancy] = true
@@ -220,6 +221,10 @@ function restoreData() {
 if (props.data)
   restoreData()
 
+function focusName() {
+  nameEl.value.focus()
+}
+
 defineExpose({
   transformToJson,
 })
@@ -230,9 +235,6 @@ defineExpose({
     <div class="wrapper">
       <el-button @click="add">
         add
-      </el-button>
-      <el-button @click="save">
-        save
       </el-button>
     </div>
 
@@ -273,15 +275,12 @@ defineExpose({
                     <el-option v-for="item in buttonType" :key="item" :label="item" :value="item" />
                   </el-select>
                 </el-form-item>
-                <el-checkbox v-model="cascaderType" label="Multiple" class="w-30%" />
+                <el-checkbox v-show="cardType === 'Cascader'" v-model="cascaderType" label="Multiple" class="w-30%" />
                 <el-form-item v-show="cardType === 'Upload'" label="Limit:" class="w-30%">
                   <el-input-number v-model="limit" :min="1" :max="10" controls-position="right" />
                 </el-form-item>
               </div>
-              <JsonEditorVue
-                v-if="cardType === 'Cascader'" v-model="json" class="editor_vue" mode="text"
-                :main-menu-bar="false"
-              />
+              <JsonEditorVue v-show="cardType === 'Cascader'" v-model="json" class="editor_vue" :mode="mode" />
 
               <el-input
                 v-show="cardType === 'Enumeration' || showType.includes(cardType)" v-model="textarea" :rows="5"
@@ -343,8 +342,8 @@ evening"
                   <el-form-item label="Controller" flex-col items-start class="w-45%">
                     <el-select v-model="item.relevancy" placeholder="Select" clearable @change="selectChange">
                       <el-option
-                        v-for="i in tableData.filter(item => item.name !== input)" :key="i.name"
-                        :label="i.name" :value="i.name"
+                        v-for="i in tableData.filter(item => item.label !== input)" :key="i.name"
+                        :label="i.label" :value="i.label"
                       />
                     </el-select>
                   </el-form-item>
@@ -378,7 +377,7 @@ evening"
       </template>
     </el-dialog>
     <el-table :data="tableData" w-200 ma>
-      <el-table-column prop="name" label="Name" />
+      <el-table-column prop="label" label="Name" />
       <el-table-column prop="type" label="Type" />
       <el-table-column fixed="right" width="120">
         <template #default="scope">
