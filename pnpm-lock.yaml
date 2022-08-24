@@ -5,7 +5,7 @@ importers:
   .:
     specifiers:
       '@antfu/eslint-config': ^0.25.2
-      '@simon_he/create_form': workspace:^0.0.4
+      '@simon_he/create_form': workspace:^0.0.6
       '@types/node': ^18.0.0
       '@vitejs/plugin-vue': ^2.3.3
       '@vitest/ui': ^0.15.1
