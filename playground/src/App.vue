@@ -1,5 +1,5 @@
-<script setup >
-import { Form } from '../../dist/index.es.js'
+<script setup>
+import { Form } from '@simon_he/create_form'
 const data = ref({
   attribs: {},
 })

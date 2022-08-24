@@ -233,56 +233,56 @@ defineExpose({
 <template>
   <div font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
     <div class="wrapper">
-      <el-button @click="add">
+      <ElButton @click="add">
         add
-      </el-button>
+      </ElButton>
     </div>
 
-    <el-dialog v-model="dialogVisible" title="Type" width="50%" :before-close="handleClose">
+    <ElDialog v-model="dialogVisible" title="Type" width="50%" :before-close="handleClose">
       <div v-show="cardShow" flex="~ gap-2" w-full flex-wrap @click="choose">
-        <el-card v-for="i in types" :key="i" shadow="hover" class="w-49%" :type="i">
+        <ElCard v-for="i in types" :key="i" shadow="hover" class="w-49%" :type="i">
           {{ i }}
-        </el-card>
+        </ElCard>
       </div>
 
       <div v-show="cardType" relative>
         <h2 absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black>
           {{ type === 'add' ? 'Add new' : 'Edit' }} {{ cardType }} field
         </h2>
-        <el-tabs v-model="activeName" class="demo-tabs">
-          <el-tab-pane label="Basic settings" name="first">
+        <ElTabs v-model="activeName" class="demo-tabs">
+          <ElTabPane label="Basic settings" name="first">
             <div v-show="cardType">
               <div flex="~ gap-5 wrap">
-                <el-form-item label="Name:" class="w-30%">
-                  <el-input ref="nameEl" v-model="input" placeholder="Please input Name" />
-                </el-form-item>
-                <el-form-item label="Placeholder:" class="w-30%">
-                  <el-input v-model="placeholder" placeholder="Please input Placeholder" />
-                </el-form-item>
-                <el-form-item label="Description:" class="w-30%">
-                  <el-input v-model="description" placeholder="Please input Description" />
-                </el-form-item>
-                <el-form-item label="TitleColor:" class="w-30%">
-                  <el-color-picker v-model="colorTitle" />
-                </el-form-item>
-                <el-form-item label="Size:" class="w-30%">
-                  <el-select v-model="size" placeholder="Pick Size">
-                    <el-option v-for="item in sizeOptions" :key="item" :label="item" :value="item" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item v-show="showType.includes(cardType)" label="Type:" class="w-30%">
-                  <el-select v-model="cardType" placeholder="Pick Size">
-                    <el-option v-for="item in buttonType" :key="item" :label="item" :value="item" />
-                  </el-select>
-                </el-form-item>
-                <el-checkbox v-show="cardType === 'Cascader'" v-model="cascaderType" label="Multiple" class="w-30%" />
-                <el-form-item v-show="cardType === 'Upload'" label="Limit:" class="w-30%">
-                  <el-input-number v-model="limit" :min="1" :max="10" controls-position="right" />
-                </el-form-item>
+                <ElFormItem label="Name:" class="w-30%">
+                  <ElInput ref="nameEl" v-model="input" placeholder="Please input Name" />
+                </ElFormItem>
+                <ElFormItem label="Placeholder:" class="w-30%">
+                  <ElInput v-model="placeholder" placeholder="Please input Placeholder" />
+                </ElFormItem>
+                <ElFormItem label="Description:" class="w-30%">
+                  <ElInput v-model="description" placeholder="Please input Description" />
+                </ElFormItem>
+                <ElFormItem label="TitleColor:" class="w-30%">
+                  <ElColorPicker v-model="colorTitle" />
+                </ElFormItem>
+                <ElFormItem label="Size:" class="w-30%">
+                  <ElSelect v-model="size" placeholder="Pick Size">
+                    <ElOption v-for="item in sizeOptions" :key="item" :label="item" :value="item" />
+                  </ElSelect>
+                </ElFormItem>
+                <ElFormItem v-show="showType.includes(cardType)" label="Type:" class="w-30%">
+                  <ElSelect v-model="cardType" placeholder="Pick Size">
+                    <ElOption v-for="item in buttonType" :key="item" :label="item" :value="item" />
+                  </ElSelect>
+                </ElFormItem>
+                <ElCheckbox v-show="cardType === 'Cascader'" v-model="cascaderType" label="Multiple" class="w-30%" />
+                <ElFormItem v-show="cardType === 'Upload'" label="Limit:" class="w-30%">
+                  <ElInputNumber v-model="limit" :min="1" :max="10" controls-position="right" />
+                </ElFormItem>
               </div>
               <JsonEditorVue v-show="cardType === 'Cascader'" v-model="json" class="editor_vue" :mode="mode" />
 
-              <el-input
+              <ElInput
                 v-show="cardType === 'Enumeration' || showType.includes(cardType)" v-model="textarea" :rows="5"
                 type="textarea" placeholder="Ex:
 morning
@@ -290,35 +290,35 @@ noon
 evening"
               />
             </div>
-          </el-tab-pane>
-          <el-tab-pane label="Advanced settings" name="second">
+          </ElTabPane>
+          <ElTabPane label="Advanced settings" name="second">
             <div flex="~ gap-2">
-              <el-form-item label="Default value" flex-col items-start class="w-50%">
-                <el-input v-model="defaultvalue" />
-              </el-form-item>
-              <el-form-item label="RegExp pattern" flex-col items-start class="w-50%">
-                <el-input v-model="regExp" />
-              </el-form-item>
-              <el-form-item v-show="regExp" label="Error message" flex-col items-start class="w-50%">
-                <el-input v-model="errMsg" />
-              </el-form-item>
+              <ElFormItem label="Default value" flex-col items-start class="w-50%">
+                <ElInput v-model="defaultvalue" />
+              </ElFormItem>
+              <ElFormItem label="RegExp pattern" flex-col items-start class="w-50%">
+                <ElInput v-model="regExp" />
+              </ElFormItem>
+              <ElFormItem v-show="regExp" label="Error message" flex-col items-start class="w-50%">
+                <ElInput v-model="errMsg" />
+              </ElFormItem>
             </div>
             <div flex="~" flex-col items-start>
               <h3 text-black text-6>
                 Settings
               </h3>
               <div flex="~ gap-2" w-full flex-wrap>
-                <el-checkbox v-model="required" label="Required field" size="large" class="w-45%" />
+                <ElCheckbox v-model="required" label="Required field" size="large" class="w-45%" />
                 <div class="w-45%" text-left flex flex-col>
-                  <el-checkbox v-model="min" label="Minimum value" size="large" />
-                  <el-input-number
+                  <ElCheckbox v-model="min" label="Minimum value" size="large" />
+                  <ElInputNumber
                     v-show="min" v-model="minvalue" :min="0" :max="10" size="small"
                     controls-position="right"
                   />
                 </div>
                 <div class="w-45%" text-left flex flex-col>
-                  <el-checkbox v-model="max" label="Maximum value" size="large" />
-                  <el-input-number
+                  <ElCheckbox v-model="max" label="Maximum value" size="large" />
+                  <ElInputNumber
                     v-show="max" v-model="maxvalue" :min="0" :max="10" size="small"
                     controls-position="right"
                   />
@@ -339,57 +339,57 @@ evening"
                   </svg>
                 </div>
                 <div flex="~ gap-2" w-full>
-                  <el-form-item label="Controller" flex-col items-start class="w-45%">
-                    <el-select v-model="item.relevancy" placeholder="Select" clearable @change="selectChange">
-                      <el-option
+                  <ElFormItem label="Controller" flex-col items-start class="w-45%">
+                    <ElSelect v-model="item.relevancy" placeholder="Select" clearable @change="selectChange">
+                      <ElOption
                         v-for="i in tableData.filter(item => item.label !== input)" :key="i.name"
                         :label="i.label" :value="i.label"
                       />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item v-show="item.relevancy" label="Control show" flex-col items-start class="w-45%">
-                    <el-select v-model="item.controlType" placeholder="Select">
-                      <el-option v-for="i in controlTypes" :key="i" :label="i" :value="i" />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item
+                    </ElSelect>
+                  </ElFormItem>
+                  <ElFormItem v-show="item.relevancy" label="Control show" flex-col items-start class="w-45%">
+                    <ElSelect v-model="item.controlType" placeholder="Select">
+                      <ElOption v-for="i in controlTypes" :key="i" :label="i" :value="i" />
+                    </ElSelect>
+                  </ElFormItem>
+                  <ElFormItem
                     v-show="item.controlType === 'regExp'" label="regExp" flex-col items-start
                     class="w-45%"
                   >
-                    <el-input v-model="item.controlReg" input-style="h-full" />
-                  </el-form-item>
+                    <ElInput v-model="item.controlReg" input-style="h-full" />
+                  </ElFormItem>
                 </div>
               </div>
-              <el-button @click="controllers.push({ relevancy: '', controlType: '', controlReg: '' })">
+              <ElButton @click="controllers.push({ relevancy: '', controlType: '', controlReg: '' })">
                 add controller
-              </el-button>
+              </ElButton>
             </div>
-          </el-tab-pane>
-        </el-tabs>
+          </ElTabPane>
+        </ElTabs>
       </div>
 
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="cancel">Cancel
-          </el-button>
-          <el-button @click="confirm">Confirm</el-button>
+          <ElButton @click="cancel">Cancel
+          </ElButton>
+          <ElButton @click="confirm">Confirm</ElButton>
         </span>
       </template>
-    </el-dialog>
-    <el-table :data="tableData" w-200 ma>
-      <el-table-column prop="label" label="Name" />
-      <el-table-column prop="type" label="Type" />
-      <el-table-column fixed="right" width="120">
+    </ElDialog>
+    <ElTable :data="tableData" w-200 ma>
+      <ElTableColumn prop="label" label="Name" />
+      <ElTableColumn prop="type" label="Type" />
+      <ElTableColumn fixed="right" width="120">
         <template #default="scope">
-          <el-button link type="primary" size="small" @click="deleteHandler(scope.row)">
+          <ElButton link type="primary" size="small" @click="deleteHandler(scope.row)">
             Delete
-          </el-button>
-          <el-button link type="primary" size="small" @click="editHandler(scope.row)">
+          </ElButton>
+          <ElButton link type="primary" size="small" @click="editHandler(scope.row)">
             Edit
-          </el-button>
+          </ElButton>
         </template>
-      </el-table-column>
-    </el-table>
+      </ElTableColumn>
+    </ElTable>
   </div>
 </template>
 

@@ -66,9 +66,9 @@ function addPosition(list: any[], key: number) {
 
 <template>
   <div v-show="isShow">
-    <el-button m-2 @click="save1">
+    <ElButton m-2 @click="save1">
       save
-    </el-button>
+    </ElButton>
     <div flex="~ gap-1" border-1 border-black border-rd-1 w-200 ma>
       <draggable class="list-group" :list="list1" group="people" item-key="label">
         <template #item="{ element }">
