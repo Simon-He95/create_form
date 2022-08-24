@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "dev": "vite --open",
-    "test": "vitest",
+    "test": "vitest --dir=test",
     "build-js": "vite build --emptyOutDir",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
