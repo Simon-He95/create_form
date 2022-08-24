@@ -13,10 +13,11 @@ export default defineConfig({
       fileName: f => `index.${f}.js`,
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', 'vuedraggable'],
       output: {
         globals: {
           vue: 'Vue',
+          vuedraggable: 'vuedraggable',
         },
       },
     },
