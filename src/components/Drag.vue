@@ -62,6 +62,23 @@ function save1() {
 function addPosition(list: any[], key: number) {
   list.forEach((item, idx) => item.label && (item.position = `${key}-${idx}`))
 }
+
+function moveEnd() {
+  const lis1 = list1.value.length - 1
+  const lis2 = list2.value.length - 1
+  const lis3 = list3.value.length - 1
+  const max = Math.max(lis1, lis2, lis3)
+  for (let i = 0; i < max; i++) {
+    const l1 = list1.value[i]?.label || ''
+    const l2 = list2.value[i]?.label || ''
+    const l3 = list3.value[i]?.label || ''
+    if (!l1 && !l2 && !l3) {
+      list1.value.splice(i, 1)
+      list2.value.splice(i, 1)
+      list3.value.splice(i, 1)
+    }
+  }
+}
 </script>
 
 <template>
@@ -70,7 +87,7 @@ function addPosition(list: any[], key: number) {
       save
     </ElButton>
     <div flex="~ gap-1" border-1 border-black border-rd-1 w-200 ma>
-      <draggable class="list-group" :list="list1" group="people" item-key="label">
+      <draggable class="list-group" :list="list1" group="people" item-key="label" @end="moveEnd">
         <template #item="{ element }">
           <div class="list-group-item" h-10 :class="element.label ? 'border-1' : ''" border-gray border-rd-1 m-2 lh-10>
             {{ element.label }}
@@ -78,14 +95,14 @@ function addPosition(list: any[], key: number) {
         </template>
       </draggable>
 
-      <draggable class="list-group" :list="list2" group="people" item-key="label">
+      <draggable class="list-group" :list="list2" group="people" item-key="label" @end="moveEnd">
         <template #item="{ element }">
           <div class="list-group-item" h-10 :class="element.label ? 'border-1' : ''" border-gray border-rd-1 m-2 lh-10>
             {{ element.label }}
           </div>
         </template>
       </draggable>
-      <draggable class="list-group" :list="list3" group="people" item-key="label">
+      <draggable class="list-group" :list="list3" group="people" item-key="label" @end="moveEnd">
         <template #item="{ element }">
           <div class="list-group-item" h-10 :class="element.label ? 'border-1' : ''" border-gray border-rd-1 m-2 lh-10>
             {{ element.label }}
