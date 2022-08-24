@@ -1,6 +1,7 @@
 {
   "name": "@simon_he/create_form",
   "version": "0.0.4",
+  "packageManager": "pnpm@6.32.3",
   "description": "@simon_he/create_form",
   "author": "Simon He",
   "license": "MIT",
