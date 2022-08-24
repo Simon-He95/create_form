@@ -28,7 +28,7 @@
   "module": "./dist/index.es.js",
   "types": "./dist/exports.d.ts",
   "files": [
-    "dist/*"
+    "dist"
   ],
   "scripts": {
     "dev": "vite --open",
