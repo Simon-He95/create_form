@@ -1,6 +1,6 @@
 {
   "name": "@simon_he/create_form",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "packageManager": "pnpm@6.32.3",
   "description": "@simon_he/create_form",
   "author": "Simon He",
@@ -20,12 +20,12 @@
   "exports": {
     ".": {
       "types": "./dist/exports.d.ts",
-      "require": "./dist/index.umd.js",
+      "require": "./dist/index.cjs.js",
       "import": "./dist/index.es.js"
     },
     "./*": "./*"
   },
-  "main": "./dist/index.umd.js",
+  "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
   "types": "./dist/exports.d.ts",
   "files": [
