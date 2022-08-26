@@ -1,23 +1,35 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import Form from './components/Form.vue'
-import Drag from './components/Drag.vue'
+// import { Form } from '@json-manage/form'
+
 const data = ref<Record<string, any>>({
   attribs: {},
 })
-const formEl = ref<{ transformToJson: () => Record<string, any> }>()
+const formEl = ref<{ getFormData: () => Record<string, any>; add: () => void; sort: () => void }>()
+const current = ref('')
 function transform() {
-  data.value = formEl.value!.transformToJson()
+  data.value = formEl.value!.getFormData()
+}
+function switchForm(i) {
+  current.value = i
+}
+function add() {
+  formEl.value.add()
 }
 </script>
 
 <template>
+  <button @click="add">
+    add
+  </button>
   <Form ref="formEl" :data="data" />
-
   <div m-5 align-center>
     <el-button @click="transform">
       transform json to form
     </el-button>
   </div>
-  <Drag :data="data" />
 </template>
+
+<style scoped>
+</style>

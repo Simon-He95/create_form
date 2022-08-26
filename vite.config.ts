@@ -11,6 +11,7 @@ export default defineConfig({
       name,
       entry: './src/exports.ts',
       fileName: f => `index.${f}.js`,
+      formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: ['vue', 'vuedraggable'],

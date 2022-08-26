@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, defineProps, ref, watch } from 'vue'
-import { ElButton } from 'element-plus'
 import draggable from 'vuedraggable'
 
 const props = defineProps<{ data: Record<string, any> }>()
@@ -56,7 +55,7 @@ watch(list1, () => {
   }
 }, { immediate: true })
 
-function save1() {
+function save() {
   [list1.value, list2.value, list3.value].forEach((list, i) => addPosition(list, i))
 }
 function addPosition(list: any[], key: number) {
@@ -79,13 +78,11 @@ function moveEnd() {
     }
   }
 }
+defineExpose({ save })
 </script>
 
 <template>
   <div v-show="isShow">
-    <ElButton m-2 @click="save1">
-      save
-    </ElButton>
     <div flex="~ gap-1" border-1 border-black border-rd-1 w-200 ma>
       <draggable class="list-group" :list="list1" group="people" item-key="label" @end="moveEnd">
         <template #item="{ element }">

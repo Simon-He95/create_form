@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { defineProps, ref, watch } from 'vue'
 import JsonEditorVue from 'json-editor-vue'
-import { ElButton, ElCard, ElCheckbox, ElColorPicker, ElDialog, ElFormItem, ElInput, ElInputNumber, ElMessage, ElOption, ElSelect, ElTabPane, ElTable, ElTableColumn, ElTabs } from 'element-plus'
+import Drag from './Drag.vue'
 const props = defineProps<{ name?: String; data: Record<string, any> }>()
 watch(props, restoreData)
+const dragShow = ref(false)
+const dragEl = ref(null)
 const dialogVisible = ref(false)
 const cardShow = ref(true)
 const type = ref('add')
 const current = ref(null)
 function add() {
+  resetData()
   type.value = 'add'
   dialogVisible.value = true
 }
@@ -41,6 +44,7 @@ const jsonTemp = JSON.stringify({
 }, undefined, 2)
 const json = ref(jsonTemp)
 const nameEl = ref()
+const formResult = ref({ attribs: {} })
 
 interface Icontrollers {
   relevancy: string
@@ -112,18 +116,17 @@ function confirm() {
     current.value = null
   }
   dialogVisible.value = false
-  resetData()
+  formResult.value = transformToJson()
 }
 
 function cancel() {
   dialogVisible.value = false
-  resetData()
 }
 
 function transformToJson() {
   const result = {
     name,
-    description: 'xxx',
+    description: '',
     attribs: {},
   }
   tableData.value.reduce((result, item) => {
@@ -135,6 +138,8 @@ function transformToJson() {
 function resetData() {
   cardShow.value = true
   cardType.value = ''
+  description.value = ''
+  placeholder.value = ''
   textarea.value = ''
   cascaderType.value = false
   json.value = jsonTemp
@@ -224,20 +229,23 @@ if (props.data)
 function focusName() {
   nameEl.value.focus()
 }
+function sort() {
+  dragShow.value = true
+}
+function sortEnd() {
+  dragEl.value.save()
+  dragShow.value = false
+}
 
 defineExpose({
-  transformToJson,
+  getFormData: () => formResult.value,
+  add,
+  sort,
 })
 </script>
 
 <template>
   <div font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
-    <div class="wrapper">
-      <ElButton @click="add">
-        add
-      </ElButton>
-    </div>
-
     <ElDialog v-model="dialogVisible" title="Type" width="50%" :before-close="handleClose">
       <div v-show="cardShow" flex="~ gap-2" w-full flex-wrap @click="choose">
         <ElCard v-for="i in types" :key="i" shadow="hover" class="w-49%" :type="i">
@@ -352,10 +360,7 @@ evening"
                       <ElOption v-for="i in controlTypes" :key="i" :label="i" :value="i" />
                     </ElSelect>
                   </ElFormItem>
-                  <ElFormItem
-                    v-show="item.controlType === 'regExp'" label="regExp" flex-col items-start
-                    class="w-45%"
-                  >
+                  <ElFormItem v-show="item.controlType === 'regExp'" label="regExp" flex-col items-start class="w-45%">
                     <ElInput v-model="item.controlReg" input-style="h-full" />
                   </ElFormItem>
                 </div>
@@ -367,16 +372,50 @@ evening"
           </ElTabPane>
         </ElTabs>
       </div>
-
       <template #footer>
         <span class="dialog-footer">
-          <ElButton @click="cancel">Cancel
-          </ElButton>
-          <ElButton @click="confirm">Confirm</ElButton>
+          <div class="sc-cTAIfT sc-dYtuZ pmygK bkSVwu">
+            <div class="sc-cTAIfT sc-ihINtW oSriV gREqRk">
+              <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="cancel"><button
+                aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
+              ><span
+                class="sc-dkPtRN kZdUHC"
+              >Cancel</span></button></div>
+              <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="confirm"><button
+                aria-disabled="false" type="submit" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
+              ><span
+                class="sc-dkPtRN kZdUHC"
+              >Confirm</span></button>
+              </div>
+            </div>
+          </div>
         </span>
       </template>
     </ElDialog>
-    <ElTable :data="tableData" w-200 ma>
+
+    <ElDialog v-model="dragShow" title="Sort" width="50%">
+      <Drag ref="dragEl" :data="formResult" />
+      <template #footer>
+        <span class="dialog-footer">
+          <div class="sc-cTAIfT sc-dYtuZ pmygK bkSVwu">
+            <div class="sc-cTAIfT sc-ihINtW oSriV gREqRk">
+              <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="dragShow = false"><button
+                aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
+              ><span
+                class="sc-dkPtRN kZdUHC"
+              >Cancel</span></button></div>
+              <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="sortEnd"><button
+                aria-disabled="false" type="submit" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
+              ><span
+                class="sc-dkPtRN kZdUHC"
+              >Confirm</span></button>
+              </div>
+            </div>
+          </div>
+        </span>
+      </template>
+    </ElDialog>
+    <ElTable :data="tableData" ma w-200>
       <ElTableColumn prop="label" label="Name" />
       <ElTableColumn prop="type" label="Type" />
       <ElTableColumn fixed="right" width="120">
@@ -393,25 +432,25 @@ evening"
   </div>
 </template>
 
-<style>
-.demo-tabs .el-tabs__nav {
+<style scoped>
+:deep(.demo-tabs .el-tabs__nav) {
   float: right !important;
 }
 
-.demo-tabs .el-form-item__content {
+:deep(.demo-tabs .el-form-item__content) {
   width: 100%;
   align-items: flex-start;
 }
 
-.el-form-item__content .el-select {
+:deep(.el-form-item__content .el-select) {
   width: 100%;
 }
 
-.editor_vue .cm-line {
+:deep(.editor_vue .cm-line) {
   text-align: left;
 }
 
-.el-form-item__content .el-cascader {
+:deep(.el-form-item__content .el-cascader) {
   width: 100%;
 }
 </style>
