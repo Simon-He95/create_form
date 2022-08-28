@@ -1,0 +1,782 @@
+<script>
+import Footer from "./Footer.vue";
+import Tabs from "./Tabs.vue";
+import Drag from "./Drag.vue";
+import vueJsonEditor from "vue-json-editor";
+import { nanoid } from "nanoid";
+export default {
+  name: "Form",
+  components: {
+    Footer,
+    Tabs,
+    Drag,
+    vueJsonEditor,
+  },
+  props: {
+    name: {
+      type: String,
+      default: "",
+    },
+    schema: {
+      type: Object,
+      default: () => {
+        return {
+          name: "",
+          description: "",
+          attribs: {},
+        };
+      },
+    },
+  },
+  data() {
+    return {
+      dragShow: false,
+      dialogVisible: false,
+      tableData: [],
+      current: "",
+      cardType: "",
+      cardShow: true,
+      type: "add",
+      input: "",
+      placeholder: "",
+      description: "",
+      colorTitle: "",
+      size: "default",
+      activeName: "first",
+      defaultvalue: "",
+      textarea: "",
+      regExp: "",
+      min: false,
+      max: false,
+      required: false,
+      minvalue: 0,
+      maxvalue: 0,
+      errMsg: "",
+      cascaderType: false,
+      limit: 1,
+      controllers: [{ relevancy: "", controlType: "", controlReg: "" }],
+      buttonType: ["Radio", "RadioButton"],
+      key: 0,
+      sizeOptions: ["default", "small", "large"],
+      mode: "code",
+      json: "",
+      types: [
+        {
+          name: "Text",
+          description: "文本框",
+        },
+        {
+          name: "Radio",
+          description: "单选框",
+        },
+        {
+          name: "RichText",
+          description: "富文本",
+        },
+        {
+          name: "Date",
+          description: "日期",
+        },
+        {
+          name: "Enumeration",
+          description: "枚举",
+        },
+        {
+          name: "Password",
+          description: "密码",
+        },
+        {
+          name: "Number",
+          description: "数字",
+        },
+        {
+          name: "Boolean",
+          description: "布尔",
+        },
+        {
+          name: "Checkbox",
+          description: "多选框",
+        },
+        {
+          name: "Upload",
+          description: "上传",
+        },
+        {
+          name: "Cascader",
+          description: "级联选择",
+        },
+        {
+          name: "Relation",
+          description: "关联",
+        },
+      ],
+      controlTypes: ["value", "regExp"],
+      showType: ["Radio", "RadioButton", "Checkbox", "CheckboxButton"],
+      mapKey: "",
+    };
+  },
+  watch: {
+    schema: {
+      handler() {
+        this.restoreData();
+      },
+      deep: true,
+    },
+  },
+  mounted() {
+    this.restoreData();
+  },
+  methods: {
+    editHandler(row) {
+      if (row.type === "Checkbox")
+        this.buttonType = ["Checkbox", "CheckboxButton"];
+      if (row.type === "Radio") this.buttonType = ["Radio", "RadioButton"];
+      this.controllers = row.show || [
+        { relevancy: "", controlType: "", controlReg: "" },
+      ];
+      this.json = row.json;
+      this.type = "edit";
+      this.limit = row.limit;
+      this.current = this.input = row.label;
+      this.mapKey = row.mapKey;
+      this.cascaderType = row.cascaderType;
+      if (row.options) this.textarea = row.options.join("\n");
+      this.cardShow = false;
+      this.cardType = row.type;
+      this.defaultvalue = row.default;
+      this.regExp = row.regExp;
+      this.errMsg = row.errMsg;
+      this.placeholder = row.placeholder;
+      this.description = row.description;
+      this.colorTitle = row.colorTitle;
+      this.size = row.size;
+      if (row.min) {
+        this.min = true;
+        this.minvalue = row.min;
+      }
+      if (row.max) {
+        this.max = true;
+        this.maxvalue = row.max;
+      }
+      this.required = row.required;
+      this.activeName = "first";
+      this.dialogVisible = true;
+      this.focusName();
+    },
+    deleteHandler(row) {
+      this.tableData = this.tableData.filter(
+        (item) => item.label !== row.label
+      );
+    },
+    sortEnd() {
+      this.$emit("change", this.$refs.dragEl.save());
+      this.dragShow = false;
+    },
+    getAllname() {
+      return this.tableData.map((item) => item.label);
+    },
+    confirm() {
+      if (
+        this.current !== this.input &&
+        this.getAllname().includes(this.input)
+      ) {
+        return this.$message({
+          message: "该字段名已存在.",
+          type: "error",
+        });
+      }
+      if (!this.input) {
+        return this.$message({
+          message: "Name 是必输项",
+          type: "error",
+        });
+      }
+      const t = this.textarea.replace(/ /g, "").split("\n").filter(Boolean);
+      const r = this.controllers
+        .map((item) => ({
+          relevancy: item.relevancy,
+          controlType: item.relevancy ? item.controlType : null,
+          controlReg: item.controlType === "value" ? null : item.controlReg,
+        }))
+        .filter((item) => item.relevancy);
+      const min = this.minvalue === 0 ? null : this.minvalue;
+      const max = this.maxvalue === 0 ? null : this.maxvalue;
+      const data = {
+        id: this.input,
+        json: this.json,
+        placeholder: this.placeholder,
+        description: this.description,
+        label: this.input,
+        type: this.cardType,
+        errMsg: this.errMsg,
+        default: this.defaultvalue || null,
+        min,
+        max,
+        cascaderType: this.cascaderType,
+        required: this.required,
+        regExp: this.regExp || null,
+        options: t.length ? t : null,
+        show: r.length ? r : null,
+        key: ++this.key,
+        position: `0-${this.key - 1}`,
+        colorTitle: this.colorTitle,
+        size: this.size,
+        limit: this.limit,
+        mapKey: this.mapKey || this.input,
+      };
+      if (this.type === "add") {
+        this.tableData = [...this.tableData, data];
+      } else {
+        const idx = this.tableData.findIndex(
+          (item) => item.label === this.current
+        );
+        this.$set(
+          this.tableData,
+          idx,
+          Object.assign(data, { position: this.tableData[idx].position })
+        );
+        this.current = null;
+      }
+      this.dialogVisible = false;
+    },
+    transformToJson() {
+      const result = {
+        name,
+        description: "",
+        attribs: {},
+        id: nanoid(),
+      };
+      this.tableData.reduce((result, item) => {
+        result[item.label] = item;
+        return result;
+      }, result.attribs);
+      return result;
+    },
+    cancel() {
+      this.dialogVisible = false;
+    },
+    selectChange() {
+      const map = {};
+      for (let i = 0; i < this.controllers.length; i++) {
+        const item = this.controllers[i];
+        if (map[item.relevancy]) {
+          this.$message({
+            message: "相同关联字段不能重复.",
+            type: "error",
+          });
+          return (item.relevancy = "");
+        }
+        map[item.relevancy] = true;
+      }
+    },
+    choose(type) {
+      this.cardType = type;
+      this.cardShow = false;
+      if (this.cardType === "Checkbox")
+        this.buttonType = ["Checkbox", "CheckboxButton"];
+      if (this.cardType === "Radio") this.buttonType = ["Radio", "RadioButton"];
+      this.focusName();
+    },
+    focusName() {
+      this.$nextTick(() => {
+        this.$refs.nameEl.focus();
+      });
+    },
+    handleClose(done) {
+      this.resetData();
+      done();
+    },
+    add() {
+      this.resetData();
+      this.dialogVisible = true;
+    },
+    resetData() {
+      this.cardShow = true;
+      this.mapKey = "";
+      this.cardType = "";
+      this.description = "";
+      this.placeholder = "";
+      this.textarea = "";
+      this.cascaderType = false;
+      this.json = {
+        options: [],
+      };
+      this.input = "";
+      this.colorTitle = "";
+      this.size = "default";
+      this.defaultvalue = "";
+      this.regExp = "";
+      this.min = false;
+      this.max = false;
+      this.required = false;
+      this.minvalue = 0;
+      this.maxvalue = 0;
+      this.errMsg = "";
+      this.controllers = [{ relevancy: "", controlType: "", controlReg: "" }];
+      this.activeName = "first";
+      this.type = "add";
+      this.limit = 1;
+      this.key = this.key + 1;
+    },
+    sort() {
+      this.dragShow = true;
+      this.$nextTick(() => this.$refs.dragEl.update());
+    },
+    getFormData() {
+      return this.transformToJson();
+    },
+    restoreData() {
+      const attribs = JSON.parse(JSON.stringify(this.schema.attribs));
+      this.tableData = Object.keys(attribs).map((key) => attribs[key] || {});
+    },
+  },
+};
+</script>
+
+<template>
+  <div
+    id="form_wrapper"
+    font-sans
+    p="x-4 y-10"
+    text="center gray-700 dark:gray-200"
+  >
+    <el-dialog
+      :visible.sync="dialogVisible"
+      title="user"
+      width="50%"
+      :before-close="handleClose"
+    >
+      <div v-show="cardShow" style="margin-bottom: 24px">
+        <div class="sc-dvQaRk sc-TBWPX exyKSe fkEccH">
+          <h2 class="sc-bvFjSx inqAba">
+            Select a field for your collection type
+          </h2>
+        </div>
+        <hr class="sc-ljMRFG sc-jwQYvw fYRdMc goLodl" />
+      </div>
+      <Tabs v-show="cardShow" :types="types" @choose="choose" />
+
+      <div v-show="cardType" class="relative">
+        <div
+          class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black"
+        >
+          {{ type === "add" ? "Add new" : "Edit" }} {{ cardType }} field
+        </div>
+        <el-form>
+          <el-tabs v-model="activeName" class="demo-tabs">
+            <el-tab-pane label="Basic settings" name="first">
+              <div v-show="cardType">
+                <div class="wrapper">
+                  <el-form-item label="Name:" class="w30">
+                    <el-input
+                      ref="nameEl"
+                      v-model="input"
+                      placeholder="Please input Name"
+                    />
+                  </el-form-item>
+                  <el-form-item label="Placeholder:" class="w30">
+                    <el-input
+                      v-model="placeholder"
+                      placeholder="Please input Placeholder"
+                    />
+                  </el-form-item>
+                  <el-form-item label="Description:" class="w30">
+                    <el-input
+                      v-model="description"
+                      placeholder="Please input Description"
+                    />
+                  </el-form-item>
+                  <el-form-item label="Key:" class="w30">
+                    <el-input v-model="mapKey" placeholder="Please input Key" />
+                  </el-form-item>
+                  <el-form-item label="Size:" class="w30">
+                    <el-select v-model="size" placeholder="Pick Size">
+                      <el-option
+                        v-for="item in sizeOptions"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="TitleColor:" class="w30">
+                    <el-color-picker v-model="colorTitle" />
+                  </el-form-item>
+                  <el-form-item
+                    v-show="showType.includes(cardType)"
+                    label="Type:"
+                    class="w30"
+                  >
+                    <el-select v-model="cardType" placeholder="Pick Size">
+                      <el-option
+                        v-for="item in buttonType"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-select>
+                  </el-form-item>
+                  <el-checkbox
+                    v-show="cardType === 'Cascader'"
+                    v-model="cascaderType"
+                    label="Multiple"
+                    class="w30"
+                  />
+                  <el-form-item
+                    v-show="cardType === 'Upload'"
+                    label="Limit:"
+                    class="w30"
+                  >
+                    <el-input-number
+                      v-model="limit"
+                      :min="1"
+                      :max="10"
+                      controls-position="right"
+                    />
+                  </el-form-item>
+                </div>
+                <vueJsonEditor
+                  v-show="cardType === 'Cascader'"
+                  v-model="json"
+                  :expandedOnStart="true"
+                  :mode="mode"
+                />
+
+                <el-input
+                  v-show="
+                    cardType === 'Enumeration' || showType.includes(cardType)
+                  "
+                  v-model="textarea"
+                  :rows="5"
+                  type="textarea"
+                  placeholder="Ex:
+morning
+noon
+evening"
+                />
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="Advanced settings" name="second">
+              <div class="flex gap-1">
+                <el-form-item
+                  label="Default value"
+                  flex-col
+                  items-start
+                  class="w45"
+                >
+                  <el-input v-model="defaultvalue" />
+                </el-form-item>
+                <el-form-item
+                  label="RegExp pattern"
+                  flex-col
+                  items-start
+                  class="w45"
+                >
+                  <el-input v-model="regExp" />
+                </el-form-item>
+                <el-form-item
+                  v-show="regExp"
+                  label="Error message"
+                  flex-col
+                  items-start
+                  class="w45"
+                >
+                  <el-input v-model="errMsg" />
+                </el-form-item>
+              </div>
+              <div class="flex flex-col item-start">
+                <h3 text-black text-6>Settings</h3>
+                <div class="wrapper left">
+                  <el-checkbox
+                    v-model="required"
+                    label="Required field"
+                    size="large"
+                    class="w45"
+                  />
+                  <div class="w45" text-left flex flex-col>
+                    <el-checkbox
+                      v-model="min"
+                      label="Minimum value"
+                      size="large"
+                    />
+                    <el-input-number
+                      v-show="min"
+                      v-model="minvalue"
+                      :min="0"
+                      :max="10"
+                      size="small"
+                      controls-position="right"
+                    />
+                  </div>
+                  <div class="w45" text-left flex flex-col>
+                    <el-checkbox
+                      v-model="max"
+                      label="Maximum value"
+                      size="large"
+                    />
+                    <el-input-number
+                      v-show="max"
+                      v-model="maxvalue"
+                      :min="0"
+                      :max="10"
+                      size="small"
+                      controls-position="right"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="wrapper">
+                <h3 text-black text-6>relevancy</h3>
+                <div
+                  v-for="(item, idx) in controllers"
+                  :key="idx"
+                  class="wrapper gap-2 relative"
+                >
+                  <div
+                    v-show="idx > 0"
+                    absolute
+                    right-0
+                    top-2
+                    @click="controllers.splice(idx, 1)"
+                  >
+                    <svg
+                      viewBox="0 0 1024 1024"
+                      xmlns="http://www.w3.org/2000/svg"
+                      data-v-029747aa=""
+                      w-4
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"
+                      />
+                    </svg>
+                  </div>
+                  <div class="wrapper gap-2">
+                    <el-form-item
+                      label="Controller"
+                      flex-col
+                      items-start
+                      class="w45"
+                    >
+                      <el-select
+                        v-model="item.relevancy"
+                        placeholder="Select"
+                        clearable
+                        @change="selectChange"
+                      >
+                        <el-option
+                          v-for="i in tableData.filter(
+                            (item) => item.label !== input
+                          )"
+                          :key="i.name"
+                          :label="i.label"
+                          :value="i.label"
+                        />
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item
+                      v-show="item.relevancy"
+                      label="Control show"
+                      flex-col
+                      items-start
+                      class="w45"
+                    >
+                      <el-select
+                        v-model="item.controlType"
+                        placeholder="Select"
+                      >
+                        <el-option
+                          v-for="i in controlTypes"
+                          :key="i"
+                          :label="i"
+                          :value="i"
+                        />
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item
+                      v-show="item.controlType === 'regExp'"
+                      label="regExp"
+                      flex-col
+                      items-start
+                      class="w45"
+                    >
+                      <el-input
+                        v-model="item.controlReg"
+                        input-style="h-full"
+                      />
+                    </el-form-item>
+                  </div>
+                </div>
+                <el-button
+                  @click="
+                    controllers.push({
+                      relevancy: '',
+                      controlType: '',
+                      controlReg: '',
+                    })
+                  "
+                >
+                  add controller
+                </el-button>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </el-form>
+      </div>
+      <template #footer>
+        <Footer @cancel="cancel" @confirm="confirm" />
+      </template>
+    </el-dialog>
+    <el-dialog
+      :visible.sync="dragShow"
+      title="Drag & drop the fields to build the layout"
+      width="50%"
+    >
+      <Drag ref="dragEl" :data="getFormData()" />
+      <template #footer>
+        <Footer @cancel="dragShow = false" @confirm="sortEnd" />
+      </template>
+    </el-dialog>
+    <el-table :data="tableData" style="width: 100%">
+      <el-table-column prop="label" label="Name" />
+      <el-table-column prop="type" label="Type" />
+      <el-table-column>
+        <template #default="scope">
+          <el-button
+            link
+            type="danger"
+            size="small"
+            @click="deleteHandler(scope.row)"
+          >
+            Delete
+          </el-button>
+          <el-button link size="small" @click="editHandler(scope.row)">
+            Edit
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+</template>
+
+<style scoped>
+.fkEccH {
+  -webkit-box-align: center;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+.inqAba {
+  color: rgb(50, 50, 77);
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.22;
+}
+
+.goLodl {
+  height: 1px;
+  border: none;
+  margin: 0px;
+}
+
+.fYRdMc {
+  background: rgb(234, 234, 239);
+}
+
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.left {
+  text-align: left;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.item-start {
+  align-items: flex-start;
+}
+
+.flex {
+  display: flex;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.w45 {
+  width: 45%;
+}
+
+.w30 {
+  width: 30%;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.left-0 {
+  left: 0;
+}
+
+.h-10 {
+  height: 2.5rem;
+}
+
+.lh-10 {
+  line-height: 2.5rem;
+}
+
+.text-5 {
+  font-size: 1.5rem;
+}
+
+.font-600 {
+  font-weight: 600;
+}
+
+.text-black {
+  color: #000;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.relative {
+  position: relative;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.demo-tabs /deep/ .el-tabs__nav-scroll {
+  float: right !important;
+}
+
+:deep(.demo-tabs .el-form-item__content) {
+  width: 100%;
+  align-items: flex-start;
+}
+
+:deep(.el-form-item__content .el-select) {
+  width: 100%;
+}
+
+:deep(.el-form-item__content .el-cascader) {
+  width: 100%;
+}
+</style>
