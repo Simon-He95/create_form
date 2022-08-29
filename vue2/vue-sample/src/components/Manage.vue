@@ -170,10 +170,8 @@ export default {
         const data = this.json.attribs[key]
         if (data.group) {
           if (!result[data.groupKey || data.group])
-            result[data.groupKey || data.group] = []
-          result[data.groupKey || data.group].push({
-            [data['mapKey'] || key]: output[key]
-          })
+            result[data.groupKey || data.group] = {}
+          result[data.groupKey || data.group][data['mapKey'] || key] = output[key]
         } else
           result[data['mapKey'] || key] = output[key]
       })

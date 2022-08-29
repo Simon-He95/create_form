@@ -149,10 +149,12 @@ export default {
         this.limit = row.upload.limit
       this.current = this.input = row.label
       this.mapKey = row.mapKey
+      this.group = row.group
+      this.groupKey = row.groupKey
       if (row.rules) {
-        this.rules = Object.keys(row.rules).map(key => ({
-          regExp: key,
-          errMsg: row.rules[key]
+        this.rules = row.rules.map(item => ({
+          regExp: item.regExp,
+          errMsg: item.errMsg
         }))
       }
       if (row.cascader) {
