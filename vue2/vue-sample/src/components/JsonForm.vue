@@ -14,7 +14,7 @@ export default {
   props: {
     schema: {
       type: Object,
-      default: () => { },
+      default: () => {},
     },
   },
   data() {
@@ -57,43 +57,43 @@ export default {
     let styles = "";
     return this.schema
       ? h(
-        "div",
-        {
-          style: {
-            textAlign: "left",
+          "div",
+          {
+            style: {
+              textAlign: "left",
+            },
+            class: "json_schema",
           },
-          class: "json_schema",
-        },
-        [
-          h(
-            "h3",
-            {
-              class: "text-2xl mb-2",
-            },
-            this.schema.name
-          ),
-          h(
-            "h1",
-            {
-              class: "text-sm mb-3",
-            },
-            this.schema.description
-          ),
-          h(
-            "el-form",
-            {
-              props: {
-                ref: "formEl",
-                model: this.model,
-                rules: this.rules,
-                size: this.schema.size,
-                class: this.schema.class,
+          [
+            h(
+              "h3",
+              {
+                class: "text-2xl mb-2",
               },
-            },
-            wrapper.call(this, renderForm.call(this, this.schema.attribs))
-          ),
-        ]
-      )
+              this.schema.name
+            ),
+            h(
+              "h1",
+              {
+                class: "text-sm mb-3",
+              },
+              this.schema.description
+            ),
+            h(
+              "el-form",
+              {
+                props: {
+                  ref: "formEl",
+                  model: this.model,
+                  rules: this.rules,
+                  size: this.schema.size,
+                  class: this.schema.class,
+                },
+              },
+              wrapper.call(this, renderForm.call(this, this.schema.attribs))
+            ),
+          ]
+        )
       : "";
 
     function renderForm(form) {
@@ -120,11 +120,9 @@ export default {
           maxlength,
           minlength,
           options,
-          values,
           min,
           max,
           disabled,
-          disables,
           border,
           precision,
           step,
@@ -135,9 +133,9 @@ export default {
         const formItemClass = `json_${type + _key}`;
         setTimeout(() => this.judgeShow(formItemClass, show));
         if (value !== undefined) this.$set(this.model, key, value || "");
-        Object.keys(rules).forEach(rule => {
+        Object.keys(rules).forEach((rule) => {
           const reg = new RegExp(rule);
-          const errMsg = rules[rule]
+          const errMsg = rules[rule];
           this.rules[key] = [
             {
               validator: (o, value, callback) => {
@@ -146,7 +144,7 @@ export default {
               },
             },
           ];
-        })
+        });
 
         const typeComponent = {
           Text: (type = "text") => {
@@ -183,7 +181,7 @@ export default {
           Number: () =>
             h("el-input-number", {
               props: {
-                value: this.model[key] || (this.model[key] = 0),
+                value: this.model[key],
                 class: className,
                 style,
                 disabled,
@@ -214,8 +212,9 @@ export default {
               (options || []).map((item, i) =>
                 h("el-option", {
                   props: {
-                    value: values ? values[i] : item,
-                    label: item,
+                    value: item.value,
+                    label: item.label,
+                    disabled: item.disabled,
                   },
                 })
               )
@@ -223,7 +222,7 @@ export default {
           Boolean: () =>
             h("el-switch", {
               props: {
-                value: this.model[key] || (this.model[key] = 0),
+                value: this.model[key] || false,
                 class: className,
                 style,
                 disabled,
@@ -246,13 +245,13 @@ export default {
                   input: modelValue,
                 },
               },
-              (options || []).map((item, i) =>
+              (options || []).map((item) =>
                 h(
                   type === "radio" ? "el-radio" : "el-radio-button",
                   {
                     props: {
-                      label: values ? values[i] : item,
-                      disabled: disables ? disables[i] : false,
+                      label: item.label,
+                      disabled: item.disabled || false,
                       border,
                     },
                   },
@@ -265,7 +264,7 @@ export default {
               "el-checkbox-group",
               {
                 props: {
-                  value: this.model[key] || (this.model[key] = []),
+                  value: this.model[key] || [],
                   class: className,
                   style,
                   disabled,
@@ -280,8 +279,9 @@ export default {
                   type === "checkbox" ? "el-checkbox" : "el-checkbox-button",
                   {
                     props: {
-                      label: values ? values[i] : item,
-                      disabled: disables ? disables[i] : false,
+                      label: item.label,
+                      disabled: item.disabled || false,
+                      value: item.value,
                       border,
                     },
                   },
@@ -294,9 +294,9 @@ export default {
           Cascader: () =>
             h("el-cascader", {
               props: {
-                value: this.model[key] || (this.model[key] = []),
+                value: this.model[key] || [],
                 class: className,
-                options: cascader.options || [],
+                options: options || [],
                 debounce,
                 style,
                 disabled,
@@ -314,7 +314,7 @@ export default {
               "el-upload",
               {
                 props: {
-                  fileList: this.model[key] || (this.model[key] = []),
+                  fileList: this.model[key] || [],
                   class: className,
                   listType: "picture-card",
                   action: "#",
@@ -331,7 +331,11 @@ export default {
                   input: modelValue,
                 },
               },
-              h("el-icon", null, { default: () => h("plus") })
+              [
+                h("i", {
+                  class: "el-icon-plus avatar-uploader-icon",
+                }),
+              ]
             ),
             h(
               "el-dialog",
@@ -371,7 +375,7 @@ export default {
           .el-form-item__content{
             width:100%
           }
-          `
+          `;
           if (!labelShow)
             styles += `.${formItemClass} .el-form-item__label{
            display:none;
@@ -388,7 +392,7 @@ export default {
                 required: !!required,
                 position,
                 size,
-                group
+                group,
               },
               class: formItemClass,
             },
@@ -474,18 +478,22 @@ export default {
               [g3[i]]
             )
           );
-        const group = g1[i].data.props.group
+        const group = g1[i].data ? g1[i].data.props.group : undefined;
         const data = h("el-row", { props: { gutter: 10 } }, col);
         return group
-          ? h('div', [
-            h('div', {
-              attrs: {
-                style: 'height:40px;line-height:40px;'
-              }
-            }, group),
-            data
-          ])
-          : data
+          ? h("div", [
+              h(
+                "div",
+                {
+                  attrs: {
+                    style: "height:40px;line-height:40px;",
+                  },
+                },
+                group
+              ),
+              data,
+            ])
+          : data;
       });
 
       return result;
@@ -493,7 +501,7 @@ export default {
         return !b
           ? -1
           : a.data.props.position.split("-")[1] -
-          b.data.props.position.split("-")[1];
+              b.data.props.position.split("-")[1];
       }
       function transformData(data) {
         if (!data.length) return [];
