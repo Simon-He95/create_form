@@ -46,7 +46,6 @@ export default {
   },
   methods: {
     update() {
-      debugger
       this.returnValue = {};
       if (this.data) {
         const { attribs } = this.data;

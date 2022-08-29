@@ -136,7 +136,6 @@ export default {
   },
   methods: {
     editHandler(row) {
-      debugger
       if (row.type === 'Checkbox')
         this.buttonType = ['Checkbox', 'CheckboxButton']
       if (row.type === 'Radio')
@@ -470,7 +469,7 @@ export default {
                   </el-form-item>
                 </div>
               </div>
-              <div class="flex flex-col item-start">
+              <div class="flex flex-col item-start" style="margin-bottom: ;20px;">
                 <h3 text-black text-6>
                   规则校验
                 </h3>
@@ -487,7 +486,7 @@ export default {
                 </div>
                 <el-button @click="rules.push({ regExp: '', errMsg: '' })">新增规则</el-button>
               </div>
-              <div class="flex flex-col item-start">
+              <div class="flex flex-col item-start" style="margin-bottom: ;20px;">
                 <h3 text-black text-6>
                   设置
                 </h3>

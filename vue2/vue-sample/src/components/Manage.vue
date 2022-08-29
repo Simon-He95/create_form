@@ -165,7 +165,6 @@ export default {
       console.log(this.json)
       const result = {}
       const output = this.$refs.formEl.getFormData()
-      debugger
       Object.keys(this.json.attribs).forEach(key => {
         const data = this.json.attribs[key]
         if (data.group) {

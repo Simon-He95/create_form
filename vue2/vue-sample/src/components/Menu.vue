@@ -17,7 +17,7 @@ export default {
       list: localStorage.getItem("store_json")
         ? JSON.parse(localStorage.getItem("store_json"))
         : [],
-      current: 0,
+      current: '',
       collpase: true,
       createShow: false,
       name: "",
@@ -69,8 +69,14 @@ export default {
         : {};
       delete data[this.name];
       localStorage.setItem("json_form_list", JSON.stringify(data));
+      const tableData = localStorage.getItem('json_form_table') ? JSON.parse(localStorage.getItem('json_form_table')) : {}
+      delete tableData[this.name]
+      localStorage.setItem('json_form_table', JSON.stringify(tableData))
       this.isDelete = false;
       this.createShow = false;
+      --this.current
+      this.clickList(this.current, this.list[this.current]);
+
     },
   },
 };
@@ -81,85 +87,48 @@ export default {
     <nav aria-label="Content-Type Builder" class="sc-kBHgYv dEPNRG">
       <div class="sc-bcGyXE erdTfC">
         <div class="sc-bcGyXE sc-kiowOE hyPoxK bwmCs">
-          <h2 class="sc-ijeLaK heUJcp">{{ title || "Content" }}</h2>
+          <h2 class="sc-ijeLaK heUJcp">{{  title || "Content"  }}</h2>
         </div>
         <div class="sc-bcGyXE epXjzL">
           <hr class="sc-bcGyXE sc-dbqYyY gdIlBK lexqVX sc-dBGsNe cyIHrr" />
         </div>
       </div>
       <div class="sc-dbqYyY UmRPd">
-        <ol
-          spacing="2"
-          class="sc-dbqYyY sc-dOkGYn sc-jRSqCh jStIwK kpsMfe bUDExr"
-        >
+        <ol spacing="2" class="sc-dbqYyY sc-dOkGYn sc-jRSqCh jStIwK kpsMfe bUDExr">
           <li>
-            <div
-              spacing="1"
-              class="sc-dbqYyY sc-dOkGYn sc-jRSqCh jStIwK kpsMfe bUDExf"
-            >
+            <div spacing="1" class="sc-dbqYyY sc-dOkGYn sc-jRSqCh jStIwK kpsMfe bUDExf">
               <div class="sc-dbqYyY sc-jdXHFF fFvRvU iQyFFF">
                 <div class="sc-dbqYyY bWTwLx">
-                  <button
-                    aria-controls="subnav-list-119"
-                    class="sc-dbqYyY sc-dOkGYn sc-jPGhGf jqVvPJ dNHUsO bRUAVn"
-                    @click="collpaseHandler"
-                  >
+                  <button aria-controls="subnav-list-119" class="sc-dbqYyY sc-dOkGYn sc-jPGhGf jqVvPJ dNHUsO bRUAVn"
+                    @click="collpaseHandler">
                     <div class="sc-dbqYyY lndfAL">
                       <span class="sc-lliPmu idVbRw">Collection Types</span>
                     </div>
-                    <div
-                      class="sc-fXiGvq"
-                      :class="[collpase ? 'exddHz' : 'eaRphy']"
-                    >
-                      <svg
-                        width="1em"
-                        height="1em"
-                        viewBox="0 0 14 8"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
+                    <div class="sc-fXiGvq" :class="[collpase ? 'exddHz' : 'eaRphy']">
+                      <svg width="1em" height="1em" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
                           d="M14 .889a.86.86 0 01-.26.625L7.615 7.736A.834.834 0 017 8a.834.834 0 01-.615-.264L.26 1.514A.861.861 0 010 .889c0-.24.087-.45.26-.625A.834.834 0 01.875 0h12.25c.237 0 .442.088.615.264a.86.86 0 01.26.625z"
-                          fill="#32324D"
-                        />
+                          fill="#32324D" />
                       </svg>
                     </div>
                   </button>
-                  <div
-                    transform="translateY(-50%)"
-                    class="sc-dbqYyY sc-dOkGYn hafWQs hYndWV"
-                  >
-                    <span class="sc-lliPmu idVbRw">{{ list.length }}</span>
+                  <div transform="translateY(-50%)" class="sc-dbqYyY sc-dOkGYn hafWQs hYndWV">
+                    <span class="sc-lliPmu idVbRw">{{  list.length  }}</span>
                   </div>
                 </div>
               </div>
               <ol v-show="collpase" id="subnav-list-119">
-                <li
-                  v-for="(item, i) in list"
-                  :key="i"
-                  @click="clickList(i, item)"
-                >
-                  <a
-                    aria-current="page"
-                    class="sc-dbqYyY sc-cjwcjg joRjZF cfdPXz"
-                    :class="[current === i ? 'active' : '']"
-                  >
+                <li v-for="(item, i) in list" :key="i" @click="clickList(i, item)">
+                  <a aria-current="page" class="sc-dbqYyY sc-cjwcjg joRjZF cfdPXz"
+                    :class="[current === i ? 'active' : '']">
                     <div class="sc-dbqYyY sc-dOkGYn jStIwK dNHUsO">
-                      <svg
-                        width="1em"
-                        height="1em"
-                        viewBox="0 0 4 4"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="sc-kHTDnN cWLdcV"
-                      >
+                      <svg width="1em" height="1em" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        class="sc-kHTDnN cWLdcV">
                         <rect width="4" height="4" rx="2" fill="#A5A5BA" />
                       </svg>
                       <div class="sc-dbqYyY fvhnfw">
-                        <span class="sc-lliPmu imwrmp">{{ item }}</span>
+                        <span class="sc-lliPmu imwrmp">{{  item  }}</span>
                       </div>
                     </div>
                   </a>
@@ -167,54 +136,28 @@ export default {
               </ol>
             </div>
             <div class="sc-gsDKAQ hjVlqg" v-show="title !== 'Content'">
-              <button
-                aria-disabled="false"
-                type="button"
-                class="sc-fUCuFg sc-dSaQTq sc-HEwFl fZLKQx ciPgPo cJJTYc"
-                @click="createHandler"
-              >
-                <span aria-hidden="true" class="sc-fUCuFg cLNaEJ"
-                  ><svg
-                    width="1em"
-                    height="1em"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+              <button aria-disabled="false" type="button" class="sc-fUCuFg sc-dSaQTq sc-HEwFl fZLKQx ciPgPo cJJTYc"
+                @click="createHandler">
+                <span aria-hidden="true" class="sc-fUCuFg cLNaEJ"><svg width="1em" height="1em" viewBox="0 0 24 24"
+                    fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M24 13.604a.3.3 0 01-.3.3h-9.795V23.7a.3.3 0 01-.3.3h-3.21a.3.3 0 01-.3-.3v-9.795H.3a.3.3 0 01-.3-.3v-3.21a.3.3 0 01.3-.3h9.795V.3a.3.3 0 01.3-.3h3.21a.3.3 0 01.3.3v9.795H23.7a.3.3 0 01.3.3v3.21z"
-                      fill="#212134"
-                    /></svg></span
-                ><span class="sc-hKysef kvRZkV"
-                  >Create new collection type</span
-                >
+                      fill="#212134" />
+                  </svg></span><span class="sc-hKysef kvRZkV">Create new collection type</span>
               </button>
             </div>
           </li>
         </ol>
       </div>
     </nav>
-    <el-dialog
-      :visible.sync="createShow"
-      title="Create a collection type"
-      width="50%"
-    >
+    <el-dialog :visible.sync="createShow" title="Create a collection type" width="50%">
       <el-form>
         <el-form-item label="Display name">
-          <el-input
-            ref="nameEl"
-            v-model="name"
-            placeholder="Please input Name"
-          />
+          <el-input ref="nameEl" v-model="name" placeholder="Please input Name" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <Footer
-          @cancel="createShow = false"
-          @confirm="confirm"
-          :isDelete="isDelete"
-          @delete="deleteHandler"
-        />
+        <Footer @cancel="createShow = false" @confirm="confirm" :isDelete="isDelete" @delete="deleteHandler" />
       </template>
     </el-dialog>
   </div>
@@ -224,6 +167,7 @@ export default {
 .erdTfC {
   padding: 24px 16px 8px 24px;
 }
+
 .bwmCs {
   align-items: flex-start;
   display: flex;
@@ -231,27 +175,33 @@ export default {
   -webkit-box-pack: justify;
   justify-content: space-between;
 }
+
 .heUJcp {
   color: rgb(50, 50, 77);
   font-weight: 600;
   font-size: 1.125rem;
   line-height: 1.22;
 }
+
 .gdIlBK {
   background: rgb(234, 234, 239);
 }
+
 .lexqVX {
   height: 1px;
   border: none;
   margin: 0px;
 }
+
 .cyIHrr {
   width: 1.5rem;
   background-color: rgb(220, 220, 228);
 }
+
 .epXjzL {
   padding-top: 16px;
 }
+
 .dEPNRG {
   width: 14.5rem;
   background: rgb(246, 246, 249);
@@ -282,7 +232,7 @@ export default {
   flex-direction: column;
 }
 
-.bUDExr > * {
+.bUDExr>* {
   margin-top: 0px;
   margin-bottom: 0px;
 }
@@ -342,7 +292,7 @@ export default {
   padding: 8px 16px 8px 24px;
 }
 
-.bUDExf > * + * {
+.bUDExf>*+* {
   margin-top: 4px;
 }
 
@@ -381,7 +331,7 @@ export default {
   height: 0.25rem;
 }
 
-.cfdPXz.active svg > * {
+.cfdPXz.active svg>* {
   fill: rgb(39, 31, 224);
 }
 
@@ -400,11 +350,11 @@ export default {
   line-height: 1.43;
 }
 
-.cfdPXz.active svg > * {
+.cfdPXz.active svg>* {
   fill: rgb(39, 31, 224);
 }
 
-.bUDExf > * {
+.bUDExf>* {
   margin-top: 0px;
   margin-bottom: 0px;
 }
