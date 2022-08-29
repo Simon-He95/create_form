@@ -23,7 +23,6 @@ export default {
       rules: {},
       dialogShow: false,
       previewSrc: "",
-      edit: false,
     };
   },
   watch: {
@@ -131,22 +130,24 @@ export default {
           placeholder,
           children,
         } = form[key];
-
         const formItemClass = `json_${type + _key}`;
         setTimeout(() => this.judgeShow(formItemClass, show));
         if (value !== undefined) this.$set(this.model, key, value || "");
-        Object.keys(rules).forEach((rule) => {
-          const reg = new RegExp(rule);
-          const errMsg = rules[rule];
+        if (rules.length) {
           this.rules[key] = [
             {
               validator: (o, value, callback) => {
-                if (!reg.test(value))
-                  return callback(new Error(errMsg || `${key} is invalid`));
+                for (const item of rules) {
+                  if (!new RegExp(item.regExp).test(value))
+                    return callback(
+                      new Error(item.errMsg || `${key} is invalid`)
+                    );
+                }
+                callback();
               },
             },
           ];
-        });
+        }
 
         const typeComponent = {
           Text: (type = "text") => {
@@ -343,20 +344,24 @@ export default {
               "el-dialog",
               {
                 props: {
-                  value: this.dialogShow.value,
+                  visible: this.dialogShow,
+                  modal: false,
                 },
                 on: {
-                  input: (val) => (this.dialogShow.value = val),
+                  input: (val) => (this.dialogShow = val),
                 },
               },
 
-              h("img", {
-                class: "w-full",
-                props: {
-                  src: this.previewSrc.value,
-                  alt: "Preview Image",
-                },
-              })
+              [
+                h("img", {
+                  class: "w-full",
+                  src: this.previewSrc,
+                  props: {
+                    src: this.previewSrc,
+                    alt: "Preview Image",
+                  },
+                }),
+              ]
             ),
           ],
         };
@@ -449,14 +454,17 @@ export default {
         );
         if (children) formList.push(...renderForm.call(this, children));
         function onPreview(uploadFile) {
-          this.previewSrc.value = uploadFile.url;
-          this.dialogShow.value = true;
+          that.previewSrc = uploadFile.url;
+          that.dialogShow = true;
         }
         function uploadChange(data) {
-          this.model[key].push(data);
+          if (!that.model[key]) that.model[key] = [];
+          if (that.model[key].length < limit) that.model[key].push(data);
+          that.schema.attribs[key].default = that.model[key];
         }
         function removeFile(data) {
-          this.model[key].splice(data, 1);
+          that.model[key].splice(data, 1);
+          that.schema.attribs[key].default = that.model[key];
         }
         let that = this;
         function modelValue(val) {

@@ -52,10 +52,13 @@
   text-align: left;
 }
 
-#json_form .el-form-item__label {
+.json_schema .el-form-item__label {
   display: none;
 }
 
+#json_form .el-form-item__label{
+  height:40px;
+}
 #json_form .el-dialog {
   max-height: 60vh;
   overflow-y: auto;
