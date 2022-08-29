@@ -14,7 +14,7 @@ export default {
   props: {
     schema: {
       type: Object,
-      default: () => {},
+      default: () => { },
     },
   },
   data() {
@@ -57,43 +57,43 @@ export default {
     let styles = "";
     return this.schema
       ? h(
-          "div",
-          {
-            style: {
-              textAlign: "left",
-            },
-            class: "json_schema",
+        "div",
+        {
+          style: {
+            textAlign: "left",
           },
-          [
-            h(
-              "h3",
-              {
-                class: "text-2xl mb-2",
+          class: "json_schema",
+        },
+        [
+          h(
+            "h3",
+            {
+              class: "text-2xl mb-2",
+            },
+            this.schema.name
+          ),
+          h(
+            "h1",
+            {
+              class: "text-sm mb-3",
+            },
+            this.schema.description
+          ),
+          h(
+            "el-form",
+            {
+              props: {
+                ref: "formEl",
+                model: this.model,
+                rules: this.rules,
+                size: this.schema.size,
+                class: this.schema.class,
               },
-              this.schema.name
-            ),
-            h(
-              "h1",
-              {
-                class: "text-sm mb-3",
-              },
-              this.schema.description
-            ),
-            h(
-              "el-form",
-              {
-                props: {
-                  ref: "formEl",
-                  model: this.model,
-                  rules: this.rules,
-                  size: this.schema.size,
-                  class: this.schema.class,
-                },
-              },
-              wrapper.call(this, renderForm.call(this, this.schema.attribs))
-            ),
-          ]
-        )
+            },
+            wrapper.call(this, renderForm.call(this, this.schema.attribs))
+          ),
+        ]
+      )
       : "";
 
     function renderForm(form) {
@@ -104,14 +104,14 @@ export default {
           key: _key,
           type,
           size,
+          group,
           limit = 1,
-          cascaderType,
           colorTitle,
-          json,
+          cascader,
           label,
-          regExp,
-          errMsg,
+          rules,
           required,
+          labelShow,
           class: className,
           position,
           style,
@@ -135,8 +135,9 @@ export default {
         const formItemClass = `json_${type + _key}`;
         setTimeout(() => this.judgeShow(formItemClass, show));
         if (value !== undefined) this.$set(this.model, key, value || "");
-        if (regExp) {
-          const reg = new RegExp(regExp);
+        Object.keys(rules).forEach(rule => {
+          const reg = new RegExp(rule);
+          const errMsg = rules[rule]
           this.rules[key] = [
             {
               validator: (o, value, callback) => {
@@ -145,7 +146,8 @@ export default {
               },
             },
           ];
-        }
+        })
+
         const typeComponent = {
           Text: (type = "text") => {
             return h("el-input", {
@@ -294,11 +296,11 @@ export default {
               props: {
                 value: this.model[key] || (this.model[key] = []),
                 class: className,
-                options: json.options || [],
+                options: cascader.options || [],
                 debounce,
                 style,
                 disabled,
-                multiple: cascaderType,
+                multiple: cascader.multiple,
                 placeholder,
                 filterable: true,
                 "collapse-tags-tooltip": true,
@@ -357,6 +359,7 @@ export default {
           styles += `
           .${formItemClass} .el-form-item__label{
             color:${colorTitle};
+            ${!labelShow ? "display:none" : ""}
           }
           .el-form-item__content{
             width:100%
@@ -364,8 +367,14 @@ export default {
           `;
         } else {
           styles += `
+
           .el-form-item__content{
             width:100%
+          }
+          `
+          if (!labelShow)
+            styles += `.${formItemClass} .el-form-item__label{
+           display:none;
           }
           `;
         }
@@ -379,6 +388,7 @@ export default {
                 required: !!required,
                 position,
                 size,
+                group
               },
               class: formItemClass,
             },
@@ -464,7 +474,18 @@ export default {
               [g3[i]]
             )
           );
-        return h("el-row", { props: { gutter: 10 } }, col);
+        const group = g1[i].data.props.group
+        const data = h("el-row", { props: { gutter: 10 } }, col);
+        return group
+          ? h('div', [
+            h('div', {
+              attrs: {
+                style: 'height:40px;line-height:40px;'
+              }
+            }, group),
+            data
+          ])
+          : data
       });
 
       return result;
@@ -472,7 +493,7 @@ export default {
         return !b
           ? -1
           : a.data.props.position.split("-")[1] -
-              b.data.props.position.split("-")[1];
+          b.data.props.position.split("-")[1];
       }
       function transformData(data) {
         if (!data.length) return [];
