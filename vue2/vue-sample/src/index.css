@@ -1,5 +1,7 @@
 #json_form .el-dialog__footer {
   padding: 0;
+  position: sticky;
+  bottom: 0;
 }
 
 #json_form .el-table {
@@ -51,7 +53,7 @@
 }
 
 #json_form .el-form-item__label {
-  height: 40px;
+  display: none;
 }
 
 #json_form .el-dialog {

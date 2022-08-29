@@ -23,6 +23,7 @@ export default {
       rules: {},
       dialogShow: false,
       previewSrc: "",
+      edit: false,
     };
   },
   watch: {
@@ -130,6 +131,7 @@ export default {
           placeholder,
           children,
         } = form[key];
+
         const formItemClass = `json_${type + _key}`;
         setTimeout(() => this.judgeShow(formItemClass, show));
         if (value !== undefined) this.$set(this.model, key, value || "");
@@ -397,6 +399,42 @@ export default {
               class: formItemClass,
             },
             [
+              h("el-input", {
+                props: {
+                  value: label,
+                },
+                ref: formItemClass,
+                class: className,
+                style: "display:none",
+                on: {
+                  input: (val) => {
+                    form[key].id = val;
+                    form[key].label = val;
+                  },
+                  blur: () => {
+                    const vm = this.$refs[formItemClass].$el;
+                    vm.nextSibling.style.display = "block";
+                    vm.style.display = "none";
+                  },
+                },
+              }),
+              h(
+                "div",
+                {
+                  on: {
+                    click: () => {
+                      const vm = this.$refs[formItemClass].$el;
+                      vm.nextElementSibling.style.display = "none";
+                      vm.style.display = "block";
+                      this.$nextTick(() => this.$refs[formItemClass].focus());
+                    },
+                  },
+                  attrs: {
+                    style: "height:40px;",
+                  },
+                },
+                label
+              ),
               h(
                 "div",
                 {
