@@ -45,6 +45,8 @@ export default {
       size: "default",
       activeName: "first",
       defaultvalue: "",
+      datetype: "",
+      format: '',
       required: false,
       minvalue: 0,
       maxvalue: 0,
@@ -64,6 +66,26 @@ export default {
       buttonType: ["Radio", "RadioButton"],
       key: 0,
       sizeOptions: ["default", "small", "large"],
+      formatOptions: ['yyyy', 'M', 'MM', 'W', 'WW', 'd', 'dd', 'H', 'HH', 'h', 'hh', 'm', 'mm', 's', 'ss', 'A', 'a', 'timestamp', '[MM]'],
+      dateOptions: [{
+        label: '时间',
+        value: 'time'
+      }, {
+        label: '时间区间',
+        value: 'timezone'
+      }, {
+        label: '日期',
+        value: 'date'
+      }, {
+        label: '日期区间',
+        value: 'datezone'
+      }, {
+        label: '日期时间',
+        value: 'datetime'
+      }, {
+        label: '日期时间区间',
+        value: 'datetimezone'
+      }],
       mode: "code",
       json: "",
       types: [
@@ -145,7 +167,11 @@ export default {
     editHandler(row) {
       if (row.type === "Checkbox")
         this.buttonType = ["Checkbox", "CheckboxButton"];
-      if (row.type === "Radio") this.buttonType = ["Radio", "RadioButton"];
+      else if (row.type === "Radio") this.buttonType = ["Radio", "RadioButton"];
+      else if (row.type === 'Date') {
+        this.datetype = row.date.type
+        this.format = row.date.format
+      }
       this.controllers = row.show || [
         { relevancy: "", controlType: "", controlReg: "" },
       ];
@@ -243,20 +269,26 @@ export default {
         mapKey: this.mapKey || this.input,
         options: this.options,
         len: this.len,
+
       };
       if (this.cardType === "Cascader") {
         data.cascader = {
           multiple: this.cascader.multiple,
         };
-      }
-      if (r.length) data["show"] = r;
-      if (this.group) data["group"] = this.group;
-      if (this.groupKey) data["groupKey"] = this.groupKey;
-      if (this.cardType === "Upload") {
+      } else if (this.cardType === 'Date') {
+        data.date = {
+          type: this.datetype,
+          format: this.format
+        }
+      } else if (this.cardType === "Upload") {
         data.upload = {
           limit: this.limit,
         };
       }
+      if (r.length) data["show"] = r;
+      if (this.group) data["group"] = this.group;
+      if (this.groupKey) data["groupKey"] = this.groupKey;
+
       this.key++;
       if (this.type === "add") {
         this.tableData = [...this.tableData, data];
@@ -340,6 +372,8 @@ export default {
           value: "",
         },
       ];
+      this.format = ''
+      this.datetype = ''
       this.input = "";
       this.colorTitle = "";
       this.size = "default";
@@ -351,6 +385,7 @@ export default {
       this.activeName = "first";
       this.type = "add";
       this.limit = 1;
+      this.datetype = ''
       this.key = this.key + 1;
     },
     sort() {
@@ -396,7 +431,17 @@ export default {
                   <el-form-item label="标签名:" class="w30">
                     <el-input ref="nameEl" v-model="input" placeholder="Please input Name" />
                   </el-form-item>
-
+                  <el-form-item v-show="cardType === 'Date'" label="日期类型:" class="w30">
+                    <el-select v-model="datetype" placeholder="Pick datetype">
+                      <el-option v-for="item in dateOptions" :key="item.value" :label="item.label"
+                        :value="item.value" />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item v-show="cardType === 'Date'" label="转换格式:" class="w30">
+                    <el-select v-model="format" placeholder="Pick format">
+                      <el-option v-for="item in formatOptions" :key="item" :label="item" :value="item" />
+                    </el-select>
+                  </el-form-item>
                   <el-form-item label="占位符:" class="w30">
                     <el-input v-model="placeholder" placeholder="Please input Placeholder" />
                   </el-form-item>

@@ -119,6 +119,7 @@ export default {
           cascader,
           label,
           rules,
+          date,
           required,
           labelShow,
           class: className,
@@ -186,18 +187,105 @@ export default {
           Email: () => typeComponent.Text(),
           RichText: () => typeComponent.Text("textarea"),
           Password: () => typeComponent.Text("password"),
-          Date: () =>
-            h("el-date-picker", {
+          Date: () => {
+            const { type, format } = date || {}
+            switch (type) {
+              case 'time':
+                return h('el-time-picker', {
+                  props: {
+                    value: this.model[key],
+                    disabled,
+                    'value-format': format,
+                    placeholder
+                  },
+                  on: {
+                    input: modelValue,
+                  },
+                })
+              case 'timezone':
+                return h('el-time-picker', {
+                  props: {
+                    value: this.model[key],
+                    'is-range': true,
+                    'range-separator': "至",
+                    "start-placeholder": "开始时间",
+                    "end-placeholder": "结束时间",
+                    disabled,
+                    'value-format': format,
+                  },
+                  on: {
+                    input: modelValue,
+                  },
+                })
+              case 'datetime':
+                return h('el-date-picker', {
+                  props: {
+                    value: this.model[key],
+                    type: 'datetime',
+                    'value-format': format,
+                    placeholder
+                  },
+                  on: {
+                    input: modelValue,
+                  },
+                })
+              case 'datetimezone':
+                return h('el-date-picker', {
+                  props: {
+                    value: this.model[key],
+                    type: 'datetimerange',
+                    'range-separator': "至",
+                    "start-placeholder": "开始时间",
+                    "end-placeholder": "结束时间",
+                    'value-format': format,
+                  },
+                  on: {
+                    input: modelValue,
+                  },
+                })
+              case 'datezone':
+                return h('el-date-picker', {
+                  props: {
+                    value: this.model[key],
+                    type: 'daterange',
+                    'range-separator': "至",
+                    "start-placeholder": "开始时间",
+                    "end-placeholder": "结束时间",
+                    disabled,
+                    'value-format': format,
+                  },
+                  on: {
+                    input: modelValue,
+                  },
+                })
+              default:
+                return h('el-date-picker', {
+                  props: {
+                    value: this.model[key],
+                    type: 'date',
+                    placeholder,
+                    disabled,
+                    'value-format': format,
+                  },
+                  on: {
+                    input: modelValue,
+                  },
+                })
+            }
+            return h("el-date-picker", {
               props: {
                 value: this.model[key],
                 class: className,
                 style,
                 disabled,
+                'value-format': format,
               },
               on: {
                 input: modelValue,
               },
-            }),
+            })
+          }
+          ,
           Number: () =>
             h("el-input-number", {
               props: {
