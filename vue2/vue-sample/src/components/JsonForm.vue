@@ -194,9 +194,8 @@ export default {
                 return h('el-time-picker', {
                   props: {
                     value: this.model[key],
-                    disabled,
-                    'value-format': format,
-                    placeholder
+                    placeholder,
+                    disabled
                   },
                   on: {
                     input: modelValue,
@@ -210,8 +209,7 @@ export default {
                     'range-separator': "至",
                     "start-placeholder": "开始时间",
                     "end-placeholder": "结束时间",
-                    disabled,
-                    'value-format': format,
+                    disabled
                   },
                   on: {
                     input: modelValue,
@@ -238,6 +236,7 @@ export default {
                     "start-placeholder": "开始时间",
                     "end-placeholder": "结束时间",
                     'value-format': format,
+                    disabled
                   },
                   on: {
                     input: modelValue,
@@ -251,8 +250,8 @@ export default {
                     'range-separator': "至",
                     "start-placeholder": "开始时间",
                     "end-placeholder": "结束时间",
-                    disabled,
                     'value-format': format,
+                    disabled
                   },
                   on: {
                     input: modelValue,
@@ -264,26 +263,14 @@ export default {
                     value: this.model[key],
                     type: 'date',
                     placeholder,
-                    disabled,
                     'value-format': format,
+                    disabled
                   },
                   on: {
                     input: modelValue,
                   },
                 })
             }
-            return h("el-date-picker", {
-              props: {
-                value: this.model[key],
-                class: className,
-                style,
-                disabled,
-                'value-format': format,
-              },
-              on: {
-                input: modelValue,
-              },
-            })
           }
           ,
           Number: () =>
@@ -563,6 +550,7 @@ export default {
           that.schema.attribs[key].default = that.model[key];
         }
         function modelValue(val) {
+          console.log(val)
           that.model[key] = val;
           that.schema.attribs[key].default = val;
         }
@@ -661,25 +649,25 @@ export default {
     function insertStyle(colorTitle, formItemClass, labelShow) {
       if (colorTitle) {
         styles += `
-          .${formItemClass} .form_label{
-            color:${colorTitle};
-            ${!labelShow ? "display:none" : ""}
-          }
-          .el-form-item__content{
-            width:100%
-          }
-          `;
+            .${formItemClass} .form_label{
+              color:${colorTitle};
+              ${!labelShow ? "display:none" : ""}
+            }
+            .el-form-item__content{
+              width:100%
+            }
+            `;
       } else {
         styles += `
-          .el-form-item__content{
-            width:100%
-          }
-          `;
+            .el-form-item__content{
+              width:100%
+            }
+            `;
         if (!labelShow)
           styles += `.${formItemClass} .form_label{
-           display:none;
-          }
-          `;
+             display:none;
+            }
+            `;
       }
     }
   },
