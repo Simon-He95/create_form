@@ -48,7 +48,7 @@ export default {
       required: false,
       minvalue: 0,
       maxvalue: 0,
-      number: {
+      len: {
         min: "",
         max: "",
       },
@@ -175,13 +175,13 @@ export default {
       this.placeholder = row.placeholder;
       this.description = row.description;
       this.colorTitle = row.colorTitle;
-      if (row.number) {
-        this.number.min = row.number.min;
-        if (this.number.min) this.min = true;
-        this.number.max = row.number.max;
-        if (this.number.max) this.max = true;
+      if (row.len) {
+        this.len.min = row.len.min;
+        if (this.length.min) this.min = true;
+        this.len.max = row.len.max;
+        if (this.len.max) this.max = true;
       } else
-        this.number = {
+        this.len = {
           min: "",
           max: "",
         };
@@ -243,6 +243,7 @@ export default {
         labelShow: this.labelShow,
         mapKey: this.mapKey || this.input,
         options: this.options,
+        len: this.len,
       };
       if (this.cardType === "Cascader") {
         data.cascader = {
@@ -543,9 +544,9 @@ export default {
                     <el-checkbox v-model="min" label="最小值" size="large" />
                     <el-input-number
                       v-show="min"
-                      v-model="number.min"
+                      v-model="len.min"
                       :min="0"
-                      :max="10"
+                      :max="30"
                       size="small"
                       controls-position="right"
                     />
@@ -554,9 +555,9 @@ export default {
                     <el-checkbox v-model="max" label="最大值" size="large" />
                     <el-input-number
                       v-show="max"
-                      v-model="number.max"
+                      v-model="len.max"
                       :min="0"
-                      :max="10"
+                      :max="30"
                       size="small"
                       controls-position="right"
                     />

@@ -117,11 +117,8 @@ export default {
           style,
           description,
           show,
-          maxlength,
-          minlength,
+          len,
           options,
-          min,
-          max,
           disabled,
           border,
           precision,
@@ -130,6 +127,7 @@ export default {
           placeholder,
           children,
         } = form[key];
+        const { min, max } = len || {};
         const formItemClass = `json_${type + _key}`;
         setTimeout(() => this.judgeShow(formItemClass, show));
         if (value !== undefined) this.$set(this.model, key, value || "");
@@ -150,22 +148,22 @@ export default {
         }
 
         const typeComponent = {
-          Text: (type = "text") => {
-            return h("el-input", {
+          Text: (type = "text") =>
+            h("el-input", {
               props: {
                 value: this.model[key],
-                maxlength,
-                minlength,
                 type,
                 placeholder,
               },
               class: className,
-              style: "background:#fff",
               on: {
-                input: modelValue,
+                input: (val) => {
+                  if (val.length > max) val = val.slice(0, max);
+                  that.model[key] = val;
+                  that.schema.attribs[key].default = val;
+                },
               },
-            });
-          },
+            }),
           Email: () => typeComponent.Text(),
           RichText: () => typeComponent.Text("textarea"),
           Password: () => typeComponent.Text("password"),
@@ -348,17 +346,18 @@ export default {
                   modal: false,
                 },
                 on: {
-                  input: (val) => (this.dialogShow = val),
+                  close: () => {
+                    this.dialogShow = false;
+                  },
                 },
               },
 
               [
                 h("img", {
                   class: "w-full",
-                  src: this.previewSrc,
-                  props: {
-                    src: this.previewSrc,
+                  attrs: {
                     alt: "Preview Image",
+                    src: this.previewSrc,
                   },
                 }),
               ]
