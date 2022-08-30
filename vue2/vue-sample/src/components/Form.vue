@@ -529,8 +529,7 @@ export default {
               </div>
               <div class="wrapper">
                 <h3 text-black text-6>显隐关联</h3>
-                <div v-for="(item, idx) in controllers" :key="idx" class="wrapper gap-2 relative"
-                  style="margin-top: -20px">
+                <div v-for="(item, idx) in controllers" :key="idx" class="wrapper gap-2 relative">
                   <div v-show="idx > 0" absolute right-0 top-2 @click="controllers.splice(idx, 1)">
                     <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-029747aa="" w-4>
                       <path fill="currentColor"
