@@ -136,12 +136,22 @@ export default {
           debounce = 300,
           placeholder,
           children,
+          validator,
+          customRender
         } = form[key];
+        let that = this;
+        if (!type) throw new Error(`type is required in ${form}`);
         const { min, max } = len || {};
         const formItemClass = `json_${type + _key}`;
         setTimeout(() => this.judgeShow(formItemClass, show));
         if (value !== undefined) this.$set(this.model, key, value || "");
-        if (rules.length) {
+        if (validator) {
+          this.rules[key] = [
+            {
+              validator,
+            },
+          ];
+        } else if (rules.length) {
           this.rules[key] = [
             {
               validator: (o, value, callback) => {
@@ -374,30 +384,9 @@ export default {
             ),
           ],
         };
-        if (!type) throw new Error(`type is required in ${form}`);
-        if (colorTitle) {
-          styles += `
-          .${formItemClass} .el-form-item__label{
-            color:${colorTitle};
-            ${!labelShow ? "display:none" : ""}
-          }
-          .el-form-item__content{
-            width:100%
-          }
-          `;
-        } else {
-          styles += `
 
-          .el-form-item__content{
-            width:100%
-          }
-          `;
-          if (!labelShow)
-            styles += `.${formItemClass} .el-form-item__label{
-           display:none;
-          }
-          `;
-        }
+        insertStyle(colorTitle)
+
         formList.push(
           h(
             "el-form-item",
@@ -464,7 +453,9 @@ export default {
                 },
                 description
               ),
-              typeComponent[type].call(this),
+              customRender
+                ? customRender(h)
+                : typeComponent[type].call(this),
             ]
           )
         );
@@ -482,7 +473,6 @@ export default {
           that.model[key].splice(data, 1);
           that.schema.attribs[key].default = that.model[key];
         }
-        let that = this;
         function modelValue(val) {
           that.model[key] = val;
           that.schema.attribs[key].default = val;
@@ -576,6 +566,32 @@ export default {
           });
         }
         return data;
+      }
+    }
+
+    function insertStyle(colorTitle) {
+      if (colorTitle) {
+        styles += `
+          .${formItemClass} .el-form-item__label{
+            color:${colorTitle};
+            ${!labelShow ? "display:none" : ""}
+          }
+          .el-form-item__content{
+            width:100%
+          }
+          `;
+      } else {
+        styles += `
+
+          .el-form-item__content{
+            width:100%
+          }
+          `;
+        if (!labelShow)
+          styles += `.${formItemClass} .el-form-item__label{
+           display:none;
+          }
+          `;
       }
     }
   },
