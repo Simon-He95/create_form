@@ -133,7 +133,6 @@ export default {
       this.deleteShow = false;
     },
     editRow(row, i) {
-      debugger;
       this.type = "edit";
       this.setJson(row, i);
     },

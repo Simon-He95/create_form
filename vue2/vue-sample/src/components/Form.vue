@@ -236,7 +236,6 @@ export default {
         rules: this.rules,
         default: this.defaultvalue || null,
         required: this.required,
-        key: this.key,
         position: `0-${this.key - 1}`,
         colorTitle: this.colorTitle,
         size: this.size,

@@ -111,7 +111,6 @@ export default {
       for (const key in form) {
         const {
           default: value,
-          key: _key,
           type,
           size,
           group,
@@ -142,7 +141,7 @@ export default {
         let that = this;
         if (!type) throw new Error(`type is required in ${form}`);
         const { min, max } = len || {};
-        const formItemClass = `json_${type + _key}`;
+        const formItemClass = `json_${nanoid()}`;
         setTimeout(() => this.judgeShow(formItemClass, show));
         if (value !== undefined) this.$set(this.model, key, value || "");
         if (validator) {
@@ -385,7 +384,7 @@ export default {
           ],
         };
 
-        insertStyle(colorTitle)
+        insertStyle(colorTitle, formItemClass, labelShow)
 
         formList.push(
           h(
@@ -430,7 +429,9 @@ export default {
                   },
                 },
                 [
-                  label,
+                  h('label', {
+                    class: 'form_label'
+                  }, label),
                   h('i', {
                     class: 'el-icon-edit',
                     style: 'margin-left:10px;padding:5px;',
@@ -569,10 +570,10 @@ export default {
       }
     }
 
-    function insertStyle(colorTitle) {
+    function insertStyle(colorTitle, formItemClass, labelShow) {
       if (colorTitle) {
         styles += `
-          .${formItemClass} .el-form-item__label{
+          .${formItemClass} .form_label{
             color:${colorTitle};
             ${!labelShow ? "display:none" : ""}
           }
@@ -582,13 +583,12 @@ export default {
           `;
       } else {
         styles += `
-
           .el-form-item__content{
             width:100%
           }
           `;
         if (!labelShow)
-          styles += `.${formItemClass} .el-form-item__label{
+          styles += `.${formItemClass} .form_label{
            display:none;
           }
           `;
