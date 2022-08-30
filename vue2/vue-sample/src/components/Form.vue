@@ -177,7 +177,7 @@ export default {
       this.colorTitle = row.colorTitle;
       if (row.len) {
         this.len.min = row.len.min;
-        if (this.length.min) this.min = true;
+        if (this.len.min) this.min = true;
         this.len.max = row.len.max;
         if (this.len.max) this.max = true;
       } else
@@ -373,19 +373,8 @@ export default {
 </script>
 
 <template>
-  <div
-    id="form_wrapper"
-    font-sans
-    p="x-4 y-10"
-    text="center gray-700 dark:gray-200"
-  >
-    <el-dialog
-      :visible.sync="dialogVisible"
-      :title="name"
-      width="50%"
-      :modal="false"
-      :before-close="handleClose"
-    >
+  <div id="form_wrapper" font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
+    <el-dialog :visible.sync="dialogVisible" :title="name" width="50%" :modal="false" :before-close="handleClose">
       <div v-show="cardShow" style="margin-bottom: 24px">
         <div class="sc-dvQaRk sc-TBWPX exyKSe fkEccH">
           <h2 class="sc-bvFjSx inqAba">
@@ -397,10 +386,8 @@ export default {
       <Tabs v-show="cardShow" :types="types" @choose="choose" />
 
       <div v-show="cardType" class="relative">
-        <div
-          class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black"
-        >
-          {{ type === "add" ? "Add new" : "Edit" }} {{ cardType }} field
+        <div class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black">
+          {{  type === "add" ? "Add new" : "Edit"  }} {{  cardType  }} field
         </div>
         <el-form>
           <el-tabs v-model="activeName" class="demo-tabs">
@@ -408,33 +395,18 @@ export default {
               <div v-show="cardType">
                 <div class="wrapper">
                   <el-form-item label="标签名:" class="w30">
-                    <el-input
-                      ref="nameEl"
-                      v-model="input"
-                      placeholder="Please input Name"
-                    />
+                    <el-input ref="nameEl" v-model="input" placeholder="Please input Name" />
                   </el-form-item>
 
                   <el-form-item label="占位符:" class="w30">
-                    <el-input
-                      v-model="placeholder"
-                      placeholder="Please input Placeholder"
-                    />
+                    <el-input v-model="placeholder" placeholder="Please input Placeholder" />
                   </el-form-item>
                   <el-form-item label="描述:" class="w30">
-                    <el-input
-                      v-model="description"
-                      placeholder="Please input Description"
-                    />
+                    <el-input v-model="description" placeholder="Please input Description" />
                   </el-form-item>
                   <el-form-item label="尺寸:" class="w30">
                     <el-select v-model="size" placeholder="Pick Size">
-                      <el-option
-                        v-for="item in sizeOptions"
-                        :key="item"
-                        :label="item"
-                        :value="item"
-                      />
+                      <el-option v-for="item in sizeOptions" :key="item" :label="item" :value="item" />
                     </el-select>
                   </el-form-item>
                   <el-form-item label="Key:" class="w30">
@@ -446,46 +418,19 @@ export default {
                   <el-form-item label="标题颜色:" class="w30">
                     <el-color-picker v-model="colorTitle" />
                   </el-form-item>
-                  <el-form-item
-                    v-show="showType.includes(cardType)"
-                    label="Type:"
-                    class="w30"
-                  >
+                  <el-form-item v-show="showType.includes(cardType)" label="Type:" class="w30">
                     <el-select v-model="cardType" placeholder="Pick Size">
-                      <el-option
-                        v-for="item in buttonType"
-                        :key="item"
-                        :label="item"
-                        :value="item"
-                      />
+                      <el-option v-for="item in buttonType" :key="item" :label="item" :value="item" />
                     </el-select>
                   </el-form-item>
-                  <el-checkbox
-                    v-show="cardType === 'Cascader'"
-                    v-model="cascader.multiple"
-                    label="Multiple"
-                    class="w30"
-                  />
-                  <el-form-item
-                    v-show="cardType === 'Upload'"
-                    label="Limit:"
-                    class="w30"
-                  >
-                    <el-input-number
-                      v-model="limit"
-                      :min="1"
-                      :max="10"
-                      controls-position="right"
-                    />
+                  <el-checkbox v-show="cardType === 'Cascader'" v-model="cascader.multiple" label="Multiple"
+                    class="w30" />
+                  <el-form-item v-show="cardType === 'Upload'" label="Limit:" class="w30">
+                    <el-input-number v-model="limit" :min="1" :max="10" controls-position="right" />
                   </el-form-item>
                 </div>
-                <VueJsonEditor
-                  v-if="showType.includes(cardType)"
-                  style="margin-top: 20px"
-                  v-model="options"
-                  :expanded-on-start="true"
-                  :mode="mode"
-                />
+                <VueJsonEditor v-if="showType.includes(cardType)" style="margin-top: 20px" v-model="options"
+                  :expanded-on-start="true" :mode="mode" />
               </div>
             </el-tab-pane>
             <el-tab-pane label="Advanced settings" name="second">
@@ -497,7 +442,7 @@ export default {
                   <el-switch v-model="required"></el-switch>
                 </el-form-item>
               </div>
-              <div class="flex flex-col item-start">
+              <!-- <div class="flex flex-col item-start">
                 <h3 text-black text-6>表单组</h3>
                 <div class="wrapper left">
                   <el-form-item label="Group" class="w30">
@@ -507,155 +452,73 @@ export default {
                     <el-input v-model="groupKey" />
                   </el-form-item>
                 </div>
-              </div>
-              <div
-                class="flex flex-col item-start"
-                style="margin-bottom: ;20px;"
-              >
+              </div> -->
+              <div class="flex flex-col item-start" style="margin-bottom: ;20px;">
                 <h3 text-black text-6>规则校验</h3>
                 <div class="wrapper left" v-for="(item, i) in rules">
                   <el-form-item label="正则" flex-col items-start class="w40">
                     <el-input v-model="item.regExp" />
                   </el-form-item>
-                  <el-form-item
-                    v-show="item.regExp"
-                    label="错误消息"
-                    flex-col
-                    items-start
-                    class="w40"
-                  >
+                  <el-form-item v-show="item.regExp" label="错误消息" flex-col items-start class="w40">
                     <el-input v-model="item.errMsg" />
                   </el-form-item>
                   <el-form-item label=" " flex-col items-start>
                     <el-button @click="deleteReg(i)">删除</el-button>
                   </el-form-item>
                 </div>
-                <el-button @click="rules.push({ regExp: '', errMsg: '' })"
-                  >新增规则</el-button
-                >
+                <el-button @click="rules.push({ regExp: '', errMsg: '' })">新增规则</el-button>
               </div>
-              <div
-                class="flex flex-col item-start"
-                style="margin-bottom: ;20px;"
-              >
+              <div class="flex flex-col item-start" style="margin-bottom: ;20px;">
                 <h3 text-black text-6>设置</h3>
                 <div class="wrapper left">
                   <div class="w45" text-left flex flex-col>
                     <el-checkbox v-model="min" label="最小值" size="large" />
-                    <el-input-number
-                      v-show="min"
-                      v-model="len.min"
-                      :min="0"
-                      :max="30"
-                      size="small"
-                      controls-position="right"
-                    />
+                    <el-input-number v-show="min" v-model="len.min" :min="0" :max="30" size="small"
+                      controls-position="right" />
                   </div>
                   <div class="w45" text-left flex flex-col>
                     <el-checkbox v-model="max" label="最大值" size="large" />
-                    <el-input-number
-                      v-show="max"
-                      v-model="len.max"
-                      :min="0"
-                      :max="30"
-                      size="small"
-                      controls-position="right"
-                    />
+                    <el-input-number v-show="max" v-model="len.max" :min="0" :max="30" size="small"
+                      controls-position="right" />
                   </div>
                 </div>
               </div>
               <div class="wrapper">
                 <h3 text-black text-6>显隐关联</h3>
-                <div
-                  v-for="(item, idx) in controllers"
-                  :key="idx"
-                  class="wrapper gap-2 relative"
-                  style="margin-top: -20px"
-                >
-                  <div
-                    v-show="idx > 0"
-                    absolute
-                    right-0
-                    top-2
-                    @click="controllers.splice(idx, 1)"
-                  >
-                    <svg
-                      viewBox="0 0 1024 1024"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-v-029747aa=""
-                      w-4
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"
-                      />
+                <div v-for="(item, idx) in controllers" :key="idx" class="wrapper gap-2 relative"
+                  style="margin-top: -20px">
+                  <div v-show="idx > 0" absolute right-0 top-2 @click="controllers.splice(idx, 1)">
+                    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-029747aa="" w-4>
+                      <path fill="currentColor"
+                        d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z" />
                     </svg>
                   </div>
                   <div class="wrapper gap-2">
-                    <el-form-item
-                      label="选择关联字段"
-                      flex-col
-                      items-start
-                      class="w45"
-                    >
-                      <el-select
-                        v-model="item.relevancy"
-                        placeholder="Select"
-                        clearable
-                        @change="selectChange"
-                      >
-                        <el-option
-                          v-for="i in tableData.filter(
-                            (item) => item.label !== input
-                          )"
-                          :key="i.name"
-                          :label="i.label"
-                          :value="i.label"
-                        />
+                    <el-form-item label="选择关联字段" flex-col items-start class="w45">
+                      <el-select v-model="item.relevancy" placeholder="Select" clearable @change="selectChange">
+                        <el-option v-for="i in tableData.filter(
+                          (item) => item.label !== input
+                        )" :key="i.name" :label="i.label" :value="i.label" />
                       </el-select>
                     </el-form-item>
-                    <el-form-item
-                      v-show="item.relevancy"
-                      label="选择规则"
-                      flex-col
-                      items-start
-                      class="w45"
-                    >
-                      <el-select
-                        v-model="item.controlType"
-                        placeholder="Select"
-                      >
-                        <el-option
-                          v-for="i in controlTypes"
-                          :key="i"
-                          :label="i"
-                          :value="i"
-                        />
+                    <el-form-item v-show="item.relevancy" label="选择规则" flex-col items-start class="w45">
+                      <el-select v-model="item.controlType" placeholder="Select">
+                        <el-option v-for="i in controlTypes" :key="i" :label="i" :value="i" />
                       </el-select>
                     </el-form-item>
-                    <el-form-item
-                      v-show="item.controlType === 'regExp'"
-                      label="regExp"
-                      flex-col
-                      items-start
-                      class="w45"
-                    >
-                      <el-input
-                        v-model="item.controlReg"
-                        input-style="h-full"
-                      />
+                    <el-form-item v-show="item.controlType === 'regExp'" label="regExp" flex-col items-start
+                      class="w45">
+                      <el-input v-model="item.controlReg" input-style="h-full" />
                     </el-form-item>
                   </div>
                 </div>
-                <el-button
-                  @click="
-                    controllers.push({
-                      relevancy: '',
-                      controlType: '',
-                      controlReg: '',
-                    })
-                  "
-                >
+                <el-button @click="
+                  controllers.push({
+                    relevancy: '',
+                    controlType: '',
+                    controlReg: '',
+                  })
+                ">
                   新增关联
                 </el-button>
               </div>
@@ -667,12 +530,7 @@ export default {
         <Footer @cancel="cancel" @confirm="confirm" />
       </template>
     </el-dialog>
-    <el-dialog
-      :visible.sync="dragShow"
-      :modal="false"
-      title="Drag & drop the fields to build the layout"
-      width="50%"
-    >
+    <el-dialog :visible.sync="dragShow" :modal="false" title="Drag & drop the fields to build the layout" width="50%">
       <Drag ref="dragEl" :data="getFormData()" />
       <template #footer>
         <Footer @cancel="dragShow = false" @confirm="sortEnd" />
@@ -683,12 +541,7 @@ export default {
       <el-table-column prop="type" label="Type" />
       <el-table-column width="180">
         <template #default="scope">
-          <el-button
-            link
-            type="danger"
-            size="small"
-            @click="deleteHandler(scope.row)"
-          >
+          <el-button link type="danger" size="small" @click="deleteHandler(scope.row)">
             Delete
           </el-button>
           <el-button link size="small" @click="editHandler(scope.row)">
@@ -701,129 +554,129 @@ export default {
 </template>
 
   <style scoped>
-.fkEccH {
-  -webkit-box-align: center;
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-}
+  .fkEccH {
+    -webkit-box-align: center;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
 
-.inqAba {
-  color: rgb(50, 50, 77);
-  font-weight: 600;
-  font-size: 1.125rem;
-  line-height: 40px;
-}
+  .inqAba {
+    color: rgb(50, 50, 77);
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 40px;
+  }
 
-.goLodl {
-  height: 1px;
-  border: none;
-  margin: 0px;
-}
+  .goLodl {
+    height: 1px;
+    border: none;
+    margin: 0px;
+  }
 
-.fYRdMc {
-  background: rgb(234, 234, 239);
-}
+  .fYRdMc {
+    background: rgb(234, 234, 239);
+  }
 
-.wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  width: 100%;
-  align-items: center;
-}
+  .wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+    align-items: center;
+  }
 
-.left {
-  text-align: left;
-}
+  .left {
+    text-align: left;
+  }
 
-.flex-col {
-  flex-direction: column;
-}
+  .flex-col {
+    flex-direction: column;
+  }
 
-.item-start {
-  align-items: flex-start;
-}
+  .item-start {
+    align-items: flex-start;
+  }
 
-.flex {
-  display: flex;
-}
+  .flex {
+    display: flex;
+  }
 
-.gap-2 {
-  gap: 0.5rem;
-}
+  .gap-2 {
+    gap: 0.5rem;
+  }
 
-.gap-1 {
-  gap: 0.25rem;
-}
+  .gap-1 {
+    gap: 0.25rem;
+  }
 
-.w45 {
-  width: 45%;
-}
+  .w45 {
+    width: 45%;
+  }
 
-.w30 {
-  width: 30%;
-}
+  .w30 {
+    width: 30%;
+  }
 
-.absolute {
-  position: absolute;
-}
+  .absolute {
+    position: absolute;
+  }
 
-.left-0 {
-  left: 0;
-}
+  .left-0 {
+    left: 0;
+  }
 
-.w40 {
-  width: 40%;
-}
+  .w40 {
+    width: 40%;
+  }
 
-.h-10 {
-  height: 2.5rem;
-}
+  .h-10 {
+    height: 2.5rem;
+  }
 
-.lh-10 {
-  line-height: 2.5rem;
-}
+  .lh-10 {
+    line-height: 2.5rem;
+  }
 
-.text-5 {
-  font-size: 1.5rem;
-}
+  .text-5 {
+    font-size: 1.5rem;
+  }
 
-.font-600 {
-  font-weight: 600;
-}
+  .font-600 {
+    font-weight: 600;
+  }
 
-.text-black {
-  color: #000;
-}
+  .text-black {
+    color: #000;
+  }
 
-.top-0 {
-  top: 0;
-}
+  .top-0 {
+    top: 0;
+  }
 
-.relative {
-  position: relative;
-}
+  .relative {
+    position: relative;
+  }
 
-.w-full {
-  width: 100%;
-}
+  .w-full {
+    width: 100%;
+  }
 
-.demo-tabs /deep/ .el-tabs__nav-scroll {
-  float: right !important;
-}
+  .demo-tabs /deep/ .el-tabs__nav-scroll {
+    float: right !important;
+  }
 
-:deep(.demo-tabs .el-form-item__content) {
-  width: 100%;
-  align-items: flex-start;
-}
+  :deep(.demo-tabs .el-form-item__content) {
+    width: 100%;
+    align-items: flex-start;
+  }
 
-:deep(.el-form-item__content .el-select) {
-  width: 100%;
-}
+  :deep(.el-form-item__content .el-select) {
+    width: 100%;
+  }
 
-:deep(.el-form-item__content .el-cascader) {
-  width: 100%;
-}
-</style>
+  :deep(.el-form-item__content .el-cascader) {
+    width: 100%;
+  }
+  </style>
 
