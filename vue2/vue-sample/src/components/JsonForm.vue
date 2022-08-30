@@ -174,11 +174,13 @@ export default {
                 value: this.model[key],
                 type,
                 placeholder,
+                disabled
               },
               class: className,
               on: {
                 input: (val) => {
-                  if (val.length > max) val = val.slice(0, max);
+
+                  if (max && (val.length > max)) val = val.slice(0, max);
                   that.model[key] = val;
                   that.schema.attribs[key].default = val;
                 },
@@ -280,8 +282,8 @@ export default {
                 class: className,
                 style,
                 disabled,
-                min,
-                max,
+                min: min || undefined,
+                max: max || undefined,
                 precision,
                 step,
               },
@@ -550,7 +552,6 @@ export default {
           that.schema.attribs[key].default = that.model[key];
         }
         function modelValue(val) {
-          console.log(val)
           that.model[key] = val;
           that.schema.attribs[key].default = val;
         }

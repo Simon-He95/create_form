@@ -421,7 +421,7 @@ export default {
 
       <div v-show="cardType" class="relative">
         <div class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black">
-          {{  type === "add" ? "Add new" : "Edit"  }} {{  cardType  }} field
+          {{ type === "add" ? "Add new" : "Edit" }} {{ cardType }} field
         </div>
         <el-form>
           <el-tabs v-model="activeName" class="demo-tabs">
@@ -473,8 +473,8 @@ export default {
                     <el-input-number v-model="limit" :min="1" :max="10" controls-position="right" />
                   </el-form-item>
                 </div>
-                <VueJsonEditor v-if="showType.includes(cardType)" style="margin-top: 20px" v-model="options"
-                  :expanded-on-start="true" :mode="mode" />
+                <VueJsonEditor v-if="showType.includes(cardType)" style="margin-top: 20px;text-align: left;"
+                  v-model="options" :expanded-on-start="true" :mode="mode" />
               </div>
             </el-tab-pane>
             <el-tab-pane label="Advanced settings" name="second">
