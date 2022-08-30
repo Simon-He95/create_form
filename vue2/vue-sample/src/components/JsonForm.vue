@@ -14,7 +14,7 @@ export default {
   props: {
     schema: {
       type: Object,
-      default: () => {},
+      default: () => { },
     },
   },
   data() {
@@ -50,50 +50,60 @@ export default {
       return (el.style.display = "block");
     },
     getFormData() {
-      return this.model;
+      const result = {};
+      Object.keys(this.schema.attribs).forEach((key) => {
+        const data = this.schema.attribs[key];
+        if (data.group) {
+          if (!result[data.groupKey || data.group])
+            result[data.groupKey || data.group] = {};
+          result[data.groupKey || data.group][data["mapKey"] || key] =
+            this.model[key];
+        } else result[data["mapKey"] || key] = this.model[key];
+      });
+      return result;
     },
   },
   render(h) {
     let styles = "";
     return this.schema
       ? h(
-          "div",
-          {
-            style: {
-              textAlign: "left",
-            },
-            class: "json_schema",
+        "div",
+        {
+          style: {
+            textAlign: "left",
           },
-          [
-            h(
-              "h3",
-              {
-                class: "text-2xl mb-2",
+          class: "json_schema",
+        },
+        [
+          h(
+            "h3",
+            {
+              class: "text-2xl mb-2",
+            },
+            this.schema.name
+          ),
+          h(
+            "h1",
+            {
+              class: "text-sm mb-3",
+            },
+            this.schema.description
+          ),
+          h(
+            "el-form",
+            {
+              props: {
+                ref: "formEl",
+                model: this.model,
+                rules: this.rules,
+                size: this.schema.size,
+                class: this.schema.class,
               },
-              this.schema.name
-            ),
-            h(
-              "h1",
-              {
-                class: "text-sm mb-3",
-              },
-              this.schema.description
-            ),
-            h(
-              "el-form",
-              {
-                props: {
-                  ref: "formEl",
-                  model: this.model,
-                  rules: this.rules,
-                  size: this.schema.size,
-                  class: this.schema.class,
-                },
-              },
-              wrapper.call(this, renderForm.call(this, this.schema.attribs))
-            ),
-          ]
-        )
+            },
+            wrapper.call(this, renderForm.call(this, this.schema.attribs))
+          ),
+        ]
+      )
       : "";
 
     function renderForm(form) {
@@ -425,19 +435,26 @@ export default {
               h(
                 "div",
                 {
-                  on: {
-                    click: () => {
-                      const vm = this.$refs[formItemClass].$el;
-                      vm.nextElementSibling.style.display = "none";
-                      vm.style.display = "block";
-                      this.$nextTick(() => this.$refs[formItemClass].focus());
-                    },
-                  },
+
                   attrs: {
                     style: "height:40px;",
                   },
                 },
-                label
+                [
+                  label,
+                  h('i', {
+                    class: 'el-icon-edit',
+                    style: 'margin-left:10px;padding:5px;',
+                    on: {
+                      click: () => {
+                        const vm = this.$refs[formItemClass].$el;
+                        vm.nextElementSibling.style.display = "none";
+                        vm.style.display = "block";
+                        this.$nextTick(() => this.$refs[formItemClass].focus());
+                      },
+                    },
+                  })
+                ]
               ),
               h(
                 "div",
@@ -527,17 +544,17 @@ export default {
         const data = h("el-row", { props: { gutter: 10 } }, col);
         return group
           ? h("div", [
-              h(
-                "div",
-                {
-                  attrs: {
-                    style: "height:40px;line-height:40px;",
-                  },
+            h(
+              "div",
+              {
+                attrs: {
+                  style: "height:40px;line-height:40px;",
                 },
-                group
-              ),
-              data,
-            ])
+              },
+              group
+            ),
+            data,
+          ])
           : data;
       });
 
@@ -546,7 +563,7 @@ export default {
         return !b
           ? -1
           : a.data.props.position.split("-")[1] -
-              b.data.props.position.split("-")[1];
+          b.data.props.position.split("-")[1];
       }
       function transformData(data) {
         if (!data.length) return [];
