@@ -249,13 +249,13 @@ defineExpose({
     <ElDialog v-model="dialogVisible" title="Type" width="50%" :before-close="handleClose">
       <div v-show="cardShow" flex="~ gap-2" w-full flex-wrap @click="choose">
         <ElCard v-for="i in types" :key="i" shadow="hover" class="w-49%" :type="i">
-          {{ i }}
+          {{  i  }}
         </ElCard>
       </div>
 
       <div v-show="cardType" relative>
         <h2 absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black>
-          {{ type === 'add' ? 'Add new' : 'Edit' }} {{ cardType }} field
+          {{  type === 'add' ? 'Add new' : 'Edit'  }} {{  cardType  }} field
         </h2>
         <ElTabs v-model="activeName" class="demo-tabs">
           <ElTabPane label="Basic settings" name="first">
@@ -290,13 +290,11 @@ defineExpose({
               </div>
               <JsonEditorVue v-show="cardType === 'Cascader'" v-model="json" class="editor_vue" :mode="mode" />
 
-              <ElInput
-                v-show="cardType === 'Enumeration' || showType.includes(cardType)" v-model="textarea" :rows="5"
+              <ElInput v-show="cardType === 'Enumeration' || showType.includes(cardType)" v-model="textarea" :rows="5"
                 type="textarea" placeholder="Ex:
 morning
 noon
-evening"
-              />
+evening" />
             </div>
           </ElTabPane>
           <ElTabPane label="Advanced settings" name="second">
@@ -319,17 +317,13 @@ evening"
                 <ElCheckbox v-model="required" label="Required field" size="large" class="w-45%" />
                 <div class="w-45%" text-left flex flex-col>
                   <ElCheckbox v-model="min" label="Minimum value" size="large" />
-                  <ElInputNumber
-                    v-show="min" v-model="minvalue" :min="0" :max="10" size="small"
-                    controls-position="right"
-                  />
+                  <ElInputNumber v-show="min" v-model="minvalue" :min="0" :max="10" size="small"
+                    controls-position="right" />
                 </div>
                 <div class="w-45%" text-left flex flex-col>
                   <ElCheckbox v-model="max" label="Maximum value" size="large" />
-                  <ElInputNumber
-                    v-show="max" v-model="maxvalue" :min="0" :max="10" size="small"
-                    controls-position="right"
-                  />
+                  <ElInputNumber v-show="max" v-model="maxvalue" :min="0" :max="10" size="small"
+                    controls-position="right" />
                 </div>
               </div>
             </div>
@@ -340,19 +334,15 @@ evening"
               <div v-for="(item, idx) in controllers" :key="idx" flex="~ gap-2" w-full flex-wrap relative>
                 <div v-show="idx > 0" absolute right-0 top-2 @click="controllers.splice(idx, 1)">
                   <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-029747aa="" w-4>
-                    <path
-                      fill="currentColor"
-                      d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"
-                    />
+                    <path fill="currentColor"
+                      d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z" />
                   </svg>
                 </div>
                 <div flex="~ gap-2" w-full>
                   <ElFormItem label="Controller" flex-col items-start class="w-45%">
                     <ElSelect v-model="item.relevancy" placeholder="Select" clearable @change="selectChange">
-                      <ElOption
-                        v-for="i in tableData.filter(item => item.label !== input)" :key="i.name"
-                        :label="i.label" :value="i.label"
-                      />
+                      <ElOption v-for="i in tableData.filter(item => item.label !== input)" :key="i.name"
+                        :label="i.label" :value="i.label" />
                     </ElSelect>
                   </ElFormItem>
                   <ElFormItem v-show="item.relevancy" label="Control show" flex-col items-start class="w-45%">
@@ -377,15 +367,11 @@ evening"
           <div class="sc-cTAIfT sc-dYtuZ pmygK bkSVwu">
             <div class="sc-cTAIfT sc-ihINtW oSriV gREqRk">
               <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="cancel"><button
-                aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
-              ><span
-                class="sc-dkPtRN kZdUHC"
-              >Cancel</span></button></div>
+                  aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"><span
+                    class="sc-dkPtRN kZdUHC">Cancel</span></button></div>
               <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="confirm"><button
-                aria-disabled="false" type="submit" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
-              ><span
-                class="sc-dkPtRN kZdUHC"
-              >Confirm</span></button>
+                  aria-disabled="false" type="submit" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"><span
+                    class="sc-dkPtRN kZdUHC">Confirm</span></button>
               </div>
             </div>
           </div>
@@ -400,15 +386,11 @@ evening"
           <div class="sc-cTAIfT sc-dYtuZ pmygK bkSVwu">
             <div class="sc-cTAIfT sc-ihINtW oSriV gREqRk">
               <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="dragShow = false"><button
-                aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
-              ><span
-                class="sc-dkPtRN kZdUHC"
-              >Cancel</span></button></div>
+                  aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"><span
+                    class="sc-dkPtRN kZdUHC">Cancel</span></button></div>
               <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="sortEnd"><button
-                aria-disabled="false" type="submit" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
-              ><span
-                class="sc-dkPtRN kZdUHC"
-              >Confirm</span></button>
+                  aria-disabled="false" type="submit" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"><span
+                    class="sc-dkPtRN kZdUHC">Confirm</span></button>
               </div>
             </div>
           </div>
@@ -433,24 +415,7 @@ evening"
 </template>
 
 <style scoped>
-:deep(.demo-tabs .el-tabs__nav) {
-  float: right !important;
-}
-
-:deep(.demo-tabs .el-form-item__content) {
-  width: 100%;
-  align-items: flex-start;
-}
-
-:deep(.el-form-item__content .el-select) {
-  width: 100%;
-}
-
 :deep(.editor_vue .cm-line) {
   text-align: left;
-}
-
-:deep(.el-form-item__content .el-cascader) {
-  width: 100%;
 }
 </style>

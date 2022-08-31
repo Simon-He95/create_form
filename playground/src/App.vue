@@ -61,81 +61,63 @@ function save() {
       <div class="sc-dbqYyY sc-dOkGYn sc-jRSqCh jStIwK kpsMfe bUDExf" style="margin-right:20px" inline-flex w-50>
         <ol v-for="(item, i) in formList" id="subnav-list-4" :key="i">
           <li @click="switchForm(i)">
-            <a
-              class="sc-dbqYyY sc-cjwcjg joRjZF cfdPXz" :class="[
-                current === i ? 'active' : '',
-              ]" aria-current="page"
-            >
+            <a class="sc-dbqYyY sc-cjwcjg joRjZF cfdPXz" :class="[
+              current === i ? 'active' : '',
+            ]" aria-current="page">
               <div class="sc-dbqYyY sc-dOkGYn jStIwK dNHUsO">
-                <svg
-                  width="1em" height="1em" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg"
-                  class="sc-kHTDnN cWLdcV"
-                >
+                <svg width="1em" height="1em" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  class="sc-kHTDnN cWLdcV">
                   <rect width="4" height="4" rx="2" fill="#A5A5BA" />
                 </svg>
                 <div class="sc-dbqYyY fvhnfw">
-                  <span class="sc-lliPmu imwrmp">{{ item.name }}</span>
+                  <span class="sc-lliPmu imwrmp">{{  item.name  }}</span>
                 </div>
               </div>
             </a>
           </li>
         </ol>
         <div class="sc-gsDKAQ hjVlqg">
-          <button
-            aria-disabled="false" type="button" class="sc-fUCuFg sc-dSaQTq sc-HEwFl fZLKQx ciPgPo cJJTYc"
-            @click="createForm"
-          >
-            <span aria-hidden="true" class="sc-fUCuFg cLNaEJ"><svg
-              width="1em" height="1em" viewBox="0 0 24 24"
-              fill="none" xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M24 13.604a.3.3 0 01-.3.3h-9.795V23.7a.3.3 0 01-.3.3h-3.21a.3.3 0 01-.3-.3v-9.795H.3a.3.3 0 01-.3-.3v-3.21a.3.3 0 01.3-.3h9.795V.3a.3.3 0 01.3-.3h3.21a.3.3 0 01.3.3v9.795H23.7a.3.3 0 01.3.3v3.21z"
-                fill="#212134"
-              />
-            </svg></span><span class="sc-hKysef kvRZkV">Create new collection type</span>
+          <button aria-disabled="false" type="button" class="sc-fUCuFg sc-dSaQTq sc-HEwFl fZLKQx ciPgPo cJJTYc"
+            @click="createForm">
+            <span aria-hidden="true" class="sc-fUCuFg cLNaEJ"><svg width="1em" height="1em" viewBox="0 0 24 24"
+                fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M24 13.604a.3.3 0 01-.3.3h-9.795V23.7a.3.3 0 01-.3.3h-3.21a.3.3 0 01-.3-.3v-9.795H.3a.3.3 0 01-.3-.3v-3.21a.3.3 0 01.3-.3h9.795V.3a.3.3 0 01.3-.3h3.21a.3.3 0 01.3.3v9.795H23.7a.3.3 0 01.3.3v3.21z"
+                  fill="#212134" />
+              </svg></span><span class="sc-hKysef kvRZkV">Create new collection type</span>
           </button>
         </div>
       </div>
 
       <!-- <div m-t-5>
-      <el-button @click="toJson">
+      <Button @click="toJson">
         To Json
-      </el-button>
+      </Button>
     </div> -->
       <div v-show="current !== ''" w-300>
         <div data-strapi-header="true" class="sc-cSyqtw eRZQkG">
           <div class="sc-cSyqtw eoRiGl">
-            <a aria-current="page" class="sc-kLnunm gECLxk active"><span
-              aria-hidden="true"
-              class="sc-kNzDjo sc-hUplSX jPfCWb cGIMyh"
-            ><svg
-              width="1em" height="1em" viewBox="0 0 24 24" fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M24 13.3a.2.2 0 01-.2.2H5.74l8.239 8.239a.2.2 0 010 .282L12.14 23.86a.2.2 0 01-.282 0L.14 12.14a.2.2 0 010-.282L11.86.14a.2.2 0 01.282 0L13.98 1.98a.2.2 0 010 .282L5.74 10.5H23.8c.11 0 .2.09.2.2v2.6z"
-                fill="#212134"
-              />
-            </svg></span><span class="sc-bttaWv htjIaV">Back</span></a>
+            <a aria-current="page" class="sc-kLnunm gECLxk active"><span aria-hidden="true"
+                class="sc-kNzDjo sc-hUplSX jPfCWb cGIMyh"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M24 13.3a.2.2 0 01-.2.2H5.74l8.239 8.239a.2.2 0 010 .282L12.14 23.86a.2.2 0 01-.282 0L.14 12.14a.2.2 0 010-.282L11.86.14a.2.2 0 01.282 0L13.98 1.98a.2.2 0 010 .282L5.74 10.5H23.8c.11 0 .2.09.2.2v2.6z"
+                    fill="#212134" />
+                </svg></span><span class="sc-bttaWv htjIaV">Back</span></a>
           </div>
           <div class="sc-cSyqtw sc-jounMn iTbWuz ULjhI">
             <div class="sc-cSyqtw sc-jounMn iTbWuz kCHDYf">
               <h1 id="title" class="sc-ccdLe lFjjs">
-                {{ name }}
+                {{  name  }}
               </h1>
               <div class="sc-cSyqtw kjnrkO">
-                <button
-                  aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
-                  @click="editCreate"
-                >
+                <button aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
+                  @click="editCreate">
                   <div aria-hidden="true" class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm">
                     <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        fill-rule="evenodd" clip-rule="evenodd"
+                      <path fill-rule="evenodd" clip-rule="evenodd"
                         d="M23.604 3.514c.528.528.528 1.36 0 1.887l-2.622 2.607-4.99-4.99L18.6.396a1.322 1.322 0 011.887 0l3.118 3.118zM0 24v-4.99l14.2-14.2 4.99 4.99L4.99 24H0z"
-                        fill="#212134"
-                      />
+                        fill="#212134" />
                     </svg>
                   </div><span class="sc-dkPtRN kZdUHC">Edit</span>
                 </button>
@@ -147,32 +129,25 @@ function save() {
                   <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M24 13.604a.3.3 0 01-.3.3h-9.795V23.7a.3.3 0 01-.3.3h-3.21a.3.3 0 01-.3-.3v-9.795H.3a.3.3 0 01-.3-.3v-3.21a.3.3 0 01.3-.3h9.795V.3a.3.3 0 01.3-.3h3.21a.3.3 0 01.3.3v9.795H23.7a.3.3 0 01.3.3v3.21z"
-                      fill="#212134"
-                    />
+                      fill="#212134" />
                   </svg>
                 </div><span class="sc-dkPtRN kZdUHC">Add another field</span>
-              </button><button
-                aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
-                @click="sortField"
-              >
+              </button><button aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
+                @click="sortField">
                 <div aria-hidden="true" class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm">
                   <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M24 13.604a.3.3 0 01-.3.3h-9.795V23.7a.3.3 0 01-.3.3h-3.21a.3.3 0 01-.3-.3v-9.795H.3a.3.3 0 01-.3-.3v-3.21a.3.3 0 01.3-.3h9.795V.3a.3.3 0 01.3-.3h3.21a.3.3 0 01.3.3v9.795H23.7a.3.3 0 01.3.3v3.21z"
-                      fill="#212134"
-                    />
+                      fill="#212134" />
                   </svg>
                 </div><span class="sc-dkPtRN kZdUHC">Sort field</span>
-              </button><button
-                type="submit" style="align-items: center;" class="sc-eCImPb igeLKl sc-iCfMLu gFLWth"
-                @click="save"
-              >
+              </button><button type="submit" style="align-items: center;" class="sc-eCImPb igeLKl sc-iCfMLu gFLWth"
+                @click="save">
                 <div aria-hidden="true" class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm">
                   <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M20.727 2.97a.2.2 0 01.286 0l2.85 2.89a.2.2 0 010 .28L9.554 20.854a.2.2 0 01-.285 0l-9.13-9.243a.2.2 0 010-.281l2.85-2.892a.2.2 0 01.284 0l6.14 6.209L20.726 2.97z"
-                      fill="#212134"
-                    />
+                      fill="#212134" />
                   </svg>
                 </div><span class="sc-dkPtRN kZdUHC">Save</span>
               </button>
@@ -186,7 +161,7 @@ function save() {
       </div>
     </div>
 
-    <el-dialog v-model="createShow" title="Create a collection type" width="30%">
+    <Modal v-model="createShow" title="Create a collection type" width="30%">
       <div class="sc-gsDKAQ eFNFqr">
         <div>
           <div id="tabs-0-tabpanel" role="tabpanel" tabindex="0" aria-labelledby="tabs-0-tab">
@@ -202,10 +177,8 @@ function save() {
                               <div class="sc-bGaVxB sc-fydGpi dYaiIs fVgflz">Display name</div>
                             </label>
                             <div class="sc-bGaVxB sc-fydGpi sc-gHjyzD dYaiIs dobAWM jsDPfk">
-                              <input
-                                id="displayName" v-model="name" name="displayName" aria-invalid="false"
-                                aria-disabled="false" placeholder="" type="text" class="sc-JEhMO iRbbcP"
-                              >
+                              <input id="displayName" v-model="name" name="displayName" aria-invalid="false"
+                                aria-disabled="false" placeholder="" type="text" class="sc-JEhMO iRbbcP">
                             </div>
                           </div>
                         </div>
@@ -223,27 +196,22 @@ function save() {
           <div class="sc-cTAIfT sc-dYtuZ pmygK bkSVwu">
             <div class="sc-cTAIfT sc-ihINtW oSriV gREqRk">
               <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="createShow = false"><button
-                aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
-              ><span
-                class="sc-dkPtRN kZdUHC"
-              >Cancel</span></button></div>
-              <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="next"><button
-                aria-disabled="false"
-                type="submit" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
-              ><span
-                class="sc-dkPtRN kZdUHC"
-              >Continue</span></button>
+                  aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"><span
+                    class="sc-dkPtRN kZdUHC">Cancel</span></button></div>
+              <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="next"><button aria-disabled="false"
+                  type="submit" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"><span
+                    class="sc-dkPtRN kZdUHC">Continue</span></button>
               </div>
             </div>
           </div>
         </span>
       </template>
-    </el-dialog>
+    </Modal>
   </div>
 </template>
 
 <style>
-#json_form .el-dialog__footer {
+#json_form .Modal__footer {
   padding: 0 !important
 }
 
@@ -743,16 +711,12 @@ function save() {
 </style>
 
 <style scoped>
-:deep(.demo-tabs .el-tabs__nav) {
-  float: right !important;
-}
-
-:deep(.demo-tabs .el-form-item__content) {
+:deep(.demo-tabs .FormItem__content) {
   width: 100%;
   align-items: flex-start;
 }
 
-:deep(.el-form-item__content .el-select) {
+:deep(.FormItem__content .Select) {
   width: 100%;
 }
 </style>

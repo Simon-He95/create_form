@@ -22,39 +22,10 @@
           </div>
         </div>
       </div>
-      <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%" @select-all="selectAll"
-        @select="selectAll">
-        <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column label="ID" prop="id" width="120">
-          <template slot-scope="scope">{{  scope.$index + 1  }} </template>
-        </el-table-column>
-        <el-table-column prop="text" label="TEXT"> </el-table-column>
-        <el-table-column prop="email" label="EMAIL"> </el-table-column>
-        <el-table-column prop="number" label="NUMBER"> </el-table-column>
-        <el-table-column prop="state" label="STATE">
-          <template slot-scope="scope">
-            <div class="sc-gsDKAQ UhwnQ" style="width: fit-content">
-              <span class="sc-bvFjSx fzRNeY">{{
-                 scope.state === 1 ? "Publish" : "Draft"
-                }}</span>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column width="180">
-          <template slot-scope="scope">
-            <el-button type="text" @click.native.prevent="editRow(scope.row, scope.$index)" icon="el-icon-edit">
-            </el-button>
-            <el-button type="text" @click.native.prevent="copyRow(scope.row, scope.$index)"
-              icon="el-icon-document-copy">
-            </el-button>
-            <el-button type="text" @click.native.prevent="deleteRow(scope.$index, tableData)" icon="el-icon-delete">
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <Table :data="tableData" :columns="tableColumns" @on-selection-change="selectAll" />
     </div>
 
-    <el-dialog title="Create an entry" :visible.sync="dialogTableVisible" :modal="false">
+    <Modal title="Create an entry" v-model="dialogTableVisible" :modal="false">
       <JsonForm ref="formEl" :schema="json" style="z-index: 999"></JsonForm>
       <span slot="footer" class="dialog-footer">
         <div class="sc-cTAIfT sc-dYtuZ pmygK bkSVwu">
@@ -73,7 +44,7 @@
           </div>
         </div>
       </span>
-    </el-dialog>
+    </Modal>
   </div>
 </template>
 
@@ -97,10 +68,49 @@ export default {
     return {
       json: {},
       originJSON: undefined,
-      formList: localStorage.getItem("json_form_list")
-        ? JSON.parse(localStorage.getItem("json_form_list"))
-        : {},
+      formList: {},
       tableData: [],
+      tableColumns: [{
+        type: 'selection',
+        width: 60,
+        align: 'center'
+      }, {
+        title: 'ID',
+        width: 120,
+        type: 'index',
+        key: 'id'
+      }, {
+        title: 'Text',
+        key: 'text'
+      }, {
+        title: 'EMAIL',
+        key: 'email'
+      }, {
+        title: 'Action',
+        width: 260,
+        align: 'center',
+        render: (h, params) => {
+          return h('div', {
+            style: 'display:flex;justify-content:space-evenly'
+          }, [
+            h('Button', {
+              on: {
+                click: () => this.editRow(params.row, params.index)
+              }
+            }, 'edit'),
+            h('Button', {
+              on: {
+                click: () => this.copyRow(params.row, params.index)
+              }
+            }, 'copy'),
+            h('Button', {
+              on: {
+                click: () => this.deleteRow(params.index)
+              }
+            }, 'delete')
+          ])
+        }
+      }],
       name: "",
       deleteShow: false,
       dialogTableVisible: false,
@@ -108,6 +118,11 @@ export default {
       currentCOl: "",
       deleteItems: [],
     };
+  },
+  mounted() {
+    this.formList = localStorage.getItem("json_form_list")
+      ? JSON.parse(localStorage.getItem("json_form_list"))
+      : {}
   },
   watch: {
     name() {
@@ -140,8 +155,8 @@ export default {
       this.type = "add";
       this.setJson(row, i);
     },
-    deleteRow(i, table) {
-      table.splice(i, 1);
+    deleteRow(i) {
+      this.tableData.splice(i, 1)
       const store = {
         [this.name]: this.tableData,
       };
@@ -174,7 +189,8 @@ export default {
       this.deleteItems = selection.map((item) => item.id);
     },
     createForm() {
-      if (!this.originJSON) return this.$message.error("当前还没有可用的模板");
+      if (!this.originJSON)
+        return this.$Message.error("当前还没有可用的模板")
       this.json = JSON.parse(this.originJSON);
       this.type = "add";
       this.dialogTableVisible = true;
@@ -185,6 +201,13 @@ export default {
 
 
 <style  scoped>
+/deep/ .ivu-modal-footer {
+  padding: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
 .dKbaYC {
   padding-bottom: 16px;
 }

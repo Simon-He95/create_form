@@ -2,13 +2,13 @@
 import vueJsonEditor from "vue-json-editor";
 import { nanoid } from "nanoid";
 import Footer from "./Footer.vue";
-import Tabs from "./Tabs.vue";
+import JsonTabs from "./JsonTabs.vue";
 import Drag from "./Drag.vue";
 export default {
-  name: "Form",
+  name: "JsonTable",
   components: {
     Footer,
-    Tabs,
+    JsonTabs,
     Drag,
     VueJsonEditor: vueJsonEditor,
   },
@@ -30,6 +30,35 @@ export default {
   },
   data() {
     return {
+      tableColumns: [
+        {
+          title: "Name",
+          key: "label",
+          resizable: true
+        }, {
+          title: "Type",
+          key: "type",
+          resizable: true
+        },
+        {
+          title: "Action",
+          width: 180,
+          key: 'action',
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [h('Button', {
+              on: {
+                click: () => this.deleteHandler(params.row)
+              }
+            }, 'Delete'), h('Button', {
+              style: "margin-left:10px;",
+              on: {
+                click: () => this.editHandler(params.row)
+              }
+            }, 'Edit'),])
+          }
+        }
+      ],
       labelShow: true,
       dragShow: false,
       dialogVisible: false,
@@ -51,8 +80,8 @@ export default {
       minvalue: 0,
       maxvalue: 0,
       len: {
-        min: "",
-        max: "",
+        min: 0,
+        max: 0,
       },
       min: false,
       max: false,
@@ -61,12 +90,119 @@ export default {
       cascader: {
         multiple: false,
       },
-      limit: 1,
       controllers: [{ relevancy: "", controlType: "", controlReg: "" }],
       buttonType: ["Radio", "RadioButton"],
       key: 0,
       sizeOptions: ["default", "small", "large"],
-      formatOptions: ['yyyy', 'M', 'MM', 'W', 'WW', 'd', 'dd', 'H', 'HH', 'h', 'hh', 'm', 'mm', 's', 'ss', 'A', 'a', 'timestamp', '[MM]'],
+      formatOptions: [
+        {
+          label: '年份（四位）',
+          value: 'yyyy'
+        },
+        {
+          label: '年份（两位）',
+          value: 'yy'
+        },
+        {
+          label: '月份（两位）',
+          value: 'MM'
+        },
+        {
+          label: '月份（一位）',
+          value: 'M'
+        },
+        {
+          label: '月份（英文）',
+          value: 'MMMM'
+        },
+        {
+          label: '月份（英文简写）',
+          value: 'MMM'
+        },
+        {
+          label: '日期（两位）',
+          value: 'dd'
+        },
+        {
+          label: '日期（一位）',
+          value: 'd'
+        }, {
+          label: '日期（简写）',
+          value: 'Do'
+        },
+        {
+          label: '星期（两位）',
+          value: 'DD'
+        },
+        {
+          label: '星期（一位）',
+          value: 'D'
+        },
+        {
+          label: '星期（英文）',
+          value: 'dddd'
+        },
+        {
+          label: '星期（英文简写）',
+          value: 'ddd'
+        },
+        {
+          label: '小时（24小时制两位）',
+          value: 'HH'
+        },
+        {
+          label: '小时（24小时制一位）',
+          value: 'H'
+        },
+        {
+          label: '小时（12小时制两位）',
+          value: 'hh'
+        },
+        {
+          label: '小时（12小时制一位）',
+          value: 'h'
+        },
+        {
+          label: '分钟（两位）',
+          value: 'mm'
+        },
+        {
+          label: '分钟（一位）',
+          value: 'm'
+        },
+        {
+          label: '秒钟（两位）',
+          value: 'ss'
+        },
+        {
+          label: '秒钟（一位）',
+          value: 's'
+        },
+        {
+          label: '毫秒（三位）',
+          value: 'SSS'
+        },
+        {
+          label: '毫秒（两位）',
+          value: 'SS'
+        },
+        {
+          label: '毫秒（一位）',
+          value: 'S'
+        },
+        {
+          label: '上午与下午（大写）',
+          value: 'A'
+        },
+        {
+          label: '上午与下午（小写）',
+          value: 'a'
+        },
+        {
+          label: '时区',
+          value: 'ZZ'
+        },
+      ],
       dateOptions: [{
         label: '时间',
         value: 'time'
@@ -148,6 +284,7 @@ export default {
         "Cascader",
         "Enumeration",
       ],
+      multiple: false,
       mapKey: "",
       options: [],
     };
@@ -176,7 +313,7 @@ export default {
         { relevancy: "", controlType: "", controlReg: "" },
       ];
       this.type = "edit";
-      if (row.upload) this.limit = row.upload.limit;
+      if (row.upload) this.multiple = row.upload.multiple;
       this.current = this.input = row.label;
       this.mapKey = row.mapKey;
       this.group = row.group;
@@ -208,8 +345,8 @@ export default {
         if (this.len.max) this.max = true;
       } else
         this.len = {
-          min: "",
-          max: "",
+          min: 0,
+          max: 0,
         };
       this.size = row.size;
       this.required = row.required;
@@ -234,13 +371,13 @@ export default {
         this.current !== this.input &&
         this.getAllname().includes(this.input)
       ) {
-        return this.$message({
+        return this.$Message({
           message: "该字段名已存在.",
           type: "error",
         });
       }
       if (!this.input) {
-        return this.$message({
+        return this.$Message({
           message: "Name 是必输项",
           type: "error",
         });
@@ -282,7 +419,7 @@ export default {
         }
       } else if (this.cardType === "Upload") {
         data.upload = {
-          limit: this.limit,
+          multiple: this.multiple,
         };
       }
       if (r.length) data["show"] = r;
@@ -303,6 +440,7 @@ export default {
         );
         this.current = null;
       }
+      console.log(this.tableData)
       this.dialogVisible = false;
     },
     transformToJson() {
@@ -326,7 +464,7 @@ export default {
       for (let i = 0; i < this.controllers.length; i++) {
         const item = this.controllers[i];
         if (map[item.relevancy]) {
-          this.$message({
+          this.$Message({
             message: "相同关联字段不能重复.",
             type: "error",
           });
@@ -348,9 +486,8 @@ export default {
         this.$refs.nameEl.focus();
       });
     },
-    handleClose(done) {
+    handleClose() {
       this.resetData();
-      done();
     },
     add() {
       this.resetData();
@@ -384,9 +521,13 @@ export default {
       this.controllers = [{ relevancy: "", controlType: "", controlReg: "" }];
       this.activeName = "first";
       this.type = "add";
-      this.limit = 1;
+      this.multiple = false;
       this.datetype = ''
       this.key = this.key + 1;
+      this.len = {
+        min: 0,
+        max: 0
+      }
     },
     sort() {
       this.dragShow = true;
@@ -408,7 +549,7 @@ export default {
 
 <template>
   <div id="form_wrapper" font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
-    <el-dialog :visible.sync="dialogVisible" :title="name" width="50%" :modal="false" :before-close="handleClose">
+    <Modal v-model="dialogVisible" :title="name" width="50%" :modal="false" :before-close="handleClose">
       <div v-show="cardShow" style="margin-bottom: 24px">
         <div class="sc-dvQaRk sc-TBWPX exyKSe fkEccH">
           <h2 class="sc-bvFjSx inqAba">
@@ -417,112 +558,111 @@ export default {
         </div>
         <hr class="sc-ljMRFG sc-jwQYvw fYRdMc goLodl" />
       </div>
-      <Tabs v-show="cardShow" :types="types" @choose="choose" />
+      <JsonTabs v-show="cardShow" :types="types" @choose="choose" />
 
       <div v-show="cardType" class="relative">
         <div class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black">
-          {{ type === "add" ? "Add new" : "Edit" }} {{ cardType }} field
+          {{  type === "add" ? "Add new" : "Edit"  }} {{  cardType  }} field
         </div>
-        <el-form>
-          <el-tabs v-model="activeName" class="demo-tabs">
-            <el-tab-pane label="Basic settings" name="first">
+        <Form>
+          <Tabs v-model="activeName" class="demo-tabs">
+            <TabPane label="Basic settings" name="first">
               <div v-show="cardType">
                 <div class="wrapper">
-                  <el-form-item label="标签名:" class="w30">
-                    <el-input ref="nameEl" v-model="input" placeholder="Please input Name" />
-                  </el-form-item>
-                  <el-form-item v-show="cardType === 'Date'" label="日期类型:" class="w30">
-                    <el-select v-model="datetype" placeholder="Pick datetype">
-                      <el-option v-for="item in dateOptions" :key="item.value" :label="item.label"
-                        :value="item.value" />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item v-show="cardType === 'Date'" label="转换格式:" class="w30">
-                    <el-select v-model="format" placeholder="Pick format">
-                      <el-option v-for="item in formatOptions" :key="item" :label="item" :value="item" />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item label="占位符:" class="w30">
-                    <el-input v-model="placeholder" placeholder="Please input Placeholder" />
-                  </el-form-item>
-                  <el-form-item label="描述:" class="w30">
-                    <el-input v-model="description" placeholder="Please input Description" />
-                  </el-form-item>
-                  <el-form-item label="尺寸:" class="w30">
-                    <el-select v-model="size" placeholder="Pick Size">
-                      <el-option v-for="item in sizeOptions" :key="item" :label="item" :value="item" />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item label="Key:" class="w30">
-                    <el-input v-model="mapKey" placeholder="Please input Key" />
-                  </el-form-item>
-                  <el-form-item label="标签名可见:" style="margin-left: 10px">
-                    <el-switch v-model="labelShow"></el-switch>
-                  </el-form-item>
-                  <el-form-item label="标题颜色:" class="w30">
-                    <el-color-picker v-model="colorTitle" />
-                  </el-form-item>
-                  <el-form-item v-show="showType.includes(cardType)" label="Type:" class="w30">
-                    <el-select v-model="cardType" placeholder="Pick Size">
-                      <el-option v-for="item in buttonType" :key="item" :label="item" :value="item" />
-                    </el-select>
-                  </el-form-item>
-                  <el-checkbox v-show="cardType === 'Cascader'" v-model="cascader.multiple" label="Multiple"
-                    class="w30" />
-                  <el-form-item v-show="cardType === 'Upload'" label="Limit:" class="w30">
-                    <el-input-number v-model="limit" :min="1" :max="10" controls-position="right" />
-                  </el-form-item>
+                  <FormItem label="标签名:" class="w30">
+                    <Input ref="nameEl" v-model="input" placeholder="Please input Name" />
+                  </FormItem>
+                  <FormItem v-show="cardType === 'Date'" label="日期类型:" class="w30">
+                    <Select v-model="datetype" placeholder="Pick datetype">
+                      <Option v-for="item in dateOptions" :key="item.value" :label="item.label" :value="item.value" />
+                    </Select>
+                  </FormItem>
+                  <FormItem v-show="cardType === 'Date'" label="展示的时间格式:" class="w30">
+                    <Select v-model="format" placeholder="Pick format" clearable>
+                      <Option v-for="item in formatOptions" :key="item.value" :label="item.label" :value="item.value" />
+                    </Select>
+                  </FormItem>
+                  <FormItem label="占位符:" class="w30">
+                    <Input v-model="placeholder" placeholder="Please input Placeholder" />
+                  </FormItem>
+                  <FormItem label="描述:" class="w30">
+                    <Input v-model="description" placeholder="Please input Description" />
+                  </FormItem>
+                  <FormItem label="尺寸:" class="w30">
+                    <Select v-model="size" placeholder="Pick Size">
+                      <Option v-for="item in sizeOptions" :key="item" :label="item" :value="item" />
+                    </Select>
+                  </FormItem>
+                  <FormItem label="Key:" class="w30">
+                    <Input v-model="mapKey" placeholder="Please input Key" />
+                  </FormItem>
+                  <FormItem label="标签名可见:" style="margin-left: 10px">
+                    <i-switch v-model="labelShow">
+                    </i-switch>
+                  </FormItem>
+                  <FormItem label="标题颜色:" class="w30">
+                    <ColorPicker v-model="colorTitle" />
+                  </FormItem>
+                  <FormItem v-show="showType.includes(cardType)" label="Type:" class="w30">
+                    <Select v-model="cardType" placeholder="Pick Size">
+                      <Option v-for="item in buttonType" :key="item" :label="item" :value="item" />
+                    </Select>
+                  </FormItem>
+                  <Checkbox v-show="cardType === 'Cascader'" v-model="cascader.multiple" label="Multiple" class="w30" />
+                  <FormItem v-show="cardType === 'Upload'" label="Limit:" class="w30">
+                    <i-switch v-model="multiple" />
+                  </FormItem>
                 </div>
                 <VueJsonEditor v-if="showType.includes(cardType)" style="margin-top: 20px;text-align: left;"
                   v-model="options" :expanded-on-start="true" :mode="mode" />
               </div>
-            </el-tab-pane>
-            <el-tab-pane label="Advanced settings" name="second">
+            </TabPane>
+            <TabPane label="Advanced settings" name="second">
               <div class="flex gap-1">
-                <el-form-item label="默认值" flex-col items-start class="w30">
-                  <el-input v-model="defaultvalue" />
-                </el-form-item>
-                <el-form-item label="是否必输" style="margin-left: 20px">
-                  <el-switch v-model="required"></el-switch>
-                </el-form-item>
+                <FormItem label="默认值" flex-col items-start class="w30">
+                  <Input v-model="defaultvalue" />
+                </FormItem>
+                <FormItem label="是否必输" style="margin-left: 20px">
+                  <i-switch v-model="required"></i-switch>
+                </FormItem>
               </div>
               <!-- <div class="flex flex-col item-start">
                 <h3 text-black text-6>表单组</h3>
                 <div class="wrapper left">
-                  <el-form-item label="Group" class="w30">
-                    <el-input v-model="group" />
-                  </el-form-item>
-                  <el-form-item label="GroupKey" class="w30">
-                    <el-input v-model="groupKey" />
-                  </el-form-item>
+                  <FormItem label="Group" class="w30">
+                    <Input v-model="group" />
+                  </FormItem>
+                  <FormItem label="GroupKey" class="w30">
+                    <Input v-model="groupKey" />
+                  </FormItem>
                 </div>
               </div> -->
-              <div class="flex flex-col item-start" style="margin-bottom: ;20px;">
-                <h3 text-black text-6>规则校验</h3>
+              <div class="flex flex-col item-start" style="margin-bottom: 20px;">
+                <h3 style="margin-bottom:10px">规则校验</h3>
                 <div class="wrapper left" v-for="(item, i) in rules">
-                  <el-form-item label="正则" flex-col items-start class="w40">
-                    <el-input v-model="item.regExp" />
-                  </el-form-item>
-                  <el-form-item v-show="item.regExp" label="错误消息" flex-col items-start class="w40">
-                    <el-input v-model="item.errMsg" />
-                  </el-form-item>
-                  <el-form-item label=" " flex-col items-start>
-                    <el-button @click="deleteReg(i)">删除</el-button>
-                  </el-form-item>
+                  <FormItem label="正则" flex-col items-start class="w40">
+                    <Input v-model="item.regExp" />
+                  </FormItem>
+                  <FormItem v-show="item.regExp" label="错误消息" flex-col items-start class="w40">
+                    <Input v-model="item.errMsg" />
+                  </FormItem>
+                  <FormItem label=" " flex-col items-start>
+                    <Button @click="deleteReg(i)">删除</Button>
+                  </FormItem>
                 </div>
-                <el-button @click="rules.push({ regExp: '', errMsg: '' })">新增规则</el-button>
+                <Button @click="rules.push({ regExp: '', errMsg: '' })">新增规则</Button>
               </div>
-              <div class="flex flex-col item-start" style="margin-bottom: ;20px;">
+              <div class="flex flex-col item-start" style="margin-bottom: 20px;">
                 <h3 text-black text-6>设置</h3>
                 <div class="wrapper left">
                   <div class="w45" text-left flex flex-col>
-                    <el-checkbox v-model="min" label="最小值" size="large" />
-                    <el-input-number v-show="min" v-model="len.min" :min="0" :max="30" size="small"
+                    <Checkbox v-model="min" size="large">最小值</Checkbox>
+                    <InputNumber v-show="min" v-model="len.min" :min="0" :max="30" size="small"
                       controls-position="right" />
                   </div>
                   <div class="w45" text-left flex flex-col>
-                    <el-checkbox v-model="max" label="最大值" size="large" />
-                    <el-input-number v-show="max" v-model="len.max" :min="0" :max="30" size="small"
+                    <Checkbox v-model="max" size="large">最大值</Checkbox>
+                    <InputNumber v-show="max" v-model="len.max" :min="0" :max="30" size="small"
                       controls-position="right" />
                   </div>
                 </div>
@@ -536,26 +676,25 @@ export default {
                         d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z" />
                     </svg>
                   </div>
-                  <div class="wrapper gap-2">
-                    <el-form-item label="选择关联字段" flex-col items-start class="w45">
-                      <el-select v-model="item.relevancy" placeholder="Select" clearable @change="selectChange">
-                        <el-option v-for="i in tableData.filter(
+                  <div class="wrapper gap-2" style="flex-wrap:nowrap">
+                    <FormItem label="选择关联字段" flex-col items-start class="w45">
+                      <Select v-model="item.relevancy" placeholder="Select" clearable @change="selectChange">
+                        <Option v-for="i in tableData.filter(
                           (item) => item.label !== input
                         )" :key="i.name" :label="i.label" :value="i.label" />
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item v-show="item.relevancy" label="选择规则" flex-col items-start class="w45">
-                      <el-select v-model="item.controlType" placeholder="Select">
-                        <el-option v-for="i in controlTypes" :key="i" :label="i" :value="i" />
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item v-show="item.controlType === 'regExp'" label="regExp" flex-col items-start
-                      class="w45">
-                      <el-input v-model="item.controlReg" input-style="h-full" />
-                    </el-form-item>
+                      </Select>
+                    </FormItem>
+                    <FormItem v-show="item.relevancy" label="选择规则" flex-col items-start class="w45">
+                      <Select v-model="item.controlType" placeholder="Select">
+                        <Option v-for="i in controlTypes" :key="i" :label="i" :value="i" />
+                      </Select>
+                    </FormItem>
+                    <FormItem v-show="item.controlType === 'regExp'" label="regExp" flex-col items-start class="w45">
+                      <Input v-model="item.controlReg" input-style="h-full" />
+                    </FormItem>
                   </div>
                 </div>
-                <el-button @click="
+                <Button @click="
                   controllers.push({
                     relevancy: '',
                     controlType: '',
@@ -563,40 +702,35 @@ export default {
                   })
                 ">
                   新增关联
-                </el-button>
+                </Button>
               </div>
-            </el-tab-pane>
-          </el-tabs>
-        </el-form>
+            </TabPane>
+          </Tabs>
+        </Form>
       </div>
       <template #footer>
         <Footer @cancel="cancel" @confirm="confirm" />
       </template>
-    </el-dialog>
-    <el-dialog :visible.sync="dragShow" :modal="false" title="Drag & drop the fields to build the layout" width="50%">
+    </Modal>
+    <Modal v-model="dragShow" :modal="false" title="Drag & drop the fields to build the layout" width="50%">
       <Drag ref="dragEl" :data="getFormData()" />
       <template #footer>
         <Footer @cancel="dragShow = false" @confirm="sortEnd" />
       </template>
-    </el-dialog>
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="label" label="Name" />
-      <el-table-column prop="type" label="Type" />
-      <el-table-column width="180">
-        <template #default="scope">
-          <el-button link type="danger" size="small" @click="deleteHandler(scope.row)">
-            Delete
-          </el-button>
-          <el-button link size="small" @click="editHandler(scope.row)">
-            Edit
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    </Modal>
+    <Table :data="tableData" :columns="tableColumns">
+    </Table>
   </div>
 </template>
 
   <style scoped>
+  /deep/ .ivu-modal-footer {
+    padding: 0;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+
   .fkEccH {
     -webkit-box-align: center;
     align-items: center;
@@ -705,21 +839,8 @@ export default {
     width: 100%;
   }
 
-  .demo-tabs /deep/ .el-tabs__nav-scroll {
+  .demo-tabs /deep/ .ivu-tabs-nav {
     float: right !important;
-  }
-
-  :deep(.demo-tabs .el-form-item__content) {
-    width: 100%;
-    align-items: flex-start;
-  }
-
-  :deep(.el-form-item__content .el-select) {
-    width: 100%;
-  }
-
-  :deep(.el-form-item__content .el-cascader) {
-    width: 100%;
   }
   </style>
 

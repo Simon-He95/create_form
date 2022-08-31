@@ -52,9 +52,8 @@ export default {
       this.name = '';
     },
     confirm() {
-      debugger
       if (this.list.includes(this.name))
-        return this.$message.error('已存在该名称');
+        return this.$Message.error('已存在该名称');
       if (this.type === 'add') this.list.push(this.name);
       else this.list[this.current] = this.name;
       localStorage.setItem('store_json', JSON.stringify(this.list));
@@ -152,20 +151,27 @@ export default {
         </ol>
       </div>
     </nav>
-    <el-dialog :visible.sync="createShow" title="Create a collection type" width="50%" :modal="false">
-      <el-form>
-        <el-form-item label="Display name">
-          <el-input ref="nameEl" v-model="name" placeholder="Please input Name" />
-        </el-form-item>
-      </el-form>
+    <Modal v-model="createShow" title="Create a collection type" width="50%" :mask="false">
+      <Form>
+        <FormItem label="Display name">
+          <Input ref="nameEl" v-model="name" placeholder="Please input Name" />
+        </FormItem>
+      </Form>
       <template #footer>
         <Footer :is-delete="isDelete" @cancel="createShow = false" @confirm="confirm" @delete="deleteHandler" />
       </template>
-    </el-dialog>
+    </Modal>
   </div>
 </template>
 
   <style scoped>
+  /deep/ .ivu-modal-footer {
+    padding: 0;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+
   .erdTfC {
     padding: 24px 16px 8px 24px;
   }

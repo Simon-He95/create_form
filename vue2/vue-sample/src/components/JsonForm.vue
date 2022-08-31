@@ -90,13 +90,12 @@ export default {
             this.schema.description
           ),
           h(
-            "el-form",
+            "Form",
             {
               props: {
                 ref: "formEl",
                 model: this.model,
                 rules: this.rules,
-                size: this.schema.size,
                 class: this.schema.class,
               },
             },
@@ -114,7 +113,6 @@ export default {
           type,
           size,
           group,
-          limit = 1,
           colorTitle,
           cascader,
           label,
@@ -132,6 +130,7 @@ export default {
           disabled,
           border,
           precision,
+          upload = {},
           step,
           debounce = 300,
           placeholder,
@@ -169,21 +168,17 @@ export default {
 
         const typeComponent = {
           Text: (type = "text") =>
-            h("el-input", {
+            h("Input", {
               props: {
                 value: this.model[key],
                 type,
+                maxlength: max,
                 placeholder,
                 disabled
               },
               class: className,
               on: {
-                input: (val) => {
-
-                  if (max && (val.length > max)) val = val.slice(0, max);
-                  that.model[key] = val;
-                  that.schema.attribs[key].default = val;
-                },
+                input: modelValue,
               },
             }),
           Email: () => typeComponent.Text(),
@@ -193,9 +188,11 @@ export default {
             const { type, format } = date || {}
             switch (type) {
               case 'time':
-                return h('el-time-picker', {
+                return h('TimePicker', {
                   props: {
-                    value: this.model[key],
+                    value: this.model[key] || [],
+                    type: 'time',
+                    confirm: true,
                     placeholder,
                     disabled
                   },
@@ -204,13 +201,11 @@ export default {
                   },
                 })
               case 'timezone':
-                return h('el-time-picker', {
+                return h('TimePicker', {
                   props: {
-                    value: this.model[key],
-                    'is-range': true,
-                    'range-separator': "至",
-                    "start-placeholder": "开始时间",
-                    "end-placeholder": "结束时间",
+                    value: this.model[key] || [],
+                    type: 'timerange',
+                    confirm: true,
                     disabled
                   },
                   on: {
@@ -218,11 +213,11 @@ export default {
                   },
                 })
               case 'datetime':
-                return h('el-date-picker', {
+                return h('DatePicker', {
                   props: {
-                    value: this.model[key],
+                    value: this.model[key] || [],
                     type: 'datetime',
-                    'value-format': format,
+                    format,
                     placeholder
                   },
                   on: {
@@ -230,14 +225,11 @@ export default {
                   },
                 })
               case 'datetimezone':
-                return h('el-date-picker', {
+                return h('DatePicker', {
                   props: {
-                    value: this.model[key],
+                    value: this.model[key] || [],
                     type: 'datetimerange',
-                    'range-separator': "至",
-                    "start-placeholder": "开始时间",
-                    "end-placeholder": "结束时间",
-                    'value-format': format,
+                    format,
                     disabled
                   },
                   on: {
@@ -245,14 +237,11 @@ export default {
                   },
                 })
               case 'datezone':
-                return h('el-date-picker', {
+                return h('DatePicker', {
                   props: {
                     value: this.model[key],
                     type: 'daterange',
-                    'range-separator': "至",
-                    "start-placeholder": "开始时间",
-                    "end-placeholder": "结束时间",
-                    'value-format': format,
+                    format,
                     disabled
                   },
                   on: {
@@ -260,12 +249,12 @@ export default {
                   },
                 })
               default:
-                return h('el-date-picker', {
+                return h('DatePicker', {
                   props: {
                     value: this.model[key],
                     type: 'date',
                     placeholder,
-                    'value-format': format,
+                    format,
                     disabled
                   },
                   on: {
@@ -276,9 +265,9 @@ export default {
           }
           ,
           Number: () =>
-            h("el-input-number", {
+            h("InputNumber", {
               props: {
-                value: this.model[key],
+                value: this.model[key] || 0,
                 class: className,
                 style,
                 disabled,
@@ -293,7 +282,7 @@ export default {
             }),
           Enumeration: () =>
             h(
-              "el-select",
+              "Select",
               {
                 props: {
                   value: this.model[key],
@@ -307,7 +296,7 @@ export default {
                 },
               },
               (options || []).map((item, i) =>
-                h("el-option", {
+                h("Option", {
                   props: {
                     value: item.value,
                     label: item.label,
@@ -317,7 +306,7 @@ export default {
               )
             ),
           Boolean: () =>
-            h("el-switch", {
+            h("i-switch", {
               props: {
                 value: this.model[key] || false,
                 class: className,
@@ -330,7 +319,7 @@ export default {
             }),
           Radio: (type = "radio") =>
             h(
-              "el-radio-group",
+              "RadioGroup",
               {
                 props: {
                   value: this.model[key],
@@ -344,7 +333,7 @@ export default {
               },
               (options || []).map((item) =>
                 h(
-                  type === "radio" ? "el-radio" : "el-radio-button",
+                  type === "radio" ? "Radio" : "Radio-button",
                   {
                     props: {
                       label: item.label,
@@ -358,7 +347,7 @@ export default {
             ),
           Checkbox: (type = "checkbox") =>
             h(
-              "el-checkbox-group",
+              "CheckboxGroup",
               {
                 props: {
                   value: this.model[key] || [],
@@ -373,7 +362,7 @@ export default {
 
               (options || []).map((item, i) =>
                 h(
-                  type === "checkbox" ? "el-checkbox" : "el-checkbox-button",
+                  type === "checkbox" ? "Checkbox" : "Checkbox-button",
                   {
                     props: {
                       label: item.label,
@@ -389,7 +378,7 @@ export default {
           CheckboxButton: () => typeComponent.Checkbox("checkboxButton"),
           RadioButton: () => typeComponent.Radio("radioButton"),
           Cascader: () =>
-            h("el-cascader", {
+            h("Cascader", {
               props: {
                 value: this.model[key] || [],
                 class: className,
@@ -408,34 +397,41 @@ export default {
             }),
           Upload: () => [
             h(
-              "el-upload",
+              "Upload",
               {
                 props: {
                   fileList: this.model[key] || [],
                   class: className,
-                  listType: "picture-card",
-                  action: "#",
+                  action: upload.action || "#",
                   autoUpload: false,
-                  limit,
-                  style,
+                  multiple: !!upload.multiple,
+                  headers: upload.headers || {},
+                  data: upload.data || {},
+                  maxSize: upload.maxSize,
+                  accept: upload.accept,
+                  type: 'drag',
                   disabled,
                   onChange: uploadChange,
                   onRemove: removeFile,
                   onPreview,
-                  placeholder,
                 },
+                style: 'display: inline-block;width:58px;',
                 on: {
                   input: modelValue,
                 },
               },
-              [
-                h("i", {
-                  class: "el-icon-plus avatar-uploader-icon",
-                }),
-              ]
+              [h('div', {
+                style: 'width: 58px;height:58px;line-height: 58px;'
+              }, [h("Icon", {
+                type: "ios-camera",
+                props: {
+                  type: "ios-camera",
+                  size: 20
+                }
+              })])]
             ),
             h(
-              "el-dialog",
+              "Modal",
               {
                 props: {
                   visible: this.dialogShow,
@@ -465,7 +461,7 @@ export default {
 
         formList.push(
           h(
-            "el-form-item",
+            "FormItem",
             {
               props: {
                 label,
@@ -478,7 +474,7 @@ export default {
               class: formItemClass,
             },
             [
-              h("el-input", {
+              h("Input", {
                 props: {
                   value: label,
                 },
@@ -497,32 +493,6 @@ export default {
                   },
                 },
               }),
-              h(
-                "div",
-                {
-
-                  attrs: {
-                    style: "height:40px;",
-                  },
-                },
-                [
-                  h('label', {
-                    class: 'form_label'
-                  }, label),
-                  h('i', {
-                    class: 'el-icon-edit',
-                    style: 'margin-left:10px;padding:5px;',
-                    on: {
-                      click: () => {
-                        const vm = this.$refs[formItemClass].$el;
-                        vm.nextElementSibling.style.display = "none";
-                        vm.style.display = "block";
-                        this.$nextTick(() => this.$refs[formItemClass].focus());
-                      },
-                    },
-                  })
-                ]
-              ),
               h(
                 "div",
                 {
@@ -587,7 +557,7 @@ export default {
         l_1 &&
           col.push(
             h(
-              "el-col",
+              "Col",
               { props: { span: level === 3 ? 8 : level === 2 ? 12 : 24 } },
               [g1[i]]
             )
@@ -595,7 +565,7 @@ export default {
         l_2 &&
           col.push(
             h(
-              "el-col",
+              "Col",
               { props: { span: level === 3 ? 8 : level === 2 ? 12 : 24 } },
               [g2[i]]
             )
@@ -603,13 +573,13 @@ export default {
         l_3 &&
           col.push(
             h(
-              "el-col",
+              "Col",
               { props: { span: level === 3 ? 8 : level === 2 ? 12 : 24 } },
               [g3[i]]
             )
           );
         const group = g1[i].data ? g1[i].data.props.group : undefined;
-        const data = h("el-row", { props: { gutter: 10 } }, col);
+        const data = h("Row", { props: { gutter: 10 } }, col);
         return group
           ? h("div", [
             h(
@@ -650,22 +620,13 @@ export default {
     function insertStyle(colorTitle, formItemClass, labelShow) {
       if (colorTitle) {
         styles += `
-            .${formItemClass} .form_label{
+            .${formItemClass} .ivu-form-item-label{
               color:${colorTitle};
               ${!labelShow ? "display:none" : ""}
             }
-            .el-form-item__content{
-              width:100%
-            }
             `;
-      } else {
-        styles += `
-            .el-form-item__content{
-              width:100%
-            }
-            `;
-        if (!labelShow)
-          styles += `.${formItemClass} .form_label{
+      } else if (!labelShow) {
+        styles += `.${formItemClass} .ivu-form-item-label{
              display:none;
             }
             `;

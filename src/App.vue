@@ -25,9 +25,9 @@ function add() {
   </button>
   <Form ref="formEl" :data="data" />
   <div m-5 align-center>
-    <el-button @click="transform">
+    <Button @click="transform">
       transform json to form
-    </el-button>
+    </Button>
   </div>
 </template>
 

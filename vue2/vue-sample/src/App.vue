@@ -1,5 +1,5 @@
 <script>
-import Form from './components/Form.vue'
+import JsonTable from './components/JsonTable.vue'
 import Menu from './components/Menu'
 import Header from './components/Header'
 import Manage from './components/Manage'
@@ -7,7 +7,7 @@ import MenuWrapper from './components/MenuWrapper.vue'
 export default {
   name: 'App',
   components: {
-    Form,
+    JsonTable,
     Menu,
     Header,
     Manage,
@@ -39,7 +39,7 @@ export default {
     save() {
       this.$set(this.result, this.name, this.$refs.formEl.getFormData())
       localStorage.setItem('json_form_list', JSON.stringify(this.result))
-      this.$message.success('保存成功')
+      this.$Message.success('保存成功')
     },
     setName(name) {
       this.name = name
@@ -64,6 +64,7 @@ export default {
       this.title = String(i) === '0' ? 'Content' : 'Content-Type Builder'
       this.setName(this.name)
     },
+
     edit() {
       this.$refs.menuEl.edit(this.name)
     },
@@ -75,12 +76,11 @@ export default {
   <div id="json_form">
     <div class="sc-dvQaRk sc-TBWPX dPOXkr hAgEcW">
       <MenuWrapper @clickMenu="clickMenu" />
-
       <div class="fzVfup" style="width: 100%">
         <Menu ref="menuEl" :title="title" @click-list="setName" />
         <div v-if="title === 'Content-Type Builder' && name" class="right">
           <Header :name="name" @add="add" @save="save" @drag="drag" @edit="edit" />
-          <Form ref="formEl" :schema="data_data" :name="name" @change="changeHandler" />
+          <JsonTable ref="formEl" :schema="data_data" :name="name" @change="changeHandler" />
         </div>
         <Manage v-if="title === 'Content' && name" ref="jsonFormEl" :title="name" />
       </div>
