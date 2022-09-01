@@ -80,8 +80,8 @@ export default {
       minvalue: 0,
       maxvalue: 0,
       len: {
-        min: 0,
-        max: 0,
+        min: undefined,
+        max: undefined,
       },
       min: false,
       max: false,
@@ -345,8 +345,8 @@ export default {
         if (this.len.max) this.max = true;
       } else
         this.len = {
-          min: 0,
-          max: 0,
+          min: undefined,
+          max: undefined,
         };
       this.size = row.size;
       this.required = row.required;
@@ -440,7 +440,6 @@ export default {
         );
         this.current = null;
       }
-      console.log(this.tableData)
       this.dialogVisible = false;
     },
     transformToJson() {
@@ -525,8 +524,8 @@ export default {
       this.datetype = ''
       this.key = this.key + 1;
       this.len = {
-        min: 0,
-        max: 0
+        min: undefined,
+        max: undefined
       }
     },
     sort() {
@@ -562,7 +561,7 @@ export default {
 
       <div v-show="cardType" class="relative">
         <div class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black">
-          {{  type === "add" ? "Add new" : "Edit"  }} {{  cardType  }} field
+          {{ type === "add" ? "Add new" : "Edit" }} {{ cardType }} field
         </div>
         <Form>
           <Tabs v-model="activeName" class="demo-tabs">
@@ -730,31 +729,31 @@ export default {
     bottom: 0;
     z-index: 10;
   }
-
+  
   .fkEccH {
     -webkit-box-align: center;
     align-items: center;
     display: flex;
     flex-direction: row;
   }
-
+  
   .inqAba {
     color: rgb(50, 50, 77);
     font-weight: 600;
     font-size: 1.125rem;
     line-height: 40px;
   }
-
+  
   .goLodl {
     height: 1px;
     border: none;
     margin: 0px;
   }
-
+  
   .fYRdMc {
     background: rgb(234, 234, 239);
   }
-
+  
   .wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -762,83 +761,83 @@ export default {
     width: 100%;
     align-items: center;
   }
-
+  
   .left {
     text-align: left;
   }
-
+  
   .flex-col {
     flex-direction: column;
   }
-
+  
   .item-start {
     align-items: flex-start;
   }
-
+  
   .flex {
     display: flex;
   }
-
+  
   .gap-2 {
     gap: 0.5rem;
   }
-
+  
   .gap-1 {
     gap: 0.25rem;
   }
-
+  
   .w45 {
     width: 45%;
   }
-
+  
   .w30 {
     width: 30%;
   }
-
+  
   .absolute {
     position: absolute;
   }
-
+  
   .left-0 {
     left: 0;
   }
-
+  
   .w40 {
     width: 40%;
   }
-
+  
   .h-10 {
     height: 2.5rem;
   }
-
+  
   .lh-10 {
     line-height: 2.5rem;
   }
-
+  
   .text-5 {
     font-size: 1.5rem;
   }
-
+  
   .font-600 {
     font-weight: 600;
   }
-
+  
   .text-black {
     color: #000;
   }
-
+  
   .top-0 {
     top: 0;
   }
-
+  
   .relative {
     position: relative;
   }
-
+  
   .w-full {
     width: 100%;
   }
-
+  
   .demo-tabs /deep/ .ivu-tabs-nav {
     float: right !important;
   }

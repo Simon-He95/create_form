@@ -62,6 +62,370 @@ export default {
       });
       return result;
     },
+    validators(validator, key, rules) {
+      if (validator) {
+        this.rules[key] = [
+          {
+            validator,
+          },
+        ];
+      } else if (rules.length) {
+        this.rules[key] = [
+          {
+            validator: (o, value, callback) => {
+              for (const item of rules) {
+                if (!new RegExp(item.regExp).test(value))
+                  return callback(
+                    new Error(item.errMsg || `${key} is invalid`)
+                  );
+              }
+              callback();
+            },
+          },
+        ];
+      }
+    },
+    onPreview(uploadFile) {
+      this.previewSrc = uploadFile.url;
+      this.dialogShow = true;
+    },
+    uploadChange(data) {
+      if (!this.model[key]) this.model[key] = [];
+      if (this.model[key].length < limit) this.model[key].push(data);
+      this.schema.attribs[key].default = this.model[key];
+    },
+    removeFile(data) {
+      this.model[key].splice(data, 1);
+      this.schema.attribs[key].default = this.model[key];
+    },
+    modelValue(val, key) {
+      this.model[key] = val;
+      this.schema.attribs[key].default = val;
+    },
+    getTypeComponent(h, form, key) {
+      const {
+        default: value,
+        type,
+        size,
+        group,
+        colorTitle,
+        cascader,
+        label,
+        rules,
+        date,
+        required,
+        labelShow,
+        class: className,
+        position,
+        style,
+        description,
+        show,
+        len,
+        options,
+        disabled,
+        border,
+        precision,
+        upload = {},
+        step,
+        debounce = 300,
+        placeholder,
+        children,
+        validator,
+        customRender
+      } = form[key]
+      const { min, max } = len || {};
+      const typeComponent = {
+        Text: (type = "text") =>
+          h("Input", {
+            props: {
+              value: this.model[key],
+              type,
+              maxlength: max,
+              placeholder,
+              disabled
+            },
+            class: className,
+            on: {
+              input: (val) => this.modelValue(val, key),
+            },
+          }),
+        Email: () => typeComponent.Text(),
+        RichText: () => typeComponent.Text("textarea"),
+        Password: () => typeComponent.Text("password"),
+        Date: () => {
+          const { type, format } = date || {}
+          switch (type) {
+            case 'time':
+              return h('TimePicker', {
+                props: {
+                  value: this.model[key] || [],
+                  type: 'time',
+                  confirm: true,
+                  placeholder,
+                  disabled
+                },
+                on: {
+                  input: (val) => this.modelValue(val, key),
+                },
+              })
+            case 'timezone':
+              return h('TimePicker', {
+                props: {
+                  value: this.model[key] || [],
+                  type: 'timerange',
+                  confirm: true,
+                  disabled
+                },
+                on: {
+                  input: (val) => this.modelValue(val, key),
+                },
+              })
+            case 'datetime':
+              return h('DatePicker', {
+                props: {
+                  value: this.model[key] || [],
+                  type: 'datetime',
+                  format,
+                  placeholder
+                },
+                on: {
+                  input: (val) => this.modelValue(val, key),
+                },
+              })
+            case 'datetimezone':
+              return h('DatePicker', {
+                props: {
+                  value: this.model[key] || [],
+                  type: 'datetimerange',
+                  format,
+                  disabled
+                },
+                on: {
+                  input: (val) => this.modelValue(val, key),
+                },
+              })
+            case 'datezone':
+              return h('DatePicker', {
+                props: {
+                  value: this.model[key],
+                  type: 'daterange',
+                  format,
+                  disabled
+                },
+                on: {
+                  input: (val) => this.modelValue(val, key),
+                },
+              })
+            default:
+              return h('DatePicker', {
+                props: {
+                  value: this.model[key],
+                  type: 'date',
+                  placeholder,
+                  format,
+                  disabled
+                },
+                on: {
+                  input: (val) => this.modelValue(val, key),
+                },
+              })
+          }
+        }
+        ,
+        Number: () =>
+          h("InputNumber", {
+            props: {
+              value: this.model[key] || 0,
+              class: className,
+              style,
+              disabled,
+              min: min || undefined,
+              max: max || undefined,
+              precision,
+              step,
+            },
+            on: {
+              input: (val) => this.modelValue(val, key),
+            },
+          }),
+        Enumeration: () =>
+          h(
+            "Select",
+            {
+              props: {
+                value: this.model[key],
+                class: className,
+                style,
+                disabled,
+                placeholder,
+              },
+              on: {
+                input: (val) => this.modelValue(val, key),
+              },
+            },
+            (options || []).map((item, i) =>
+              h("Option", {
+                props: {
+                  value: item.value,
+                  label: item.label,
+                  disabled: item.disabled,
+                },
+              })
+            )
+          ),
+        Boolean: () =>
+          h("i-switch", {
+            props: {
+              value: this.model[key] || false,
+              class: className,
+              style,
+              disabled,
+            },
+            on: {
+              input: (val) => this.modelValue(val, key),
+            },
+          }),
+        Radio: (type = "radio") =>
+          h(
+            "RadioGroup",
+            {
+              props: {
+                value: this.model[key],
+                class: className,
+                style,
+                disabled,
+              },
+              on: {
+                input: (val) => this.modelValue(val, key),
+              },
+            },
+            (options || []).map((item) =>
+              h(
+                type === "radio" ? "Radio" : "Radio-button",
+                {
+                  props: {
+                    label: item.label,
+                    disabled: item.disabled || false,
+                    border,
+                  },
+                },
+                item
+              )
+            )
+          ),
+        Checkbox: (type = "checkbox") =>
+          h(
+            "CheckboxGroup",
+            {
+              props: {
+                value: this.model[key] || [],
+                class: className,
+                style,
+                disabled,
+              },
+              on: {
+                input: (val) => this.modelValue(val, key),
+              },
+            },
+
+            (options || []).map((item, i) =>
+              h(
+                type === "checkbox" ? "Checkbox" : "Checkbox-button",
+                {
+                  props: {
+                    label: item.label,
+                    disabled: item.disabled || false,
+                    value: item.value,
+                    border,
+                  },
+                },
+                item
+              )
+            )
+          ),
+        CheckboxButton: () => typeComponent.Checkbox("checkboxButton"),
+        RadioButton: () => typeComponent.Radio("radioButton"),
+        Cascader: () =>
+          h("Cascader", {
+            props: {
+              value: this.model[key] || [],
+              class: className,
+              options: options || [],
+              debounce,
+              style,
+              disabled,
+              multiple: cascader.multiple,
+              placeholder,
+              filterable: true,
+              "collapse-tags-tooltip": true,
+            },
+            on: {
+              input: (val) => this.modelValue(val, key),
+            },
+          }),
+        Upload: () => [
+          h(
+            "Upload",
+            {
+              props: {
+                fileList: this.model[key] || [],
+                class: className,
+                action: upload.action || "#",
+                autoUpload: false,
+                multiple: !!upload.multiple,
+                headers: upload.headers || {},
+                data: upload.data || {},
+                maxSize: upload.maxSize,
+                accept: upload.accept,
+                type: 'drag',
+                disabled,
+                onChange: this.uploadChange,
+                onRemove: this.removeFile,
+                onPreview: this.onPreview,
+              },
+              style: 'display: inline-block;width:58px;',
+              on: {
+                input: this.modelValue,
+              },
+            },
+            [h('div', {
+              style: 'width: 58px;height:58px;line-height: 58px;'
+            }, [h("Icon", {
+              type: "ios-camera",
+              props: {
+                type: "ios-camera",
+                size: 20
+              }
+            })])]
+          ),
+          h(
+            "Modal",
+            {
+              props: {
+                visible: this.dialogShow,
+                modal: false,
+              },
+              on: {
+                close: () => {
+                  this.dialogShow = false;
+                },
+              },
+            },
+
+            [
+              h("img", {
+                class: "w-full",
+                attrs: {
+                  alt: "Preview Image",
+                  src: this.previewSrc,
+                },
+              }),
+            ]
+          ),
+        ],
+      };
+      return typeComponent[type]()
+    }
   },
   render(h) {
     let styles = "";
@@ -105,19 +469,14 @@ export default {
       )
       : "";
 
-    function renderForm(form) {
-      const formList = [];
-      for (const key in form) {
+    function renderForm(form = {}) {
+      return Object.keys(form).reduce((formList, key) => {
         const {
           default: value,
-          type,
-          size,
           group,
           colorTitle,
-          cascader,
           label,
           rules,
-          date,
           required,
           labelShow,
           class: className,
@@ -125,338 +484,17 @@ export default {
           style,
           description,
           show,
-          len,
-          options,
-          disabled,
-          border,
-          precision,
-          upload = {},
-          step,
-          debounce = 300,
-          placeholder,
-          children,
           validator,
           customRender
         } = form[key];
-        let that = this;
-        if (!type) throw new Error(`type is required in ${form}`);
-        const { min, max } = len || {};
         const formItemClass = `json_${nanoid()}`;
         setTimeout(() => this.judgeShow(formItemClass, show));
         if (value !== undefined) this.$set(this.model, key, value || "");
-        if (validator) {
-          this.rules[key] = [
-            {
-              validator,
-            },
-          ];
-        } else if (rules.length) {
-          this.rules[key] = [
-            {
-              validator: (o, value, callback) => {
-                for (const item of rules) {
-                  if (!new RegExp(item.regExp).test(value))
-                    return callback(
-                      new Error(item.errMsg || `${key} is invalid`)
-                    );
-                }
-                callback();
-              },
-            },
-          ];
-        }
 
-        const typeComponent = {
-          Text: (type = "text") =>
-            h("Input", {
-              props: {
-                value: this.model[key],
-                type,
-                maxlength: max,
-                placeholder,
-                disabled
-              },
-              class: className,
-              on: {
-                input: modelValue,
-              },
-            }),
-          Email: () => typeComponent.Text(),
-          RichText: () => typeComponent.Text("textarea"),
-          Password: () => typeComponent.Text("password"),
-          Date: () => {
-            const { type, format } = date || {}
-            switch (type) {
-              case 'time':
-                return h('TimePicker', {
-                  props: {
-                    value: this.model[key] || [],
-                    type: 'time',
-                    confirm: true,
-                    placeholder,
-                    disabled
-                  },
-                  on: {
-                    input: modelValue,
-                  },
-                })
-              case 'timezone':
-                return h('TimePicker', {
-                  props: {
-                    value: this.model[key] || [],
-                    type: 'timerange',
-                    confirm: true,
-                    disabled
-                  },
-                  on: {
-                    input: modelValue,
-                  },
-                })
-              case 'datetime':
-                return h('DatePicker', {
-                  props: {
-                    value: this.model[key] || [],
-                    type: 'datetime',
-                    format,
-                    placeholder
-                  },
-                  on: {
-                    input: modelValue,
-                  },
-                })
-              case 'datetimezone':
-                return h('DatePicker', {
-                  props: {
-                    value: this.model[key] || [],
-                    type: 'datetimerange',
-                    format,
-                    disabled
-                  },
-                  on: {
-                    input: modelValue,
-                  },
-                })
-              case 'datezone':
-                return h('DatePicker', {
-                  props: {
-                    value: this.model[key],
-                    type: 'daterange',
-                    format,
-                    disabled
-                  },
-                  on: {
-                    input: modelValue,
-                  },
-                })
-              default:
-                return h('DatePicker', {
-                  props: {
-                    value: this.model[key],
-                    type: 'date',
-                    placeholder,
-                    format,
-                    disabled
-                  },
-                  on: {
-                    input: modelValue,
-                  },
-                })
-            }
-          }
-          ,
-          Number: () =>
-            h("InputNumber", {
-              props: {
-                value: this.model[key] || 0,
-                class: className,
-                style,
-                disabled,
-                min: min || undefined,
-                max: max || undefined,
-                precision,
-                step,
-              },
-              on: {
-                input: modelValue,
-              },
-            }),
-          Enumeration: () =>
-            h(
-              "Select",
-              {
-                props: {
-                  value: this.model[key],
-                  class: className,
-                  style,
-                  disabled,
-                  placeholder,
-                },
-                on: {
-                  input: modelValue,
-                },
-              },
-              (options || []).map((item, i) =>
-                h("Option", {
-                  props: {
-                    value: item.value,
-                    label: item.label,
-                    disabled: item.disabled,
-                  },
-                })
-              )
-            ),
-          Boolean: () =>
-            h("i-switch", {
-              props: {
-                value: this.model[key] || false,
-                class: className,
-                style,
-                disabled,
-              },
-              on: {
-                input: modelValue,
-              },
-            }),
-          Radio: (type = "radio") =>
-            h(
-              "RadioGroup",
-              {
-                props: {
-                  value: this.model[key],
-                  class: className,
-                  style,
-                  disabled,
-                },
-                on: {
-                  input: modelValue,
-                },
-              },
-              (options || []).map((item) =>
-                h(
-                  type === "radio" ? "Radio" : "Radio-button",
-                  {
-                    props: {
-                      label: item.label,
-                      disabled: item.disabled || false,
-                      border,
-                    },
-                  },
-                  item
-                )
-              )
-            ),
-          Checkbox: (type = "checkbox") =>
-            h(
-              "CheckboxGroup",
-              {
-                props: {
-                  value: this.model[key] || [],
-                  class: className,
-                  style,
-                  disabled,
-                },
-                on: {
-                  input: modelValue,
-                },
-              },
+        // 规则检验
+        this.validators(validator, key, rules)
 
-              (options || []).map((item, i) =>
-                h(
-                  type === "checkbox" ? "Checkbox" : "Checkbox-button",
-                  {
-                    props: {
-                      label: item.label,
-                      disabled: item.disabled || false,
-                      value: item.value,
-                      border,
-                    },
-                  },
-                  item
-                )
-              )
-            ),
-          CheckboxButton: () => typeComponent.Checkbox("checkboxButton"),
-          RadioButton: () => typeComponent.Radio("radioButton"),
-          Cascader: () =>
-            h("Cascader", {
-              props: {
-                value: this.model[key] || [],
-                class: className,
-                options: options || [],
-                debounce,
-                style,
-                disabled,
-                multiple: cascader.multiple,
-                placeholder,
-                filterable: true,
-                "collapse-tags-tooltip": true,
-              },
-              on: {
-                input: modelValue,
-              },
-            }),
-          Upload: () => [
-            h(
-              "Upload",
-              {
-                props: {
-                  fileList: this.model[key] || [],
-                  class: className,
-                  action: upload.action || "#",
-                  autoUpload: false,
-                  multiple: !!upload.multiple,
-                  headers: upload.headers || {},
-                  data: upload.data || {},
-                  maxSize: upload.maxSize,
-                  accept: upload.accept,
-                  type: 'drag',
-                  disabled,
-                  onChange: uploadChange,
-                  onRemove: removeFile,
-                  onPreview,
-                },
-                style: 'display: inline-block;width:58px;',
-                on: {
-                  input: modelValue,
-                },
-              },
-              [h('div', {
-                style: 'width: 58px;height:58px;line-height: 58px;'
-              }, [h("Icon", {
-                type: "ios-camera",
-                props: {
-                  type: "ios-camera",
-                  size: 20
-                }
-              })])]
-            ),
-            h(
-              "Modal",
-              {
-                props: {
-                  visible: this.dialogShow,
-                  modal: false,
-                },
-                on: {
-                  close: () => {
-                    this.dialogShow = false;
-                  },
-                },
-              },
-
-              [
-                h("img", {
-                  class: "w-full",
-                  attrs: {
-                    alt: "Preview Image",
-                    src: this.previewSrc,
-                  },
-                }),
-              ]
-            ),
-          ],
-        };
-
+        // 注入style
         insertStyle(colorTitle, formItemClass, labelShow)
 
         formList.push(
@@ -468,67 +506,27 @@ export default {
                 prop: key,
                 required: !!required,
                 position,
-                size,
                 group,
               },
               class: formItemClass,
             },
-            [
-              h("Input", {
-                props: {
-                  value: label,
-                },
-                ref: formItemClass,
-                class: className,
-                style: "display:none",
-                on: {
-                  input: (val) => {
-                    form[key].id = val;
-                    form[key].label = val;
-                  },
-                  blur: () => {
-                    const vm = this.$refs[formItemClass].$el;
-                    vm.nextSibling.style.display = "block";
-                    vm.style.display = "none";
-                  },
-                },
-              }),
-              h(
-                "div",
-                {
-                  style:
-                    "width:100%;font-size:0.25rem;display:flex;line-height:1rem;color: rgba(75, 85, 99, 0.5); margin-bottom: 0.25rem;",
-                },
-                description
-              ),
-              customRender
-                ? customRender(h)
-                : typeComponent[type].call(this),
-            ]
+            [h(
+              "div",
+              {
+                style:
+                  "width:100%;font-size:0.25rem;display:flex;line-height:1rem;color: rgba(75, 85, 99, 0.5); margin-bottom: 0.25rem;",
+              },
+              description
+            ),
+            customRender
+              ? customRender(h, function (val) { this.model[key] = val })
+              : this.getTypeComponent(h, form, key),]
           )
         );
-        if (children) formList.push(...renderForm.call(this, children));
-        function onPreview(uploadFile) {
-          that.previewSrc = uploadFile.url;
-          that.dialogShow = true;
-        }
-        function uploadChange(data) {
-          if (!that.model[key]) that.model[key] = [];
-          if (that.model[key].length < limit) that.model[key].push(data);
-          that.schema.attribs[key].default = that.model[key];
-        }
-        function removeFile(data) {
-          that.model[key].splice(data, 1);
-          that.schema.attribs[key].default = that.model[key];
-        }
-        function modelValue(val) {
-          that.model[key] = val;
-          that.schema.attribs[key].default = val;
-        }
-      }
-      return formList;
+        return formList
+      }, [])
     }
-    function wrapper(data) {
+    function wrapper(data = []) {
       if (remove) remove();
       remove = addStyle(styles);
       const g1 = transformData(
