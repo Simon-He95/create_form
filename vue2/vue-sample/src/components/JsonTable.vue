@@ -87,9 +87,7 @@ export default {
       max: false,
       group: "",
       groupKey: "",
-      cascader: {
-        multiple: false,
-      },
+      multiple: false,
       controllers: [{ relevancy: "", controlType: "", controlReg: "" }],
       buttonType: ["Radio", "RadioButton"],
       key: 0,
@@ -226,52 +224,64 @@ export default {
       json: "",
       types: [
         {
-          name: "Text",
+          name: "文本",
           description: "文本框",
+          value: "Text",
         },
         {
-          name: "Radio",
+          name: "单选",
           description: "单选框",
+          value: "Radio",
         },
         {
-          name: "RichText",
+          name: "富文本",
           description: "富文本",
+          value: "RichText",
         },
         {
-          name: "Date",
+          name: "日期",
           description: "日期",
+          value: "Date",
         },
         {
-          name: "Enumeration",
+          name: "下拉选",
           description: "枚举",
+          value: "Enumeration",
         },
         {
-          name: "Password",
+          name: "密码",
           description: "密码",
+          value: "Password",
         },
         {
-          name: "Number",
+          name: "数字",
           description: "数字",
+          value: "Number",
         },
         {
-          name: "Boolean",
+          name: "开关",
           description: "布尔",
+          value: "Boolean",
         },
         {
-          name: "Checkbox",
+          name: "多选框",
           description: "多选框",
+          value: "Checkbox",
         },
         {
-          name: "Upload",
+          name: "上传",
           description: "上传",
+          value: "Upload",
         },
         {
-          name: "Cascader",
+          name: "级联选择",
           description: "级联选择",
+          value: "Cascader",
         },
         {
-          name: "Relation",
+          name: "关联",
           description: "关联",
+          value: "Relation",
         },
       ],
       rules: [],
@@ -281,10 +291,22 @@ export default {
         "RadioButton",
         "Checkbox",
         "CheckboxButton",
+      ],
+      jsonShow: [
+        "Radio",
+        "RadioButton",
+        "Checkbox",
+        "CheckboxButton",
         "Cascader",
         "Enumeration",
       ],
-      multiple: false,
+      joinShow: [
+        'Checkbox',
+        "CheckboxButton",
+        "Cascader",
+        "Enumeration",
+      ],
+      join: false,
       mapKey: "",
       options: [],
     };
@@ -313,7 +335,7 @@ export default {
         { relevancy: "", controlType: "", controlReg: "" },
       ];
       this.type = "edit";
-      if (row.upload) this.multiple = row.upload.multiple;
+      this.multiple = row.multiple
       this.current = this.input = row.label;
       this.mapKey = row.mapKey;
       this.group = row.group;
@@ -324,16 +346,11 @@ export default {
           errMsg: item.errMsg,
         }));
       }
-      if (row.cascader) {
-        this.cascader.multiple = row.cascader.multiple;
-        this.json = {
-          multiple: row.cascader.multiple,
-        };
-      }
       this.options = row.options;
       this.cardShow = false;
       this.cardType = row.type;
       this.labelShow = row.labelShow;
+      this.join = !!row.join
       this.defaultvalue = row.default;
       this.placeholder = row.placeholder;
       this.description = row.description;
@@ -371,16 +388,10 @@ export default {
         this.current !== this.input &&
         this.getAllname().includes(this.input)
       ) {
-        return this.$Message({
-          message: "该字段名已存在.",
-          type: "error",
-        });
+        return this.$Message.error("该字段名已存在.");
       }
       if (!this.input) {
-        return this.$Message({
-          message: "Name 是必输项",
-          type: "error",
-        });
+        return this.$Message.error("Name 是必输项");
       }
       const r = this.controllers
         .map((item) => ({
@@ -406,21 +417,15 @@ export default {
         mapKey: this.mapKey || this.input,
         options: this.options,
         len: this.len,
+        multiple: this.multiple,
+        join: this.join
 
       };
-      if (this.cardType === "Cascader") {
-        data.cascader = {
-          multiple: this.cascader.multiple,
-        };
-      } else if (this.cardType === 'Date') {
+      if (this.cardType === 'Date') {
         data.date = {
           type: this.datetype,
           format: this.format
         }
-      } else if (this.cardType === "Upload") {
-        data.upload = {
-          multiple: this.multiple,
-        };
       }
       if (r.length) data["show"] = r;
       if (this.group) data["group"] = this.group;
@@ -463,10 +468,7 @@ export default {
       for (let i = 0; i < this.controllers.length; i++) {
         const item = this.controllers[i];
         if (map[item.relevancy]) {
-          this.$Message({
-            message: "相同关联字段不能重复.",
-            type: "error",
-          });
+          this.$Message.error("相同关联字段不能重复.");
           return (item.relevancy = "");
         }
         map[item.relevancy] = true;
@@ -500,8 +502,9 @@ export default {
       this.groupKey = "";
       this.placeholder = "";
       this.group = "";
+      this.labelShow = false
+      this.join = false
       this.rules = [];
-      this.cascader.multiple = false;
       this.options = [
         {
           label: "",
@@ -543,16 +546,22 @@ export default {
       this.rules.splice(i, 1);
     },
   },
+  computed: {
+    multipleShow() {
+      const multipleType = ['Cascader', 'Enumeration']
+      return multipleType.includes(this.cardType)
+    }
+  }
 };
 </script>
 
-<template>
+  <template>
   <div id="form_wrapper" font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
     <Modal v-model="dialogVisible" :title="name" width="50%" :modal="false" :before-close="handleClose">
       <div v-show="cardShow" style="margin-bottom: 24px">
         <div class="sc-dvQaRk sc-TBWPX exyKSe fkEccH">
           <h2 class="sc-bvFjSx inqAba">
-            Select a field for your collection type
+            请选择一个模板类型
           </h2>
         </div>
         <hr class="sc-ljMRFG sc-jwQYvw fYRdMc goLodl" />
@@ -561,11 +570,11 @@ export default {
 
       <div v-show="cardType" class="relative">
         <div class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black">
-          {{ type === "add" ? "Add new" : "Edit" }} {{ cardType }} field
+          {{ type === "add" ? "新增" : "编辑" }}{{ cardType }}项
         </div>
         <Form>
           <Tabs v-model="activeName" class="demo-tabs">
-            <TabPane label="Basic settings" name="first">
+            <TabPane label="基础设置" name="first">
               <div v-show="cardType">
                 <div class="wrapper">
                   <FormItem label="标签名:" class="w30">
@@ -602,21 +611,23 @@ export default {
                   <FormItem label="标题颜色:" class="w30">
                     <ColorPicker v-model="colorTitle" />
                   </FormItem>
-                  <FormItem v-show="showType.includes(cardType)" label="Type:" class="w30">
+                  <FormItem v-show="showType.includes(cardType)" label="类型:" class="w30">
                     <Select v-model="cardType" placeholder="Pick Size">
                       <Option v-for="item in buttonType" :key="item" :label="item" :value="item" />
                     </Select>
                   </FormItem>
-                  <Checkbox v-show="cardType === 'Cascader'" v-model="cascader.multiple" label="Multiple" class="w30" />
-                  <FormItem v-show="cardType === 'Upload'" label="Limit:" class="w30">
+                  <FormItem v-show="multipleShow" label="是否多选:" style="margin-left: 10px">
                     <i-switch v-model="multiple" />
                   </FormItem>
+                  <FormItem v-show="joinShow" label="开启合并结果:" style="margin-left: 10px">
+                    <i-switch v-model="join" />
+                  </FormItem>
                 </div>
-                <VueJsonEditor v-if="showType.includes(cardType)" style="margin-top: 20px;text-align: left;"
+                <VueJsonEditor v-if="jsonShow.includes(cardType)" style="margin-top: 20px;text-align: left;"
                   v-model="options" :expanded-on-start="true" :mode="mode" />
               </div>
             </TabPane>
-            <TabPane label="Advanced settings" name="second">
+            <TabPane label="高级设置" name="second">
               <div class="flex gap-1">
                 <FormItem label="默认值" flex-col items-start class="w30">
                   <Input v-model="defaultvalue" />
@@ -626,16 +637,16 @@ export default {
                 </FormItem>
               </div>
               <!-- <div class="flex flex-col item-start">
-                <h3 text-black text-6>表单组</h3>
-                <div class="wrapper left">
-                  <FormItem label="Group" class="w30">
-                    <Input v-model="group" />
-                  </FormItem>
-                  <FormItem label="GroupKey" class="w30">
-                    <Input v-model="groupKey" />
-                  </FormItem>
-                </div>
-              </div> -->
+                  <h3 text-black text-6>表单组</h3>
+                  <div class="wrapper left">
+                    <FormItem label="Group" class="w30">
+                      <Input v-model="group" />
+                    </FormItem>
+                    <FormItem label="GroupKey" class="w30">
+                      <Input v-model="groupKey" />
+                    </FormItem>
+                  </div>
+                </div> -->
               <div class="flex flex-col item-start" style="margin-bottom: 20px;">
                 <h3 style="margin-bottom:10px">规则校验</h3>
                 <div class="wrapper left" v-for="(item, i) in rules">
@@ -722,124 +733,124 @@ export default {
   </div>
 </template>
 
-  <style scoped>
-  /deep/ .ivu-modal-footer {
-    padding: 0;
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-  }
-  
-  .fkEccH {
-    -webkit-box-align: center;
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-  }
-  
-  .inqAba {
-    color: rgb(50, 50, 77);
-    font-weight: 600;
-    font-size: 1.125rem;
-    line-height: 40px;
-  }
-  
-  .goLodl {
-    height: 1px;
-    border: none;
-    margin: 0px;
-  }
-  
-  .fYRdMc {
-    background: rgb(234, 234, 239);
-  }
-  
-  .wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    width: 100%;
-    align-items: center;
-  }
-  
-  .left {
-    text-align: left;
-  }
-  
-  .flex-col {
-    flex-direction: column;
-  }
-  
-  .item-start {
-    align-items: flex-start;
-  }
-  
-  .flex {
-    display: flex;
-  }
-  
-  .gap-2 {
-    gap: 0.5rem;
-  }
-  
-  .gap-1 {
-    gap: 0.25rem;
-  }
-  
-  .w45 {
-    width: 45%;
-  }
-  
-  .w30 {
-    width: 30%;
-  }
-  
-  .absolute {
-    position: absolute;
-  }
-  
-  .left-0 {
-    left: 0;
-  }
-  
-  .w40 {
-    width: 40%;
-  }
-  
-  .h-10 {
-    height: 2.5rem;
-  }
-  
-  .lh-10 {
-    line-height: 2.5rem;
-  }
-  
-  .text-5 {
-    font-size: 1.5rem;
-  }
-  
-  .font-600 {
-    font-weight: 600;
-  }
-  
-  .text-black {
-    color: #000;
-  }
-  
-  .top-0 {
-    top: 0;
-  }
-  
-  .relative {
-    position: relative;
-  }
-  
-  .w-full {
-    width: 100%;
-  }
-  
-  .demo-tabs /deep/ .ivu-tabs-nav {
-    float: right !important;
-  }
-  </style>
+    <style scoped>
+    /deep/ .ivu-modal-footer {
+      padding: 0;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+    
+    .fkEccH {
+      -webkit-box-align: center;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+    }
+    
+    .inqAba {
+      color: rgb(50, 50, 77);
+      font-weight: 600;
+      font-size: 1.125rem;
+      line-height: 40px;
+    }
+    
+    .goLodl {
+      height: 1px;
+      border: none;
+      margin: 0px;
+    }
+    
+    .fYRdMc {
+      background: rgb(234, 234, 239);
+    }
+    
+    .wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      width: 100%;
+      align-items: center;
+    }
+    
+    .left {
+      text-align: left;
+    }
+    
+    .flex-col {
+      flex-direction: column;
+    }
+    
+    .item-start {
+      align-items: flex-start;
+    }
+    
+    .flex {
+      display: flex;
+    }
+    
+    .gap-2 {
+      gap: 0.5rem;
+    }
+    
+    .gap-1 {
+      gap: 0.25rem;
+    }
+    
+    .w45 {
+      width: 45%;
+    }
+    
+    .w30 {
+      width: 30%;
+    }
+    
+    .absolute {
+      position: absolute;
+    }
+    
+    .left-0 {
+      left: 0;
+    }
+    
+    .w40 {
+      width: 40%;
+    }
+    
+    .h-10 {
+      height: 2.5rem;
+    }
+    
+    .lh-10 {
+      line-height: 2.5rem;
+    }
+    
+    .text-5 {
+      font-size: 1.5rem;
+    }
+    
+    .font-600 {
+      font-weight: 600;
+    }
+    
+    .text-black {
+      color: #000;
+    }
+    
+    .top-0 {
+      top: 0;
+    }
+    
+    .relative {
+      position: relative;
+    }
+    
+    .w-full {
+      width: 100%;
+    }
+    
+    .demo-tabs /deep/ .ivu-tabs-nav {
+      float: right !important;
+    }
+    </style>
 

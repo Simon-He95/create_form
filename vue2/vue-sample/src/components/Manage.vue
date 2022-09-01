@@ -25,7 +25,7 @@
       <Table :data="tableData" :columns="tableColumns" @on-selection-change="selectAll" />
     </div>
 
-    <Modal title="Create an entry" v-model="dialogTableVisible" :modal="false">
+    <Modal title="创建一个Form表单" v-model="dialogTableVisible" :modal="false">
       <JsonForm ref="formEl" :schema="json" style="z-index: 999"></JsonForm>
       <span slot="footer" class="dialog-footer">
         <div class="sc-cTAIfT sc-dYtuZ pmygK bkSVwu">
