@@ -1,5 +1,5 @@
 <script>
-import vueJsonEditor from "vue-json-editor";
+// import vueJsonEditor from 'vue-json-editor';
 import { nanoid } from "nanoid";
 import Footer from "./Footer.vue";
 import JsonTabs from "./JsonTabs.vue";
@@ -10,7 +10,7 @@ export default {
     Footer,
     JsonTabs,
     Drag,
-    VueJsonEditor: vueJsonEditor,
+    // VueJsonEditor: vueJsonEditor,
   },
   props: {
     name: {
@@ -32,32 +32,44 @@ export default {
     return {
       tableColumns: [
         {
-          title: "Name",
+          title: "标签名",
           key: "label",
-          resizable: true
-        }, {
-          title: "Type",
-          key: "type",
-          resizable: true
+          resizable: true,
         },
         {
-          title: "Action",
+          title: "类型",
+          key: "type",
+          resizable: true,
+        },
+        {
+          title: "操作",
           width: 180,
-          key: 'action',
-          align: 'center',
+          key: "action",
+          align: "center",
           render: (h, params) => {
-            return h('div', [h('Button', {
-              on: {
-                click: () => this.deleteHandler(params.row)
-              }
-            }, 'Delete'), h('Button', {
-              style: "margin-left:10px;",
-              on: {
-                click: () => this.editHandler(params.row)
-              }
-            }, 'Edit'),])
-          }
-        }
+            return h("div", [
+              h(
+                "Button",
+                {
+                  on: {
+                    click: () => this.deleteHandler(params.row),
+                  },
+                },
+                "Delete"
+              ),
+              h(
+                "Button",
+                {
+                  style: "margin-left:10px;",
+                  on: {
+                    click: () => this.editHandler(params.row),
+                  },
+                },
+                "Edit"
+              ),
+            ]);
+          },
+        },
       ],
       labelShow: true,
       dragShow: false,
@@ -75,7 +87,7 @@ export default {
       activeName: "first",
       defaultvalue: "",
       datetype: "",
-      format: '',
+      format: "",
       required: false,
       minvalue: 0,
       maxvalue: 0,
@@ -94,132 +106,140 @@ export default {
       sizeOptions: ["default", "small", "large"],
       formatOptions: [
         {
-          label: '年份（四位）',
-          value: 'yyyy'
+          label: "年份（四位）",
+          value: "yyyy",
         },
         {
-          label: '年份（两位）',
-          value: 'yy'
+          label: "年份（两位）",
+          value: "yy",
         },
         {
-          label: '月份（两位）',
-          value: 'MM'
+          label: "月份（两位）",
+          value: "MM",
         },
         {
-          label: '月份（一位）',
-          value: 'M'
+          label: "月份（一位）",
+          value: "M",
         },
         {
-          label: '月份（英文）',
-          value: 'MMMM'
+          label: "月份（英文）",
+          value: "MMMM",
         },
         {
-          label: '月份（英文简写）',
-          value: 'MMM'
+          label: "月份（英文简写）",
+          value: "MMM",
         },
         {
-          label: '日期（两位）',
-          value: 'dd'
+          label: "日期（两位）",
+          value: "dd",
         },
         {
-          label: '日期（一位）',
-          value: 'd'
-        }, {
-          label: '日期（简写）',
-          value: 'Do'
+          label: "日期（一位）",
+          value: "d",
         },
         {
-          label: '星期（两位）',
-          value: 'DD'
+          label: "日期（简写）",
+          value: "Do",
         },
         {
-          label: '星期（一位）',
-          value: 'D'
+          label: "星期（两位）",
+          value: "DD",
         },
         {
-          label: '星期（英文）',
-          value: 'dddd'
+          label: "星期（一位）",
+          value: "D",
         },
         {
-          label: '星期（英文简写）',
-          value: 'ddd'
+          label: "星期（英文）",
+          value: "dddd",
         },
         {
-          label: '小时（24小时制两位）',
-          value: 'HH'
+          label: "星期（英文简写）",
+          value: "ddd",
         },
         {
-          label: '小时（24小时制一位）',
-          value: 'H'
+          label: "小时（24小时制两位）",
+          value: "HH",
         },
         {
-          label: '小时（12小时制两位）',
-          value: 'hh'
+          label: "小时（24小时制一位）",
+          value: "H",
         },
         {
-          label: '小时（12小时制一位）',
-          value: 'h'
+          label: "小时（12小时制两位）",
+          value: "hh",
         },
         {
-          label: '分钟（两位）',
-          value: 'mm'
+          label: "小时（12小时制一位）",
+          value: "h",
         },
         {
-          label: '分钟（一位）',
-          value: 'm'
+          label: "分钟（两位）",
+          value: "mm",
         },
         {
-          label: '秒钟（两位）',
-          value: 'ss'
+          label: "分钟（一位）",
+          value: "m",
         },
         {
-          label: '秒钟（一位）',
-          value: 's'
+          label: "秒钟（两位）",
+          value: "ss",
         },
         {
-          label: '毫秒（三位）',
-          value: 'SSS'
+          label: "秒钟（一位）",
+          value: "s",
         },
         {
-          label: '毫秒（两位）',
-          value: 'SS'
+          label: "毫秒（三位）",
+          value: "SSS",
         },
         {
-          label: '毫秒（一位）',
-          value: 'S'
+          label: "毫秒（两位）",
+          value: "SS",
         },
         {
-          label: '上午与下午（大写）',
-          value: 'A'
+          label: "毫秒（一位）",
+          value: "S",
         },
         {
-          label: '上午与下午（小写）',
-          value: 'a'
+          label: "上午与下午（大写）",
+          value: "A",
         },
         {
-          label: '时区',
-          value: 'ZZ'
+          label: "上午与下午（小写）",
+          value: "a",
+        },
+        {
+          label: "时区",
+          value: "ZZ",
         },
       ],
-      dateOptions: [{
-        label: '时间',
-        value: 'time'
-      }, {
-        label: '时间区间',
-        value: 'timezone'
-      }, {
-        label: '日期',
-        value: 'date'
-      }, {
-        label: '日期区间',
-        value: 'datezone'
-      }, {
-        label: '日期时间',
-        value: 'datetime'
-      }, {
-        label: '日期时间区间',
-        value: 'datetimezone'
-      }],
+      dateOptions: [
+        {
+          label: "时间",
+          value: "time",
+        },
+        {
+          label: "时间区间",
+          value: "timezone",
+        },
+        {
+          label: "日期",
+          value: "date",
+        },
+        {
+          label: "日期区间",
+          value: "datezone",
+        },
+        {
+          label: "日期时间",
+          value: "datetime",
+        },
+        {
+          label: "日期时间区间",
+          value: "datetimezone",
+        },
+      ],
       mode: "code",
       json: "",
       types: [
@@ -286,12 +306,7 @@ export default {
       ],
       rules: [],
       controlTypes: ["value", "regExp"],
-      showType: [
-        "Radio",
-        "RadioButton",
-        "Checkbox",
-        "CheckboxButton",
-      ],
+      showType: ["Radio", "RadioButton", "Checkbox", "CheckboxButton"],
       jsonShow: [
         "Radio",
         "RadioButton",
@@ -300,15 +315,12 @@ export default {
         "Cascader",
         "Enumeration",
       ],
-      joinShow: [
-        'Checkbox',
-        "CheckboxButton",
-        "Cascader",
-        "Enumeration",
-      ],
+      joinShow: ["Checkbox", "CheckboxButton", "Cascader", "Enumeration"],
       join: false,
       mapKey: "",
       options: [],
+      option_label: "",
+      option_value: "",
     };
   },
   watch: {
@@ -324,18 +336,19 @@ export default {
   },
   methods: {
     editHandler(row) {
+      console.log(row);
       if (row.type === "Checkbox")
         this.buttonType = ["Checkbox", "CheckboxButton"];
       else if (row.type === "Radio") this.buttonType = ["Radio", "RadioButton"];
-      else if (row.type === 'Date') {
-        this.datetype = row.date.type
-        this.format = row.date.format
+      else if (row.type === "Date") {
+        this.datetype = row.date.type;
+        this.format = row.date.format;
       }
       this.controllers = row.show || [
         { relevancy: "", controlType: "", controlReg: "" },
       ];
       this.type = "edit";
-      this.multiple = row.multiple
+      this.multiple = row.multiple;
       this.current = this.input = row.label;
       this.mapKey = row.mapKey;
       this.group = row.group;
@@ -350,7 +363,7 @@ export default {
       this.cardShow = false;
       this.cardType = row.type;
       this.labelShow = row.labelShow;
-      this.join = !!row.join
+      this.join = !!row.join;
       this.defaultvalue = row.default;
       this.placeholder = row.placeholder;
       this.description = row.description;
@@ -418,14 +431,13 @@ export default {
         options: this.options,
         len: this.len,
         multiple: this.multiple,
-        join: this.join
-
+        join: this.join,
       };
-      if (this.cardType === 'Date') {
+      if (this.cardType === "Date") {
         data.date = {
           type: this.datetype,
-          format: this.format
-        }
+          format: this.format,
+        };
       }
       if (r.length) data["show"] = r;
       if (this.group) data["group"] = this.group;
@@ -502,17 +514,12 @@ export default {
       this.groupKey = "";
       this.placeholder = "";
       this.group = "";
-      this.labelShow = false
-      this.join = false
+      this.labelShow = false;
+      this.join = false;
       this.rules = [];
-      this.options = [
-        {
-          label: "",
-          value: "",
-        },
-      ];
-      this.format = ''
-      this.datetype = ''
+      this.options = [];
+      this.format = "";
+      this.datetype = "";
       this.input = "";
       this.colorTitle = "";
       this.size = "default";
@@ -524,12 +531,14 @@ export default {
       this.activeName = "first";
       this.type = "add";
       this.multiple = false;
-      this.datetype = ''
+      this.datetype = "";
       this.key = this.key + 1;
+      this.option_label = "";
+      this.option_value = "";
       this.len = {
         min: undefined,
-        max: undefined
-      }
+        max: undefined,
+      };
     },
     sort() {
       this.dragShow = true;
@@ -545,31 +554,55 @@ export default {
     deleteReg(i) {
       this.rules.splice(i, 1);
     },
+    addTag() {
+      if (!this.option_label || !this.option_value)
+        return this.$Message.error("新增项的数据不能为空");
+      this.options.push({
+        label: this.option_label,
+        value: this.option_value,
+      });
+      this.option_label = "";
+      this.option_value = "";
+    },
+    closeTag(i) {
+      this.options.splice(i, 1);
+    },
   },
   computed: {
     multipleShow() {
-      const multipleType = ['Cascader', 'Enumeration']
-      return multipleType.includes(this.cardType)
-    }
-  }
+      const multipleType = ["Cascader", "Enumeration"];
+      return multipleType.includes(this.cardType);
+    },
+  },
 };
 </script>
 
-  <template>
-  <div id="form_wrapper" font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
-    <Modal v-model="dialogVisible" :title="name" width="50%" :modal="false" :before-close="handleClose">
+<template>
+  <div
+    id="form_wrapper"
+    font-sans
+    p="x-4 y-10"
+    text="center gray-700 dark:gray-200"
+  >
+    <Modal
+      v-model="dialogVisible"
+      :title="name"
+      width="50%"
+      :modal="false"
+      :before-close="handleClose"
+    >
       <div v-show="cardShow" style="margin-bottom: 24px">
         <div class="sc-dvQaRk sc-TBWPX exyKSe fkEccH">
-          <h2 class="sc-bvFjSx inqAba">
-            请选择一个模板类型
-          </h2>
+          <h2 class="sc-bvFjSx inqAba">请选择一个模板类型</h2>
         </div>
         <hr class="sc-ljMRFG sc-jwQYvw fYRdMc goLodl" />
       </div>
       <JsonTabs v-show="cardShow" :types="types" @choose="choose" />
 
       <div v-show="cardType" class="relative">
-        <div class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black">
+        <div
+          class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black"
+        >
           {{ type === "add" ? "新增" : "编辑" }}{{ cardType }}项
         </div>
         <Form>
@@ -578,53 +611,133 @@ export default {
               <div v-show="cardType">
                 <div class="wrapper">
                   <FormItem label="标签名:" class="w30">
-                    <Input ref="nameEl" v-model="input" placeholder="Please input Name" />
+                    <Input
+                      ref="nameEl"
+                      v-model="input"
+                      placeholder="Please input Name"
+                    />
                   </FormItem>
-                  <FormItem v-show="cardType === 'Date'" label="日期类型:" class="w30">
+                  <FormItem
+                    v-show="cardType === 'Date'"
+                    label="日期类型:"
+                    class="w30"
+                  >
                     <Select v-model="datetype" placeholder="Pick datetype">
-                      <Option v-for="item in dateOptions" :key="item.value" :label="item.label" :value="item.value" />
+                      <Option
+                        v-for="item in dateOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
                     </Select>
                   </FormItem>
-                  <FormItem v-show="cardType === 'Date'" label="展示的时间格式:" class="w30">
-                    <Select v-model="format" placeholder="Pick format" clearable>
-                      <Option v-for="item in formatOptions" :key="item.value" :label="item.label" :value="item.value" />
+                  <FormItem
+                    v-show="cardType === 'Date'"
+                    label="展示的时间格式:"
+                    class="w30"
+                  >
+                    <Select
+                      v-model="format"
+                      placeholder="Pick format"
+                      clearable
+                    >
+                      <Option
+                        v-for="item in formatOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
                     </Select>
                   </FormItem>
                   <FormItem label="占位符:" class="w30">
-                    <Input v-model="placeholder" placeholder="Please input Placeholder" />
+                    <Input
+                      v-model="placeholder"
+                      placeholder="Please input Placeholder"
+                    />
                   </FormItem>
                   <FormItem label="描述:" class="w30">
-                    <Input v-model="description" placeholder="Please input Description" />
+                    <Input
+                      v-model="description"
+                      placeholder="Please input Description"
+                    />
                   </FormItem>
                   <FormItem label="尺寸:" class="w30">
                     <Select v-model="size" placeholder="Pick Size">
-                      <Option v-for="item in sizeOptions" :key="item" :label="item" :value="item" />
+                      <Option
+                        v-for="item in sizeOptions"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
                     </Select>
                   </FormItem>
                   <FormItem label="Key:" class="w30">
                     <Input v-model="mapKey" placeholder="Please input Key" />
                   </FormItem>
                   <FormItem label="标签名可见:" style="margin-left: 10px">
-                    <i-switch v-model="labelShow">
-                    </i-switch>
+                    <i-switch v-model="labelShow"> </i-switch>
                   </FormItem>
                   <FormItem label="标题颜色:" class="w30">
                     <ColorPicker v-model="colorTitle" />
                   </FormItem>
-                  <FormItem v-show="showType.includes(cardType)" label="类型:" class="w30">
+                  <FormItem
+                    v-show="showType.includes(cardType)"
+                    label="类型:"
+                    class="w30"
+                  >
                     <Select v-model="cardType" placeholder="Pick Size">
-                      <Option v-for="item in buttonType" :key="item" :label="item" :value="item" />
+                      <Option
+                        v-for="item in buttonType"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
                     </Select>
                   </FormItem>
-                  <FormItem v-show="multipleShow" label="是否多选:" style="margin-left: 10px">
+                  <FormItem
+                    v-if="multipleShow"
+                    label="是否多选:"
+                    style="margin-left: 10px"
+                  >
                     <i-switch v-model="multiple" />
                   </FormItem>
-                  <FormItem v-show="joinShow" label="开启合并结果:" style="margin-left: 10px">
+                  <FormItem
+                    v-if="joinShow"
+                    label="开启合并结果:"
+                    style="margin-left: 10px"
+                  >
                     <i-switch v-model="join" />
                   </FormItem>
                 </div>
-                <VueJsonEditor v-if="jsonShow.includes(cardType)" style="margin-top: 20px;text-align: left;"
-                  v-model="options" :expanded-on-start="true" :mode="mode" />
+                <div style="margin-top: 20px">
+                  <div style="display: flex; gap: 0.5rem; margin-bottom: 5px">
+                    <Input
+                      v-model="option_label"
+                      placeholder="下拉项名"
+                      class="w30"
+                    />
+                    <Input
+                      v-model="option_value"
+                      placeholder="下拉项值"
+                      class="w30"
+                    />
+                    <Button type="info" @click="addTag">新增</Button>
+                  </div>
+                  <Tag
+                    v-for="(item, i) in options"
+                    :key="item.value"
+                    :name="item"
+                    closable
+                    @on-close="closeTag(i)"
+                    >{{ item.label }}/{{ item.value }}</Tag
+                  >
+                </div>
+                <!-- <VueJsonEditor
+                  style="margin-top: 20px; text-align: left"
+                  v-model="options"
+                  :expanded-on-start="true"
+                  :mode="mode"
+                /> -->
               </div>
             </TabPane>
             <TabPane label="高级设置" name="second">
@@ -647,70 +760,141 @@ export default {
                     </FormItem>
                   </div>
                 </div> -->
-              <div class="flex flex-col item-start" style="margin-bottom: 20px;">
-                <h3 style="margin-bottom:10px">规则校验</h3>
-                <div class="wrapper left" v-for="(item, i) in rules">
+              <div class="flex flex-col item-start" style="margin-bottom: 20px">
+                <h3 style="margin-bottom: 10px">规则校验</h3>
+                <div class="wrapper left" v-for="(item, i) in rules" :key="i">
                   <FormItem label="正则" flex-col items-start class="w40">
                     <Input v-model="item.regExp" />
                   </FormItem>
-                  <FormItem v-show="item.regExp" label="错误消息" flex-col items-start class="w40">
+                  <FormItem
+                    v-show="item.regExp"
+                    label="错误消息"
+                    flex-col
+                    items-start
+                    class="w40"
+                  >
                     <Input v-model="item.errMsg" />
                   </FormItem>
                   <FormItem label=" " flex-col items-start>
                     <Button @click="deleteReg(i)">删除</Button>
                   </FormItem>
                 </div>
-                <Button @click="rules.push({ regExp: '', errMsg: '' })">新增规则</Button>
+                <Button @click="rules.push({ regExp: '', errMsg: '' })"
+                  >新增规则</Button
+                >
               </div>
-              <div class="flex flex-col item-start" style="margin-bottom: 20px;">
+              <div class="flex flex-col item-start" style="margin-bottom: 20px">
                 <h3 text-black text-6>设置</h3>
                 <div class="wrapper left">
                   <div class="w45" text-left flex flex-col>
                     <Checkbox v-model="min" size="large">最小值</Checkbox>
-                    <InputNumber v-show="min" v-model="len.min" :min="0" :max="30" size="small"
-                      controls-position="right" />
+                    <InputNumber
+                      v-show="min"
+                      v-model="len.min"
+                      :min="0"
+                      :max="30"
+                      size="small"
+                      controls-position="right"
+                    />
                   </div>
                   <div class="w45" text-left flex flex-col>
                     <Checkbox v-model="max" size="large">最大值</Checkbox>
-                    <InputNumber v-show="max" v-model="len.max" :min="0" :max="30" size="small"
-                      controls-position="right" />
+                    <InputNumber
+                      v-show="max"
+                      v-model="len.max"
+                      :min="0"
+                      :max="30"
+                      size="small"
+                      controls-position="right"
+                    />
                   </div>
                 </div>
               </div>
               <div class="wrapper">
                 <h3 text-black text-6>显隐关联</h3>
-                <div v-for="(item, idx) in controllers" :key="idx" class="wrapper gap-2 relative">
-                  <div v-show="idx > 0" absolute right-0 top-2 @click="controllers.splice(idx, 1)">
-                    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-029747aa="" w-4>
-                      <path fill="currentColor"
-                        d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z" />
+                <div
+                  v-for="(item, idx) in controllers"
+                  :key="idx"
+                  class="wrapper gap-2 relative"
+                >
+                  <div
+                    v-show="idx > 0"
+                    absolute
+                    right-0
+                    top-2
+                    @click="controllers.splice(idx, 1)"
+                  >
+                    <svg
+                      viewBox="0 0 1024 1024"
+                      xmlns="http://www.w3.org/2000/svg"
+                      data-v-029747aa=""
+                      w-4
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"
+                      />
                     </svg>
                   </div>
-                  <div class="wrapper gap-2" style="flex-wrap:nowrap">
-                    <FormItem label="选择关联字段" flex-col items-start class="w45">
-                      <Select v-model="item.relevancy" placeholder="Select" clearable @change="selectChange">
-                        <Option v-for="i in tableData.filter(
-                          (item) => item.label !== input
-                        )" :key="i.name" :label="i.label" :value="i.label" />
+                  <div class="wrapper gap-2" style="flex-wrap: nowrap">
+                    <FormItem
+                      label="选择关联字段"
+                      flex-col
+                      items-start
+                      class="w45"
+                    >
+                      <Select
+                        v-model="item.relevancy"
+                        placeholder="Select"
+                        clearable
+                        @change="selectChange"
+                      >
+                        <Option
+                          v-for="i in tableData.filter(
+                            (item) => item.label !== input
+                          )"
+                          :key="i.name"
+                          :label="i.label"
+                          :value="i.label"
+                        />
                       </Select>
                     </FormItem>
-                    <FormItem v-show="item.relevancy" label="选择规则" flex-col items-start class="w45">
+                    <FormItem
+                      v-show="item.relevancy"
+                      label="选择规则"
+                      flex-col
+                      items-start
+                      class="w45"
+                    >
                       <Select v-model="item.controlType" placeholder="Select">
-                        <Option v-for="i in controlTypes" :key="i" :label="i" :value="i" />
+                        <Option
+                          v-for="i in controlTypes"
+                          :key="i"
+                          :label="i"
+                          :value="i"
+                        />
                       </Select>
                     </FormItem>
-                    <FormItem v-show="item.controlType === 'regExp'" label="regExp" flex-col items-start class="w45">
+                    <FormItem
+                      v-show="item.controlType === 'regExp'"
+                      label="regExp"
+                      flex-col
+                      items-start
+                      class="w45"
+                    >
                       <Input v-model="item.controlReg" input-style="h-full" />
                     </FormItem>
                   </div>
                 </div>
-                <Button @click="
-                  controllers.push({
-                    relevancy: '',
-                    controlType: '',
-                    controlReg: '',
-                  })
-                ">
+                <Button
+                  @click="
+                    controllers.push({
+                      relevancy: '',
+                      controlType: '',
+                      controlReg: '',
+                    })
+                  "
+                >
                   新增关联
                 </Button>
               </div>
@@ -722,135 +906,138 @@ export default {
         <Footer @cancel="cancel" @confirm="confirm" />
       </template>
     </Modal>
-    <Modal v-model="dragShow" :modal="false" title="Drag & drop the fields to build the layout" width="50%">
+    <Modal
+      v-model="dragShow"
+      :modal="false"
+      title="Drag & drop the fields to build the layout"
+      width="50%"
+    >
       <Drag ref="dragEl" :data="getFormData()" />
       <template #footer>
         <Footer @cancel="dragShow = false" @confirm="sortEnd" />
       </template>
     </Modal>
-    <Table :data="tableData" :columns="tableColumns">
-    </Table>
+    <Table :data="tableData" :columns="tableColumns"> </Table>
   </div>
 </template>
 
-    <style scoped>
-    /deep/ .ivu-modal-footer {
-      padding: 0;
-      position: sticky;
-      bottom: 0;
-      z-index: 10;
-    }
-    
-    .fkEccH {
-      -webkit-box-align: center;
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-    }
-    
-    .inqAba {
-      color: rgb(50, 50, 77);
-      font-weight: 600;
-      font-size: 1.125rem;
-      line-height: 40px;
-    }
-    
-    .goLodl {
-      height: 1px;
-      border: none;
-      margin: 0px;
-    }
-    
-    .fYRdMc {
-      background: rgb(234, 234, 239);
-    }
-    
-    .wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      width: 100%;
-      align-items: center;
-    }
-    
-    .left {
-      text-align: left;
-    }
-    
-    .flex-col {
-      flex-direction: column;
-    }
-    
-    .item-start {
-      align-items: flex-start;
-    }
-    
-    .flex {
-      display: flex;
-    }
-    
-    .gap-2 {
-      gap: 0.5rem;
-    }
-    
-    .gap-1 {
-      gap: 0.25rem;
-    }
-    
-    .w45 {
-      width: 45%;
-    }
-    
-    .w30 {
-      width: 30%;
-    }
-    
-    .absolute {
-      position: absolute;
-    }
-    
-    .left-0 {
-      left: 0;
-    }
-    
-    .w40 {
-      width: 40%;
-    }
-    
-    .h-10 {
-      height: 2.5rem;
-    }
-    
-    .lh-10 {
-      line-height: 2.5rem;
-    }
-    
-    .text-5 {
-      font-size: 1.5rem;
-    }
-    
-    .font-600 {
-      font-weight: 600;
-    }
-    
-    .text-black {
-      color: #000;
-    }
-    
-    .top-0 {
-      top: 0;
-    }
-    
-    .relative {
-      position: relative;
-    }
-    
-    .w-full {
-      width: 100%;
-    }
-    
-    .demo-tabs /deep/ .ivu-tabs-nav {
-      float: right !important;
-    }
-    </style>
+<style scoped>
+/deep/ .ivu-modal-footer {
+  padding: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
 
+.fkEccH {
+  -webkit-box-align: center;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+.inqAba {
+  color: rgb(50, 50, 77);
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 40px;
+}
+
+.goLodl {
+  height: 1px;
+  border: none;
+  margin: 0px;
+}
+
+.fYRdMc {
+  background: rgb(234, 234, 239);
+}
+
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+  align-items: center;
+}
+
+.left {
+  text-align: left;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.item-start {
+  align-items: flex-start;
+}
+
+.flex {
+  display: flex;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.w45 {
+  width: 45%;
+}
+
+.w30 {
+  width: 30%;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.left-0 {
+  left: 0;
+}
+
+.w40 {
+  width: 40%;
+}
+
+.h-10 {
+  height: 2.5rem;
+}
+
+.lh-10 {
+  line-height: 2.5rem;
+}
+
+.text-5 {
+  font-size: 1.5rem;
+}
+
+.font-600 {
+  font-weight: 600;
+}
+
+.text-black {
+  color: #000;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.relative {
+  position: relative;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.demo-tabs /deep/ .ivu-tabs-nav {
+  float: right !important;
+}
+</style>

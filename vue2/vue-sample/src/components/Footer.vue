@@ -1,13 +1,13 @@
 <script>
 export default {
   name: "Footer",
-  emits: ["cancel", "confirm"],
   props: {
     isDelete: {
       type: Boolean,
       default: false,
     },
   },
+  emits: ["cancel", "confirm"],
   methods: {
     cancel() {
       this.$emit("cancel");

@@ -108,7 +108,6 @@ export default {
           this.list3.splice(i, 1);
         }
       }
-      console.log(this.list1, this.list2, this.list3);
     },
   },
 };
@@ -117,20 +116,54 @@ export default {
 <template>
   <div v-show="isShow">
     <div class="wrapper" border-1 border-black border-rd-1 w-200 ma>
-      <Draggable v-model="list1" class="list-group" group="people" item-key="label" @end="moveEnd">
-        <div v-for="element in list1" :key="element.id" class="list-group-item" h-10 :class="element.label ? 'bd' : ''">
-          {{  element.label.trim()  }}
+      <Draggable
+        v-model="list1"
+        class="list-group"
+        group="people"
+        item-key="label"
+        @end="moveEnd"
+      >
+        <div
+          v-for="element in list1"
+          :key="element.id"
+          class="list-group-item"
+          h-10
+          :class="element.label ? 'bd' : ''"
+        >
+          {{ element.label.trim() }}
         </div>
       </Draggable>
 
-      <Draggable class="list-group" :list="list2" group="people" item-key="label" @end="moveEnd">
-        <div v-for="element in list2" :key="element.id" class="list-group-item" :class="element.label ? 'bd' : ''">
-          {{  element.label.trim()  }}
+      <Draggable
+        class="list-group"
+        :list="list2"
+        group="people"
+        item-key="label"
+        @end="moveEnd"
+      >
+        <div
+          v-for="element in list2"
+          :key="element.id"
+          class="list-group-item"
+          :class="element.label ? 'bd' : ''"
+        >
+          {{ element.label.trim() }}
         </div>
       </Draggable>
-      <Draggable class="list-group" :list="list3" group="people" item-key="label" @end="moveEnd">
-        <div v-for="element in list3" :key="element.id" class="list-group-item" :class="element.label ? 'bd' : ''">
-          {{  element.label.trim()  }}
+      <Draggable
+        class="list-group"
+        :list="list3"
+        group="people"
+        item-key="label"
+        @end="moveEnd"
+      >
+        <div
+          v-for="element in list3"
+          :key="element.id"
+          class="list-group-item"
+          :class="element.label ? 'bd' : ''"
+        >
+          {{ element.label.trim() }}
         </div>
       </Draggable>
     </div>

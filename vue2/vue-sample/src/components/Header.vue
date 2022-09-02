@@ -37,13 +37,10 @@ export default {
 </script>
 
 <template>
-  <div style="height: 152.984px">
+  <div style="height: 152.984px; text-align: left">
     <div data-strapi-header="true" class="sc-cSyqtw eRZQkG">
       <div class="sc-cSyqtw eoRiGl">
-        <a
-          aria-current="page"
-          class="sc-kLnunm gECLxk active"
-          href="/admin/plugins/content-type-builder/"
+        <a aria-current="page" class="sc-kLnunm gECLxk active"
           ><span aria-hidden="true" class="sc-kNzDjo sc-hUplSX jPfCWb cGIMyh"
             ><svg
               width="1em"
@@ -64,7 +61,7 @@ export default {
           <div id="title" class="sc-ccdLe lFjjs">
             {{ name }}
           </div>
-          <div class="sc-cSyqtw kjnrkO" v-show="type === 'build'">
+          <div v-show="type === 'build'" class="sc-cSyqtw kjnrkO">
             <button
               aria-disabled="false"
               type="button"
@@ -116,7 +113,7 @@ export default {
                 />
               </svg>
             </div>
-            <span class="sc-dkPtRN kZdUHC">Add another field</span></button
+            <span class="sc-dkPtRN kZdUHC">新增</span></button
           ><button
             v-show="type === 'build'"
             type="submit"
@@ -142,7 +139,7 @@ export default {
                 />
               </svg>
             </div>
-            <span class="sc-dkPtRN kZdUHC">Position</span></button
+            <span class="sc-dkPtRN kZdUHC">布局</span></button
           ><button
             v-show="type === 'build'"
             type="submit"
@@ -163,7 +160,7 @@ export default {
                 />
               </svg>
             </div>
-            <span class="sc-dkPtRN kZdUHC">Save</span>
+            <span class="sc-dkPtRN kZdUHC">保存</span>
           </button>
           <button
             v-show="type === 'manage'"
@@ -185,7 +182,7 @@ export default {
                 />
               </svg>
             </div>
-            <span class="sc-dkPtRN kZdUHC">Create new entry</span>
+            <span class="sc-dkPtRN kZdUHC">新增</span>
           </button>
         </div>
       </div>
