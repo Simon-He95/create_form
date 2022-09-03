@@ -4,12 +4,16 @@ import { nanoid } from "nanoid";
 import Footer from "./Footer.vue";
 import JsonTabs from "./JsonTabs.vue";
 import Drag from "./Drag.vue";
+import Group from "./Group.vue";
+import JsonButton from "./JsonButton.vue";
 export default {
   name: "JsonTable",
   components: {
     Footer,
     JsonTabs,
     Drag,
+    Group,
+    JsonButton,
     // VueJsonEditor: vueJsonEditor,
   },
   props: {
@@ -299,28 +303,28 @@ export default {
           value: "Cascader",
         },
         {
-          name: "关联",
-          description: "关联",
-          value: "Relation",
+          name: "按钮",
+          description: "按钮",
+          value: "Button",
+        },
+        {
+          name: "组",
+          description: "组合",
+          value: "Group",
         },
       ],
       rules: [],
       controlTypes: ["value", "regExp"],
       showType: ["Radio", "RadioButton", "Checkbox", "CheckboxButton"],
-      jsonShow: [
-        "Radio",
-        "RadioButton",
-        "Checkbox",
-        "CheckboxButton",
-        "Cascader",
-        "Enumeration",
-      ],
       joinShow: ["Checkbox", "CheckboxButton", "Cascader", "Enumeration"],
       join: false,
       mapKey: "",
       options: [],
       option_label: "",
       option_value: "",
+      groupOptions: [],
+      buttonContent: "",
+      groupValue: "",
     };
   },
   watch: {
@@ -336,7 +340,17 @@ export default {
   },
   methods: {
     editHandler(row) {
-      console.log(row);
+      this.type = "edit";
+      if (row.type === "Group" || row.type === "Button") {
+        this.cardShow = false;
+        this.cardType = row.type;
+        if (row.button) {
+          this.groupValue = row.button.value;
+          this.buttonContent = row.button.content;
+          this.getGroupOptions();
+        }
+        return (this.dialogVisible = true);
+      }
       if (row.type === "Checkbox")
         this.buttonType = ["Checkbox", "CheckboxButton"];
       else if (row.type === "Radio") this.buttonType = ["Radio", "RadioButton"];
@@ -347,7 +361,6 @@ export default {
       this.controllers = row.show || [
         { relevancy: "", controlType: "", controlReg: "" },
       ];
-      this.type = "edit";
       this.multiple = row.multiple;
       this.current = this.input = row.label;
       this.mapKey = row.mapKey;
@@ -397,6 +410,8 @@ export default {
       return this.tableData.map((item) => item.label);
     },
     confirm() {
+      if (this.cardType === "Button") return this.buttonConfirm();
+      if (this.cardType === "Group") return this.groupConfirm();
       if (
         this.current !== this.input &&
         this.getAllname().includes(this.input)
@@ -466,8 +481,12 @@ export default {
         attribs: {},
         id: nanoid(),
       };
+      debugger;
       this.tableData.reduce((result, item) => {
-        result[item.label] = item;
+        if (item.type === "Button") {
+          result.button = result.button || {};
+          result.button[item.button.value] = item.button.content;
+        } else result[item.label] = item;
         return result;
       }, result.attribs);
       return result;
@@ -492,9 +511,11 @@ export default {
       if (this.cardType === "Checkbox")
         this.buttonType = ["Checkbox", "CheckboxButton"];
       if (this.cardType === "Radio") this.buttonType = ["Radio", "RadioButton"];
+      if (this.cardType === "Button") this.getGroupOptions();
       this.focusName();
     },
     focusName() {
+      if (this.cardType === "Group" || this.cardType === "Button") return;
       this.$nextTick(() => {
         this.$refs.nameEl.focus();
       });
@@ -567,11 +588,86 @@ export default {
     closeTag(i) {
       this.options.splice(i, 1);
     },
+    groupConfirm() {
+      const { filters, group } = this.$refs.GroupEl.save();
+      const data = {
+        type: "Group",
+        label: group,
+        filters,
+        group,
+      };
+      if (this.type === "add") {
+        if (this.hasGroup()) return this.$Message.error("只能添加一个分组");
+        this.tableData = [...this.tableData, data];
+      } else {
+        const idx = this.tableData.findIndex(
+          (item) => item.label === this.current
+        );
+        this.$set(this.tableData, idx, data);
+        this.current = null;
+      }
+
+      this.dialogVisible = false;
+    },
+    getGroupOptions() {
+      this.groupOptions = this.tableData
+        .map((item) => item.type === "Group" && (item.group[0] || []))
+        .filter(Boolean)
+        .map((item) => ({ label: item.label, value: item.key }));
+      console.log(this.groupOptions);
+    },
+    hasGroup() {
+      console.log(this.tableData);
+      for (let i = 0; i < this.tableData.length; i++) {
+        if (this.tableData[i].type === "Group") return true;
+      }
+      return false;
+    },
+    buttonConfirm() {
+      const { content, group } = this.$refs.JsonButtonEl.save();
+      if (!group || !content)
+        return this.$Message.error("按钮需要指定一个分组和内容");
+      const data = {
+        type: "Button",
+        label: "button",
+        button: {
+          value: group,
+          content,
+        },
+      };
+      console.log(data);
+      if (this.type === "add") {
+        this.tableData = [...this.tableData, data];
+      } else {
+        const idx = this.tableData.findIndex(
+          (item) => item.label === this.current
+        );
+        this.$set(
+          this.tableData,
+          idx,
+          Object.assign(data, { position: this.tableData[idx].position })
+        );
+        this.current = null;
+      }
+      this.groupValue = "";
+      this.buttonContent = "";
+      this.dialogVisible = false;
+    },
   },
   computed: {
     multipleShow() {
       const multipleType = ["Cascader", "Enumeration"];
       return multipleType.includes(this.cardType);
+    },
+    jsonShow() {
+      return [
+        "Radio",
+        "RadioButton",
+        "Checkbox",
+        "CheckboxButton",
+        "Cascader",
+        "Enumeration",
+      ].includes(this.cardType);
     },
   },
 };
@@ -598,17 +694,26 @@ export default {
         <hr class="sc-ljMRFG sc-jwQYvw fYRdMc goLodl" />
       </div>
       <JsonTabs v-show="cardShow" :types="types" @choose="choose" />
+      <json-button
+        v-if="cardType === 'Button'"
+        :options="groupOptions"
+        :group="groupValue"
+        :content="buttonContent"
+        ref="JsonButtonEl"
+      />
+      <Group v-else-if="cardType === 'Group'" :data="tableData" ref="GroupEl" />
 
-      <div v-show="cardType" class="relative">
-        <div
-          class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black"
-        >
-          {{ type === "add" ? "新增" : "编辑" }}{{ cardType }}项
-        </div>
-        <Form>
-          <Tabs v-model="activeName" class="demo-tabs">
-            <TabPane label="基础设置" name="first">
-              <div v-show="cardType">
+      <template v-else>
+        <div v-if="cardType" class="relative">
+          <div
+            class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black"
+          >
+            {{ type === "add" ? "新增" : "编辑" }}{{ cardType }}项
+          </div>
+
+          <Form>
+            <Tabs v-model="activeName" class="demo-tabs">
+              <TabPane label="基础设置" name="first">
                 <div class="wrapper">
                   <FormItem label="标签名:" class="w30">
                     <Input
@@ -708,48 +813,48 @@ export default {
                   >
                     <i-switch v-model="join" />
                   </FormItem>
-                </div>
-                <div style="margin-top: 20px">
-                  <div style="display: flex; gap: 0.5rem; margin-bottom: 5px">
-                    <Input
-                      v-model="option_label"
-                      placeholder="下拉项名"
-                      class="w30"
-                    />
-                    <Input
-                      v-model="option_value"
-                      placeholder="下拉项值"
-                      class="w30"
-                    />
-                    <Button type="info" @click="addTag">新增</Button>
-                  </div>
-                  <Tag
-                    v-for="(item, i) in options"
-                    :key="item.value"
-                    :name="item"
-                    closable
-                    @on-close="closeTag(i)"
-                    >{{ item.label }}/{{ item.value }}</Tag
-                  >
-                </div>
-                <!-- <VueJsonEditor
+
+                  <div style="margin-top: 20px; width: 100%" v-if="jsonShow">
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 5px">
+                      <Input
+                        v-model="option_label"
+                        placeholder="下拉项名"
+                        class="w30"
+                      />
+                      <Input
+                        v-model="option_value"
+                        placeholder="下拉项值"
+                        class="w30"
+                      />
+                      <Button type="info" @click="addTag">新增</Button>
+                    </div>
+                    <Tag
+                      v-for="(item, i) in options"
+                      :key="item.value"
+                      :name="item.label"
+                      closable
+                      @on-close="closeTag(i)"
+                      >{{ item.label }}/{{ item.value }}</Tag
+                    >
+                    <!-- <VueJsonEditor
                   style="margin-top: 20px; text-align: left"
                   v-model="options"
                   :expanded-on-start="true"
                   :mode="mode"
                 /> -->
-              </div>
-            </TabPane>
-            <TabPane label="高级设置" name="second">
-              <div class="flex gap-1">
-                <FormItem label="默认值" flex-col items-start class="w30">
-                  <Input v-model="defaultvalue" />
-                </FormItem>
-                <FormItem label="是否必输" style="margin-left: 20px">
-                  <i-switch v-model="required"></i-switch>
-                </FormItem>
-              </div>
-              <!-- <div class="flex flex-col item-start">
+                  </div>
+                </div>
+              </TabPane>
+              <TabPane label="高级设置" name="second">
+                <div class="flex gap-1">
+                  <FormItem label="默认值" flex-col items-start class="w30">
+                    <Input v-model="defaultvalue" />
+                  </FormItem>
+                  <FormItem label="是否必输" style="margin-left: 20px">
+                    <i-switch v-model="required"></i-switch>
+                  </FormItem>
+                </div>
+                <!-- <div class="flex flex-col item-start">
                   <h3 text-black text-6>表单组</h3>
                   <div class="wrapper left">
                     <FormItem label="Group" class="w30">
@@ -760,148 +865,155 @@ export default {
                     </FormItem>
                   </div>
                 </div> -->
-              <div class="flex flex-col item-start" style="margin-bottom: 20px">
-                <h3 style="margin-bottom: 10px">规则校验</h3>
-                <div class="wrapper left" v-for="(item, i) in rules" :key="i">
-                  <FormItem label="正则" flex-col items-start class="w40">
-                    <Input v-model="item.regExp" />
-                  </FormItem>
-                  <FormItem
-                    v-show="item.regExp"
-                    label="错误消息"
-                    flex-col
-                    items-start
-                    class="w40"
-                  >
-                    <Input v-model="item.errMsg" />
-                  </FormItem>
-                  <FormItem label=" " flex-col items-start>
-                    <Button @click="deleteReg(i)">删除</Button>
-                  </FormItem>
-                </div>
-                <Button @click="rules.push({ regExp: '', errMsg: '' })"
-                  >新增规则</Button
-                >
-              </div>
-              <div class="flex flex-col item-start" style="margin-bottom: 20px">
-                <h3 text-black text-6>设置</h3>
-                <div class="wrapper left">
-                  <div class="w45" text-left flex flex-col>
-                    <Checkbox v-model="min" size="large">最小值</Checkbox>
-                    <InputNumber
-                      v-show="min"
-                      v-model="len.min"
-                      :min="0"
-                      :max="30"
-                      size="small"
-                      controls-position="right"
-                    />
-                  </div>
-                  <div class="w45" text-left flex flex-col>
-                    <Checkbox v-model="max" size="large">最大值</Checkbox>
-                    <InputNumber
-                      v-show="max"
-                      v-model="len.max"
-                      :min="0"
-                      :max="30"
-                      size="small"
-                      controls-position="right"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div class="wrapper">
-                <h3 text-black text-6>显隐关联</h3>
                 <div
-                  v-for="(item, idx) in controllers"
-                  :key="idx"
-                  class="wrapper gap-2 relative"
+                  class="flex flex-col item-start"
+                  style="margin-bottom: 20px"
                 >
-                  <div
-                    v-show="idx > 0"
-                    absolute
-                    right-0
-                    top-2
-                    @click="controllers.splice(idx, 1)"
-                  >
-                    <svg
-                      viewBox="0 0 1024 1024"
-                      xmlns="http://www.w3.org/2000/svg"
-                      data-v-029747aa=""
-                      w-4
+                  <h3 style="margin-bottom: 10px">规则校验</h3>
+                  <div class="wrapper left" v-for="(item, i) in rules" :key="i">
+                    <FormItem label="正则" flex-col items-start class="w40">
+                      <Input v-model="item.regExp" />
+                    </FormItem>
+                    <FormItem
+                      v-show="item.regExp"
+                      label="错误消息"
+                      flex-col
+                      items-start
+                      class="w40"
                     >
-                      <path
-                        fill="currentColor"
-                        d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"
-                      />
-                    </svg>
+                      <Input v-model="item.errMsg" />
+                    </FormItem>
+                    <FormItem label=" " flex-col items-start>
+                      <Button @click="deleteReg(i)">删除</Button>
+                    </FormItem>
                   </div>
-                  <div class="wrapper gap-2" style="flex-wrap: nowrap">
-                    <FormItem
-                      label="选择关联字段"
-                      flex-col
-                      items-start
-                      class="w45"
-                    >
-                      <Select
-                        v-model="item.relevancy"
-                        placeholder="Select"
-                        clearable
-                        @change="selectChange"
-                      >
-                        <Option
-                          v-for="i in tableData.filter(
-                            (item) => item.label !== input
-                          )"
-                          :key="i.name"
-                          :label="i.label"
-                          :value="i.label"
-                        />
-                      </Select>
-                    </FormItem>
-                    <FormItem
-                      v-show="item.relevancy"
-                      label="选择规则"
-                      flex-col
-                      items-start
-                      class="w45"
-                    >
-                      <Select v-model="item.controlType" placeholder="Select">
-                        <Option
-                          v-for="i in controlTypes"
-                          :key="i"
-                          :label="i"
-                          :value="i"
-                        />
-                      </Select>
-                    </FormItem>
-                    <FormItem
-                      v-show="item.controlType === 'regExp'"
-                      label="regExp"
-                      flex-col
-                      items-start
-                      class="w45"
-                    >
-                      <Input v-model="item.controlReg" input-style="h-full" />
-                    </FormItem>
+                  <Button @click="rules.push({ regExp: '', errMsg: '' })"
+                    >新增规则</Button
+                  >
+                </div>
+                <div
+                  class="flex flex-col item-start"
+                  style="margin-bottom: 20px"
+                >
+                  <h3 text-black text-6>设置</h3>
+                  <div class="wrapper left">
+                    <div class="w45" text-left flex flex-col>
+                      <Checkbox v-model="min" size="large">最小值</Checkbox>
+                      <InputNumber
+                        v-show="min"
+                        v-model="len.min"
+                        :min="0"
+                        :max="30"
+                        size="small"
+                        controls-position="right"
+                      />
+                    </div>
+                    <div class="w45" text-left flex flex-col>
+                      <Checkbox v-model="max" size="large">最大值</Checkbox>
+                      <InputNumber
+                        v-show="max"
+                        v-model="len.max"
+                        :min="0"
+                        :max="30"
+                        size="small"
+                        controls-position="right"
+                      />
+                    </div>
                   </div>
                 </div>
-                <Button
-                  @click="
-                    controllers.push({
-                      relevancy: '',
-                      controlType: '',
-                      controlReg: '',
-                    })
-                  "
-                >
-                  新增关联
-                </Button>
-              </div>
-            </TabPane>
-          </Tabs>
-        </Form>
-      </div>
+                <div class="wrapper">
+                  <h3 text-black text-6>显隐关联</h3>
+                  <div
+                    v-for="(item, idx) in controllers"
+                    :key="idx"
+                    class="wrapper gap-2 relative"
+                  >
+                    <div
+                      v-show="idx > 0"
+                      absolute
+                      right-0
+                      top-2
+                      @click="controllers.splice(idx, 1)"
+                    >
+                      <svg
+                        viewBox="0 0 1024 1024"
+                        xmlns="http://www.w3.org/2000/svg"
+                        data-v-029747aa=""
+                        w-4
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="wrapper gap-2" style="flex-wrap: nowrap">
+                      <FormItem
+                        label="选择关联字段"
+                        flex-col
+                        items-start
+                        class="w45"
+                      >
+                        <Select
+                          v-model="item.relevancy"
+                          placeholder="Select"
+                          clearable
+                          @change="selectChange"
+                        >
+                          <Option
+                            v-for="i in tableData.filter(
+                              (item) => item.id && item.label !== input
+                            )"
+                            :key="i.name"
+                            :label="i.label"
+                            :value="i.label"
+                          />
+                        </Select>
+                      </FormItem>
+                      <FormItem
+                        v-show="item.relevancy"
+                        label="选择规则"
+                        flex-col
+                        items-start
+                        class="w45"
+                      >
+                        <Select v-model="item.controlType" placeholder="Select">
+                          <Option
+                            v-for="i in controlTypes"
+                            :key="i"
+                            :label="i"
+                            :value="i"
+                          />
+                        </Select>
+                      </FormItem>
+                      <FormItem
+                        v-show="item.controlType === 'regExp'"
+                        label="regExp"
+                        flex-col
+                        items-start
+                        class="w45"
+                      >
+                        <Input v-model="item.controlReg" input-style="h-full" />
+                      </FormItem>
+                    </div>
+                  </div>
+                  <Button
+                    @click="
+                      controllers.push({
+                        relevancy: '',
+                        controlType: '',
+                        controlReg: '',
+                      })
+                    "
+                  >
+                    新增关联
+                  </Button>
+                </div>
+              </TabPane>
+            </Tabs>
+          </Form>
+        </div>
+      </template>
       <template #footer>
         <Footer @cancel="cancel" @confirm="confirm" />
       </template>

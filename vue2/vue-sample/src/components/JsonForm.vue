@@ -9,6 +9,7 @@ function addStyle(str) {
 }
 
 let remove;
+let styles = "";
 export default {
   name: "JsonForm",
   props: {
@@ -21,6 +22,7 @@ export default {
     return {
       model: {},
       rules: {},
+      groupData: {},
       dialogShow: false,
       previewSrc: "",
     };
@@ -101,11 +103,11 @@ export default {
       this.model[key].splice(data, 1);
       this.schema.attribs[key].default = this.model[key];
     },
-    modelValue(val, key) {
-      this.model[key] = val;
-      this.schema.attribs[key].default = val;
+    modelValue(val, model, key) {
+      model[key] = val;
+      // this.schema.attribs[key].default = val;
     },
-    getTypeComponent(h, form, key) {
+    getTypeComponent(h, form, model, key) {
       const {
         type,
         cascader,
@@ -122,21 +124,81 @@ export default {
         step,
         debounce = 300,
         placeholder,
-      } = form[key];
+        group,
+        children,
+        mapKey,
+        label,
+      } = form[key] || form;
+      key = key || mapKey || label;
       const { min, max } = len || {};
+      if (key === "button") return;
+      let that = this;
+      if (group) {
+        const button = form.button ? form.button[key] : undefined;
+        if (!this.groupData[form[key].key]) {
+          this.$set(this.groupData, form[key].key, {});
+        }
+        return h(
+          "div",
+          {
+            ref: "group",
+          },
+          [
+            h("div", label),
+            form[key].children.map((item) =>
+              this.getTypeComponent(h, item, this.groupData[form[key].key])
+            ),
+            button
+              ? h(
+                  "Button",
+                  {
+                    on: {
+                      click: () => {
+                        if (!model[key])
+                          this.$set(this.model, form[key].key, []);
+
+                        that.model[form[key].key].push({
+                          ...this.groupData[form[key].key],
+                        });
+                        this.groupData[form[key].key] = Object.keys(
+                          this.groupData[form[key].key]
+                        ).forEach(
+                          (k) => (this.groupData[form[key].key][k] = undefined)
+                        );
+                        this.$refs.group
+                          .querySelectorAll("input")
+                          .forEach((item) => (item.value = ""));
+                      },
+                    },
+                  },
+                  button
+                )
+              : "",
+            this.model[form[key].key]
+              ? h(
+                  "div",
+                  this.model[form[key].key].map((item) =>
+                    h("Tag", {}, Object.entries(item).join(" / "))
+                  )
+                )
+              : "",
+          ]
+        );
+      }
       const typeComponent = {
         Text: (type = "text") =>
           h("Input", {
             props: {
-              value: this.model[key],
+              value: model[key],
               type,
               maxlength: max,
               placeholder,
               disabled,
+              key,
             },
             class: className,
             on: {
-              input: (val) => this.modelValue(val, key),
+              input: (val) => this.modelValue(val, model, key),
             },
           }),
         Email: () => typeComponent.Text(),
@@ -148,75 +210,75 @@ export default {
             case "time":
               return h("TimePicker", {
                 props: {
-                  value: this.model[key] || "",
+                  value: model[key] || "",
                   type: "time",
                   confirm: true,
                   placeholder,
                   disabled,
                 },
                 on: {
-                  input: (val) => this.modelValue(val, key),
+                  input: (val) => this.modelValue(val, model, key),
                 },
               });
             case "timezone":
               return h("TimePicker", {
                 props: {
-                  value: this.model[key] || [],
+                  value: model[key] || [],
                   type: "timerange",
                   confirm: true,
                   disabled,
                 },
                 on: {
-                  input: (val) => this.modelValue(val, key),
+                  input: (val) => this.modelValue(val, model, key),
                 },
               });
             case "datetime":
               return h("DatePicker", {
                 props: {
-                  value: this.model[key] || "",
+                  value: model[key] || "",
                   type: "datetime",
                   format,
                   placeholder,
                 },
                 on: {
-                  input: (val) => this.modelValue(val, key),
+                  input: (val) => this.modelValue(val, model, key),
                 },
               });
             case "datetimezone":
               return h("DatePicker", {
                 props: {
-                  value: this.model[key] || [],
+                  value: model[key] || [],
                   type: "datetimerange",
                   format,
                   disabled,
                 },
                 on: {
-                  input: (val) => this.modelValue(val, key),
+                  input: (val) => this.modelValue(val, model, key),
                 },
               });
             case "datezone":
               return h("DatePicker", {
                 props: {
-                  value: this.model[key],
+                  value: model[key],
                   type: "daterange",
                   format,
                   disabled,
                 },
                 on: {
-                  input: (val) => this.modelValue(val, key),
+                  input: (val) => this.modelValue(val, model, key),
                 },
               });
             default:
               return h("DatePicker", {
                 props: {
-                  value: this.model[key],
+                  value: model[key],
                   type: "date",
                   placeholder,
                   format,
                   disabled,
                 },
                 on: {
-                  input: (val) => this.modelValue(val, key),
+                  input: (val) => this.modelValue(val, model, key),
                 },
               });
           }
@@ -224,7 +286,7 @@ export default {
         Number: () =>
           h("InputNumber", {
             props: {
-              value: this.model[key],
+              value: model[key] ? +model[key] : undefined,
               class: className,
               style,
               disabled,
@@ -234,7 +296,7 @@ export default {
               step,
             },
             on: {
-              input: (val) => this.modelValue(val, key),
+              input: (val) => this.modelValue(val, model, key),
             },
           }),
         Enumeration: () =>
@@ -242,7 +304,7 @@ export default {
             "Select",
             {
               props: {
-                value: this.model[key],
+                value: model[key],
                 class: className,
                 style,
                 disabled,
@@ -250,7 +312,7 @@ export default {
                 multiple,
               },
               on: {
-                input: (val) => this.modelValue(val, key),
+                input: (val) => this.modelValue(val, model, key),
               },
             },
             (options || []).map((item, i) =>
@@ -266,13 +328,13 @@ export default {
         Boolean: () =>
           h("i-switch", {
             props: {
-              value: this.model[key] || false,
+              value: model[key] || false,
               class: className,
               style,
               disabled,
             },
             on: {
-              input: (val) => this.modelValue(val, key),
+              input: (val) => this.modelValue(val, model, key),
             },
           }),
         Radio: (type = "radio") =>
@@ -280,13 +342,13 @@ export default {
             "RadioGroup",
             {
               props: {
-                value: this.model[key],
+                value: model[key],
                 class: className,
                 style,
                 disabled,
               },
               on: {
-                input: (val) => this.modelValue(val, key),
+                input: (val) => this.modelValue(val, model, key),
               },
             },
             (options || []).map((item) =>
@@ -308,13 +370,13 @@ export default {
             "CheckboxGroup",
             {
               props: {
-                value: this.model[key] || [],
+                value: model[key] || [],
                 class: className,
                 style,
                 disabled,
               },
               on: {
-                input: (val) => this.modelValue(val, key),
+                input: (val) => this.modelValue(val, model, key),
               },
             },
 
@@ -338,7 +400,7 @@ export default {
         Cascader: () =>
           h("Cascader", {
             props: {
-              value: this.model[key] || [],
+              value: model[key] || [],
               class: className,
               options: options || [],
               debounce,
@@ -350,7 +412,7 @@ export default {
               "collapse-tags-tooltip": true,
             },
             on: {
-              input: (val) => this.modelValue(val, key),
+              input: (val) => this.modelValue(val, model, key),
             },
           }),
         Upload: () => [
@@ -358,7 +420,7 @@ export default {
             "Upload",
             {
               props: {
-                fileList: this.model[key] || [],
+                fileList: model[key] || [],
                 class: className,
                 action: upload.action || "#",
                 autoUpload: false,
@@ -424,9 +486,90 @@ export default {
       };
       return typeComponent[type]();
     },
+    renderForm(h, form = {}) {
+      const { filters = [], group = [] } = form.group || [];
+      filters.forEach((item) => delete form[item]);
+      group.forEach((item) => {
+        form[item.key] = item;
+        this.$set(this.model, item.key, []);
+        this.$set(this.groupData, item.key, {});
+      });
+      delete form.group;
+      return Object.keys(form).reduce((formList, key) => {
+        const {
+          default: value,
+          group,
+          colorTitle,
+          label,
+          rules = [],
+          required,
+          labelShow,
+          position,
+          description,
+          show,
+          validator,
+          customRender,
+        } = form[key];
+        const formItemClass = `json_${nanoid()}`;
+        setTimeout(() => this.judgeShow(formItemClass, show));
+        if (value !== undefined) this.$set(this.model, key, value);
+
+        // 规则检验
+        this.validators(validator, key, rules);
+
+        // 注入style
+        this.insertStyle(colorTitle, formItemClass, labelShow);
+
+        formList.push(
+          h(
+            "FormItem",
+            {
+              props: {
+                label,
+                prop: key,
+                required: !!required,
+                position,
+                group,
+              },
+              class: formItemClass,
+            },
+            [
+              h(
+                "div",
+                {
+                  style:
+                    "width:100%;font-size:0.25rem;display:flex;line-height:1rem;color: rgba(75, 85, 99, 0.5); margin-bottom: 0.25rem;",
+                },
+                description
+              ),
+              customRender
+                ? customRender(h, function (val) {
+                    this.model[key] = val;
+                  })
+                : this.getTypeComponent(h, form, this.model, key),
+            ]
+          )
+        );
+        return formList;
+      }, []);
+    },
+    insertStyle(colorTitle, formItemClass, labelShow) {
+      if (colorTitle) {
+        styles += `
+                .${formItemClass} .ivu-form-item-label{
+                  color:${colorTitle};
+                  ${!labelShow ? "visibility: hidden" : ""}
+                }
+                `;
+      } else if (!labelShow) {
+        styles += `.${formItemClass} .ivu-form-item-label{
+            visibility: hidden;
+                }
+                `;
+      }
+    },
   },
   render(h) {
-    let styles = "";
     return this.schema
       ? h(
           "div",
@@ -461,72 +604,17 @@ export default {
                   class: this.schema.class,
                 },
               },
-              wrapper.call(this, renderForm.call(this, this.schema.attribs))
+              wrapper.call(
+                this,
+                this.renderForm.call(this, h, this.schema.attribs)
+              )
             ),
           ]
         )
       : "";
 
-    function renderForm(form = {}) {
-      return Object.keys(form).reduce((formList, key) => {
-        const {
-          default: value,
-          group,
-          colorTitle,
-          label,
-          rules,
-          required,
-          labelShow,
-          position,
-          description,
-          show,
-          validator,
-          customRender,
-        } = form[key];
-        const formItemClass = `json_${nanoid()}`;
-        setTimeout(() => this.judgeShow(formItemClass, show));
-        if (value !== undefined) this.$set(this.model, key, value);
-
-        // 规则检验
-        this.validators(validator, key, rules);
-
-        // 注入style
-        insertStyle(colorTitle, formItemClass, labelShow);
-
-        formList.push(
-          h(
-            "FormItem",
-            {
-              props: {
-                label,
-                prop: key,
-                required: !!required,
-                position,
-                group,
-              },
-              class: formItemClass,
-            },
-            [
-              h(
-                "div",
-                {
-                  style:
-                    "width:100%;font-size:0.25rem;display:flex;line-height:1rem;color: rgba(75, 85, 99, 0.5); margin-bottom: 0.25rem;",
-                },
-                description
-              ),
-              customRender
-                ? customRender(h, function (val) {
-                    this.model[key] = val;
-                  })
-                : this.getTypeComponent(h, form, key),
-            ]
-          )
-        );
-        return formList;
-      }, []);
-    }
     function wrapper(data = []) {
+      return data;
       if (remove) remove();
       remove = addStyle(styles);
       const g1 = transformData(
@@ -612,22 +700,6 @@ export default {
           });
         }
         return data;
-      }
-    }
-
-    function insertStyle(colorTitle, formItemClass, labelShow) {
-      if (colorTitle) {
-        styles += `
-                .${formItemClass} .ivu-form-item-label{
-                  color:${colorTitle};
-                  ${!labelShow ? "visibility: hidden" : ""}
-                }
-                `;
-      } else if (!labelShow) {
-        styles += `.${formItemClass} .ivu-form-item-label{
-            visibility: hidden;
-                }
-                `;
       }
     }
   },

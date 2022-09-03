@@ -1,6 +1,15 @@
 <template>
   <div>
-    <vue-drag-tree :data="data" @drop="dropHandler" v-slot="slotProps">
+    <Form style="display: flex; gap: 0.5rem">
+      <FormItem>
+        <Input v-model="name" placeholder="请输入组名" />
+      </FormItem>
+      <FormItem>
+        <Input v-model="key" placeholder="请输入组key" />
+      </FormItem>
+      <Button @click="add">新增组</Button>
+    </Form>
+    <vue-drag-tree :data="group" @drop="dropHandler" v-slot="slotProps">
       <span
         :class="[
           slotProps.isClicked
@@ -8,14 +17,24 @@
             : 'vue-drag-node-icon',
         ]"
       ></span>
-      <span class="text">{{ slotProps.nodeName }}</span>
+      <span class="text">{{ slotProps.label }} </span>
+      <span></span>
     </vue-drag-tree>
   </div>
 </template>
 <script>
+import VueDragTree from "../drag/VueDragTree.vue";
+import { nanoid } from "nanoid";
 export default {
+  components: {
+    VueDragTree,
+  },
   data() {
-    return {};
+    return {
+      group: [],
+      name: "",
+      key: "",
+    };
   },
   props: {
     data: {
@@ -25,8 +44,54 @@ export default {
   },
   methods: {
     dropHandler() {
-      console.log(this.data);
+      console.log(this.group);
     },
+    add() {
+      if (!this.name || !this.key) {
+        return this.$Message.error("请输入组名和组key");
+      }
+      this.group.push({
+        label: this.name,
+        key: this.key,
+        children: [],
+        group: true,
+        removeFlag: true,
+        id: nanoid(),
+      });
+      this.name = "";
+      this.key = "";
+    },
+    save() {
+      const filters = [];
+      const group = [];
+      this.group.forEach(
+        (item) =>
+          item.group &&
+          group.push(item) &&
+          item.children.forEach((child) => filters.push(child.label))
+      );
+      return {
+        filters,
+        group,
+      };
+    },
+  },
+  mounted() {
+    const { filters = [], group = [] } =
+      this.data
+        .filter((item) => item.group)
+        .map((item) => ({
+          group: item.group,
+          filters: item.filters,
+        }))[0] || {};
+    this.group = this.data
+      .filter((item) => !item.group && !filters.includes(item.label))
+      .map((item) => {
+        item = JSON.parse(JSON.stringify(item));
+        item.children = item.children || [];
+        return item;
+      });
+    group.forEach((item) => this.group.push(item));
   },
 };
 </script>
