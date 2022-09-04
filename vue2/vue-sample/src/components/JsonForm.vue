@@ -52,20 +52,7 @@ export default {
       return (el.style.display = "block");
     },
     getFormData() {
-      const result = {};
-      Object.keys(this.schema.attribs).forEach((key) => {
-        const data = this.schema.attribs[key];
-        const value =
-          data.join && Array.isArray(this.model[key])
-            ? this.model[key].join(",")
-            : this.model[key];
-        if (data.group) {
-          if (!result[data.groupKey || data.group])
-            result[data.groupKey || data.group] = {};
-          result[data.groupKey || data.group][data["mapKey"] || key] = value;
-        } else result[data["mapKey"] || key] = value;
-      });
-      return result;
+      return this.model;
     },
     validators(validator, key, rules) {
       if (validator) {
@@ -104,7 +91,7 @@ export default {
       this.schema.attribs[key].default = this.model[key];
     },
     modelValue(val, model, key) {
-      model[key] = val;
+      this.$set(model, key, val);
       // this.schema.attribs[key].default = val;
     },
     getTypeComponent(h, form, model, key) {
@@ -114,6 +101,7 @@ export default {
         date,
         class: className,
         multiple,
+        default: value,
         style,
         len,
         options,
@@ -125,10 +113,10 @@ export default {
         debounce = 300,
         placeholder,
         group,
-        children,
         mapKey,
         label,
       } = form[key] || form;
+      if (key) model[key] = value;
       key = key || mapKey || label;
       const { min, max } = len || {};
       if (key === "button") return;
@@ -138,52 +126,51 @@ export default {
         if (!this.groupData[form[key].key]) {
           this.$set(this.groupData, form[key].key, {});
         }
-        return h(
-          "div",
-          {
-            ref: "group",
-          },
-          [
-            h("div", label),
-            form[key].children.map((item) =>
-              this.getTypeComponent(h, item, this.groupData[form[key].key])
-            ),
-            button
-              ? h(
-                  "Button",
-                  {
-                    on: {
-                      click: () => {
-                        if (!model[key])
-                          this.$set(this.model, form[key].key, []);
-
-                        that.model[form[key].key].push({
-                          ...this.groupData[form[key].key],
-                        });
-                        this.groupData[form[key].key] = Object.keys(
-                          this.groupData[form[key].key]
-                        ).forEach(
-                          (k) => (this.groupData[form[key].key][k] = undefined)
-                        );
-                        this.$refs.group
-                          .querySelectorAll("input")
-                          .forEach((item) => (item.value = ""));
-                      },
+        return h("div", [
+          form[key].children.map((item) =>
+            this.getTypeComponent(h, item, that.groupData[form[key].key])
+          ),
+          button
+            ? h(
+                "Button",
+                {
+                  on: {
+                    click: () => {
+                      if (!model[key]) this.$set(this.model, form[key].key, []);
+                      that.model[form[key].key].push({
+                        ...this.groupData[form[key].key],
+                      });
+                      this.groupData[form[key].key] = Object.keys(
+                        this.groupData[form[key].key]
+                      ).forEach((k) => (this.groupData[form[key].key][k] = ""));
                     },
                   },
-                  button
-                )
-              : "",
-            this.model[form[key].key]
-              ? h(
-                  "div",
-                  this.model[form[key].key].map((item) =>
-                    h("Tag", {}, Object.entries(item).join(" / "))
+                },
+                button
+              )
+            : "",
+          this.model[form[key].key]
+            ? h(
+                "div",
+                this.model[form[key].key].map((item, i) =>
+                  h(
+                    "Tag",
+                    {
+                      props: {
+                        closable: true,
+                      },
+                      on: {
+                        "on-close": () => {
+                          console.log(this.model[form[key].key].splice(i, 1));
+                        },
+                      },
+                    },
+                    item ? Object.entries(item).join(" / ") : ""
                   )
                 )
-              : "",
-          ]
-        );
+              )
+            : "",
+        ]);
       }
       const typeComponent = {
         Text: (type = "text") =>
@@ -286,7 +273,7 @@ export default {
         Number: () =>
           h("InputNumber", {
             props: {
-              value: model[key] ? +model[key] : undefined,
+              value: model[key] ? model[key] : null,
               class: className,
               style,
               disabled,
@@ -492,12 +479,11 @@ export default {
       group.forEach((item) => {
         form[item.key] = item;
         this.$set(this.model, item.key, []);
-        this.$set(this.groupData, item.key, {});
+        if (item.key) this.$set(this.groupData, item.key, {});
       });
       delete form.group;
       return Object.keys(form).reduce((formList, key) => {
         const {
-          default: value,
           group,
           colorTitle,
           label,
@@ -512,7 +498,6 @@ export default {
         } = form[key];
         const formItemClass = `json_${nanoid()}`;
         setTimeout(() => this.judgeShow(formItemClass, show));
-        if (value !== undefined) this.$set(this.model, key, value);
 
         // 规则检验
         this.validators(validator, key, rules);

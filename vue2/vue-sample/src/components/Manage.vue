@@ -206,6 +206,11 @@ export default {
       this.deleteShow = false;
     },
     editRow(row, i) {
+      console.log(row, this.json);
+      Object.keys(row).forEach((key) => {
+        if (key in this.json.attribs) this.json.attribs[key].default = row[key];
+      });
+      console.log(this.json);
       this.type = "edit";
       this.setJson(row, i);
     },
@@ -220,9 +225,8 @@ export default {
       };
       localStorage.setItem("json_form_table", JSON.stringify(store));
     },
-    setJson(row, i) {
+    setJson(i) {
       this.currentCOl = i;
-      this.json = row;
       this.dialogTableVisible = true;
     },
     switchForm(key) {
@@ -232,10 +236,10 @@ export default {
     },
     saveForm() {
       this.json.id = nanoid();
+      const value = this.$refs.formEl.getFormData();
       if (this.type === "add") {
-        this.tableData.push(JSON.parse(JSON.stringify(this.json)));
-      } else this.tableData[this.currentCOl] = this.json;
-      console.log(this.$refs.formEl.getFormData());
+        this.tableData.push(value);
+      } else this.tableData[this.currentCOl] = value;
       this.dialogTableVisible = false;
       const store = {
         [this.name]: this.tableData,

@@ -430,7 +430,7 @@ export default {
         .filter((item) => item.relevancy);
 
       const data = {
-        id: this.input,
+        id: nanoid(),
         placeholder: this.placeholder,
         description: this.description,
         label: this.input,
@@ -535,7 +535,7 @@ export default {
       this.groupKey = "";
       this.placeholder = "";
       this.group = "";
-      this.labelShow = false;
+      this.labelShow = true;
       this.join = false;
       this.rules = [];
       this.options = [];
@@ -570,7 +570,21 @@ export default {
     },
     restoreData() {
       const attribs = JSON.parse(JSON.stringify(this.schema.attribs));
-      this.tableData = Object.keys(attribs).map((key) => attribs[key] || {});
+      this.tableData = Object.keys(attribs).map((key) => {
+        if (key === "button") {
+          const value = Object.keys(attribs[key])[0];
+          const content = attribs[key][value];
+          return {
+            label: "button",
+            type: "Button",
+            button: {
+              content,
+              value,
+            },
+          };
+        }
+        return attribs[key] || {};
+      });
     },
     deleteReg(i) {
       this.rules.splice(i, 1);
@@ -592,7 +606,7 @@ export default {
       const { filters, group } = this.$refs.GroupEl.save();
       const data = {
         type: "Group",
-        label: group,
+        label: "group",
         filters,
         group,
       };
@@ -600,13 +614,10 @@ export default {
         if (this.hasGroup()) return this.$Message.error("只能添加一个分组");
         this.tableData = [...this.tableData, data];
       } else {
-        const idx = this.tableData.findIndex(
-          (item) => item.label === this.current
-        );
+        const idx = this.tableData.findIndex((item) => item.type === "Group");
         this.$set(this.tableData, idx, data);
         this.current = null;
       }
-
       this.dialogVisible = false;
     },
     getGroupOptions() {
