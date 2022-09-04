@@ -481,7 +481,6 @@ export default {
         attribs: {},
         id: nanoid(),
       };
-      debugger;
       this.tableData.reduce((result, item) => {
         if (item.type === "Button") {
           result.button = result.button || {};
