@@ -8,6 +8,10 @@ function addStyle(str) {
   return () => document.head.removeChild(s);
 }
 
+function isPlanObject(obj){
+  return Object.prototype.toString.call(obj) === '[object Object]'
+}
+
 let remove;
 let styles = "";
 export default {
@@ -25,6 +29,8 @@ export default {
       groupData: {},
       dialogShow: false,
       previewSrc: "",
+      count:0,
+      groupKeys:[]
     };
   },
   watch: {
@@ -52,7 +58,17 @@ export default {
       return (el.style.display = "block");
     },
     getFormData() {
-      return this.model;
+      this.groupKeys.forEach(key=>{
+        this.model[key] = this.model[key].map(item=>{
+          Object.keys(item).forEach(_key=>{
+            const value = item[_key]
+            if(isPlanObject(value) && value.value)
+              item[_key] = value.value
+          })
+          return item
+        })
+      })
+      return this.model
     },
     validators(validator, key, rules) {
       if (validator) {
@@ -116,11 +132,10 @@ export default {
         mapKey,
         label,
       } = form[key] || form;
-      if (key) model[key] = value;
+      if (key && value) model[key] = value;
       key = key || mapKey || label;
       const { min, max } = len || {};
       if (key === "button") return;
-      let that = this;
       if (group) {
         const button = form.button ? form.button[key] : undefined;
         if (!this.groupData[form[key].key]) {
@@ -128,7 +143,7 @@ export default {
         }
         return h("div", [
           form[key].children.map((item) =>
-            this.getTypeComponent(h, item, that.groupData[form[key].key])
+            this.getTypeComponent.call(this,h, item, this.groupData[form[key].key])
           ),
           button
             ? h(
@@ -136,9 +151,9 @@ export default {
                 {
                   on: {
                     click: () => {
-                      if (!model[key]) this.$set(this.model, form[key].key, []);
-                      that.model[form[key].key].push({
-                        ...this.groupData[form[key].key],
+                      if(!this.model[form[key].key])this.$set(this.model,form[key].key,[])
+                      this.model[form[key].key].push({
+                        ...JSON.parse(JSON.stringify(this.groupData[form[key].key])),
                       });
                       this.groupData[form[key].key] = Object.keys(
                         this.groupData[form[key].key]
@@ -160,12 +175,10 @@ export default {
                         closable: true,
                       },
                       on: {
-                        "on-close": () => {
-                          console.log(this.model[form[key].key].splice(i, 1));
-                        },
+                        "on-close": () => this.model[form[key].key].splice(i, 1),
                       },
                     },
-                    item ? Object.entries(item).join(" / ") : ""
+                    item ? Object.values(item).map(i=>isPlanObject(i)?i.label:i).join(' / ') : ""
                   )
                 )
               )
@@ -291,15 +304,18 @@ export default {
             "Select",
             {
               props: {
-                value: model[key],
+                value: isPlanObject(model[key])
+                ? model[key].value
+                : model[key],
                 class: className,
                 style,
                 disabled,
                 placeholder,
                 multiple,
+                labelInValue:true
               },
               on: {
-                input: (val) => this.modelValue(val, model, key),
+                'on-change': (val) => this.modelValue(val, model, key),
               },
             },
             (options || []).map((item, i) =>
@@ -472,13 +488,17 @@ export default {
         ],
       };
       return typeComponent[type]();
+
     },
     renderForm(h, form = {}) {
       const { filters = [], group = [] } = form.group || [];
       filters.forEach((item) => delete form[item]);
       group.forEach((item) => {
         form[item.key] = item;
+        if(!this.model[item.key])
         this.$set(this.model, item.key, []);
+        if(!this.groupKeys.includes(item.key))
+          this.groupKeys.push(item.key)
         if (item.key) this.$set(this.groupData, item.key, {});
       });
       delete form.group;
@@ -553,8 +573,12 @@ export default {
                 `;
       }
     },
+    forceUpdate(){
+      this.count++
+    }
   },
   render(h) {
+    this.count
     return this.schema
       ? h(
           "div",

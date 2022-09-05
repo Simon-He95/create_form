@@ -75,17 +75,36 @@ export default {
         group,
       };
     },
+    updateGroup(group){
+      return group.map(item=>{
+        item.children = item.children.map(child=>{
+          const children = child.children
+          return Object.assign(this.findNewData(child.id)||child, {
+            children:children.length
+            ? this.updateGroup(children)
+            : []
+          })
+        })
+        return item
+      })
+    },
+    findNewData(id){
+      for(const item of this.data){
+        if(item.id === id)
+          return item
+      }
+    }
   },
   mounted() {
     const { filters = [], group = [] } =
       this.data
         .filter((item) => item.group)
         .map((item) => ({
-          group: item.group,
+          group: this.updateGroup(item.group),
           filters: item.filters,
         }))[0] || {};
     this.group = this.data
-      .filter((item) => !item.group && !filters.includes(item.label))
+      .filter((item) => !item.group && !filters.includes(item.label) && item.type !=='Button',)
       .map((item) => {
         item = JSON.parse(JSON.stringify(item));
         item.children = item.children || [];

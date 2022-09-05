@@ -114,7 +114,8 @@ export default {
               </svg>
             </div>
             <span class="sc-dkPtRN kZdUHC">新增</span></button
-          ><button
+          >
+          <!-- <button
             v-show="type === 'build'"
             type="submit"
             class="sc-eCImPb igeLKl sc-iCfMLu gFLWth"
@@ -139,8 +140,9 @@ export default {
                 />
               </svg>
             </div>
-            <span class="sc-dkPtRN kZdUHC">布局</span></button
-          ><button
+            <span class="sc-dkPtRN kZdUHC">布局</span>
+          </button> -->
+          <button
             v-show="type === 'build'"
             type="submit"
             class="sc-eCImPb igeLKl sc-iCfMLu gFLWth save"

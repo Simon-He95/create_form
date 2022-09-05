@@ -206,17 +206,19 @@ export default {
       this.deleteShow = false;
     },
     editRow(row, i) {
-      console.log(row, this.json);
       Object.keys(row).forEach((key) => {
         if (key in this.json.attribs) this.json.attribs[key].default = row[key];
       });
-      console.log(this.json);
+      this.$refs.formEl.forceUpdate()
       this.type = "edit";
-      this.setJson(row, i);
+      this.setJson(i);
     },
-    copyRow(row, i) {
+    copyRow(row,i) {
+      Object.keys(row).forEach((key) => {
+        if (key in this.json.attribs) this.json.attribs[key].default = row[key];
+      });
       this.type = "add";
-      this.setJson(row, i);
+      this.setJson(i);
     },
     deleteRow(i) {
       this.tableData.splice(i, 1);

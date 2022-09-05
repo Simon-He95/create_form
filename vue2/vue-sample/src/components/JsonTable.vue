@@ -316,7 +316,6 @@ export default {
       rules: [],
       controlTypes: ["value", "regExp"],
       showType: ["Radio", "RadioButton", "Checkbox", "CheckboxButton"],
-      joinShow: ["Checkbox", "CheckboxButton", "Cascader", "Enumeration"],
       join: false,
       mapKey: "",
       options: [],
@@ -325,6 +324,7 @@ export default {
       groupOptions: [],
       buttonContent: "",
       groupValue: "",
+      id:"",
     };
   },
   watch: {
@@ -341,6 +341,7 @@ export default {
   methods: {
     editHandler(row) {
       this.type = "edit";
+      this.id = row.id
       if (row.type === "Group" || row.type === "Button") {
         this.cardShow = false;
         this.cardType = row.type;
@@ -430,7 +431,7 @@ export default {
         .filter((item) => item.relevancy);
 
       const data = {
-        id: nanoid(),
+        id: this.id || nanoid(),
         placeholder: this.placeholder,
         description: this.description,
         label: this.input,
@@ -529,6 +530,7 @@ export default {
     resetData() {
       this.cardShow = true;
       this.mapKey = "";
+      this.id = ''
       this.cardType = "";
       this.description = "";
       this.groupKey = "";
@@ -624,10 +626,8 @@ export default {
         .map((item) => item.type === "Group" && (item.group[0] || []))
         .filter(Boolean)
         .map((item) => ({ label: item.label, value: item.key }));
-      console.log(this.groupOptions);
     },
     hasGroup() {
-      console.log(this.tableData);
       for (let i = 0; i < this.tableData.length; i++) {
         if (this.tableData[i].type === "Group") return true;
       }
@@ -645,7 +645,6 @@ export default {
           content,
         },
       };
-      console.log(data);
       if (this.type === "add") {
         this.tableData = [...this.tableData, data];
       } else {
@@ -679,6 +678,9 @@ export default {
         "Enumeration",
       ].includes(this.cardType);
     },
+    joinShow(){
+      return ["Checkbox", "CheckboxButton", "Cascader", "Enumeration"].includes(this.cardType)
+    }
   },
 };
 </script>

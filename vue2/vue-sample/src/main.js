@@ -8,7 +8,7 @@ import ViewUI from 'view-design';
 import 'view-design/dist/styles/iview.css';
 import './index.css'
 // import VueDragTree from 'vue-drag-tree'
-import 'vue-drag-tree/dist/vue-drag-tree.min.css'
+// import 'vue-drag-tree/dist/vue-drag-tree.min.css'
 
 Vue.config.productionTip = false
 
