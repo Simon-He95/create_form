@@ -1,90 +1,113 @@
 <script setup lang="ts">
-import { Form } from '@json-manage/form'
-import { useLocalStorage } from '@vueuse/core'
+import { Form } from "@json-manage/form";
+import { useLocalStorage } from "@vueuse/core";
 const data = ref<Record<string, any>>({
   attribs: {},
-})
-const formEl = ref()
-const store = useLocalStorage<any>('store', ref({}))
-const createShow = ref(false)
-const name = ref('')
-console.log(store.value)
-const formList = reactive(Object.keys(store.value).map(item => ({ name: item })))
-const current = ref<any>('')
+});
+const formEl = ref();
+const store = useLocalStorage<any>("store", ref({}));
+const createShow = ref(false);
+const name = ref("");
+console.log(store.value);
+const formList = reactive(
+  Object.keys(store.value).map((item) => ({ name: item }))
+);
+const current = ref<any>("");
 
 function switchForm(i: any) {
-  current.value = i
-  const { name: curname } = formList[i]
-  name.value = curname
+  current.value = i;
+  const { name: curname } = formList[i];
+  name.value = curname;
 }
 function resetData() {
-  current.value = ''
-  name.value = ''
+  current.value = "";
+  name.value = "";
 }
 function createForm() {
-  resetData()
-  createShow.value = true
+  resetData();
+  createShow.value = true;
 }
 function next() {
-  if (!name.value)
-    return
+  if (!name.value) return;
   const newVal = {
     name: name.value,
-  }
-  if (current.value === '')
-    formList.push(newVal)
-  else
-    formList[current.value] = newVal
+  };
+  if (current.value === "") formList.push(newVal);
+  else formList[current.value] = newVal;
 
-  createShow.value = false
-  resetData()
+  createShow.value = false;
+  resetData();
 }
 function editCreate() {
-  createShow.value = true
+  createShow.value = true;
 }
 function addField() {
-  console.log(formEl.value)
-  formEl.value.add()
+  console.log(formEl.value);
+  formEl.value.add();
 }
 function sortField() {
-  formEl.value.sort()
+  formEl.value.sort();
 }
 function save() {
-  console.log(formList, formEl.value.getFormData())
-  store.value[name.value] = formEl.value.getFormData()
+  console.log(formList, formEl.value.getFormData());
+  store.value[name.value] = formEl.value.getFormData();
 }
 </script>
 
 <template>
   <div id="json_form">
-    <div font-sans p="x-4 y-10" text="center gray-700 dark:gray-200" flex="~">
-      <div class="sc-dbqYyY sc-dOkGYn sc-jRSqCh jStIwK kpsMfe bUDExf" style="margin-right:20px" inline-flex w-50>
+    <div font-sans text="center gray-700 dark:gray-200" flex="~">
+      <div
+        class="sc-dbqYyY sc-dOkGYn sc-jRSqCh jStIwK kpsMfe bUDExf"
+        style="margin-right: 20px"
+        inline-flex
+        w-50
+      >
         <ol v-for="(item, i) in formList" id="subnav-list-4" :key="i">
           <li @click="switchForm(i)">
-            <a class="sc-dbqYyY sc-cjwcjg joRjZF cfdPXz" :class="[
-              current === i ? 'active' : '',
-            ]" aria-current="page">
+            <a
+              class="sc-dbqYyY sc-cjwcjg joRjZF cfdPXz"
+              :class="[current === i ? 'active' : '']"
+              aria-current="page"
+            >
               <div class="sc-dbqYyY sc-dOkGYn jStIwK dNHUsO">
-                <svg width="1em" height="1em" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg"
-                  class="sc-kHTDnN cWLdcV">
+                <svg
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 4 4"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="sc-kHTDnN cWLdcV"
+                >
                   <rect width="4" height="4" rx="2" fill="#A5A5BA" />
                 </svg>
                 <div class="sc-dbqYyY fvhnfw">
-                  <span class="sc-lliPmu imwrmp">{{  item.name  }}</span>
+                  <span class="sc-lliPmu imwrmp">{{ item.name }}</span>
                 </div>
               </div>
             </a>
           </li>
         </ol>
         <div class="sc-gsDKAQ hjVlqg">
-          <button aria-disabled="false" type="button" class="sc-fUCuFg sc-dSaQTq sc-HEwFl fZLKQx ciPgPo cJJTYc"
-            @click="createForm">
-            <span aria-hidden="true" class="sc-fUCuFg cLNaEJ"><svg width="1em" height="1em" viewBox="0 0 24 24"
-                fill="none" xmlns="http://www.w3.org/2000/svg">
+          <button
+            aria-disabled="false"
+            type="button"
+            class="sc-fUCuFg sc-dSaQTq sc-HEwFl fZLKQx ciPgPo cJJTYc"
+            @click="createForm"
+          >
+            <span aria-hidden="true" class="sc-fUCuFg cLNaEJ"
+              ><svg
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   d="M24 13.604a.3.3 0 01-.3.3h-9.795V23.7a.3.3 0 01-.3.3h-3.21a.3.3 0 01-.3-.3v-9.795H.3a.3.3 0 01-.3-.3v-3.21a.3.3 0 01.3-.3h9.795V.3a.3.3 0 01.3-.3h3.21a.3.3 0 01.3.3v9.795H23.7a.3.3 0 01.3.3v3.21z"
-                  fill="#212134" />
-              </svg></span><span class="sc-hKysef kvRZkV">Create new collection type</span>
+                  fill="#212134"
+                /></svg></span
+            ><span class="sc-hKysef kvRZkV">Create new collection type</span>
           </button>
         </div>
       </div>
@@ -97,59 +120,135 @@ function save() {
       <div v-show="current !== ''" w-300>
         <div data-strapi-header="true" class="sc-cSyqtw eRZQkG">
           <div class="sc-cSyqtw eoRiGl">
-            <a aria-current="page" class="sc-kLnunm gECLxk active"><span aria-hidden="true"
-                class="sc-kNzDjo sc-hUplSX jPfCWb cGIMyh"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+            <a aria-current="page" class="sc-kLnunm gECLxk active"
+              ><span
+                aria-hidden="true"
+                class="sc-kNzDjo sc-hUplSX jPfCWb cGIMyh"
+                ><svg
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     d="M24 13.3a.2.2 0 01-.2.2H5.74l8.239 8.239a.2.2 0 010 .282L12.14 23.86a.2.2 0 01-.282 0L.14 12.14a.2.2 0 010-.282L11.86.14a.2.2 0 01.282 0L13.98 1.98a.2.2 0 010 .282L5.74 10.5H23.8c.11 0 .2.09.2.2v2.6z"
-                    fill="#212134" />
-                </svg></span><span class="sc-bttaWv htjIaV">Back</span></a>
+                    fill="#212134"
+                  /></svg></span
+              ><span class="sc-bttaWv htjIaV">Back</span></a
+            >
           </div>
           <div class="sc-cSyqtw sc-jounMn iTbWuz ULjhI">
             <div class="sc-cSyqtw sc-jounMn iTbWuz kCHDYf">
               <h1 id="title" class="sc-ccdLe lFjjs">
-                {{  name  }}
+                {{ name }}
               </h1>
               <div class="sc-cSyqtw kjnrkO">
-                <button aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
-                  @click="editCreate">
-                  <div aria-hidden="true" class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm">
-                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd" clip-rule="evenodd"
+                <button
+                  aria-disabled="false"
+                  type="button"
+                  class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
+                  @click="editCreate"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm"
+                  >
+                    <svg
+                      width="1em"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
                         d="M23.604 3.514c.528.528.528 1.36 0 1.887l-2.622 2.607-4.99-4.99L18.6.396a1.322 1.322 0 011.887 0l3.118 3.118zM0 24v-4.99l14.2-14.2 4.99 4.99L4.99 24H0z"
-                        fill="#212134" />
+                        fill="#212134"
+                      />
                     </svg>
-                  </div><span class="sc-dkPtRN kZdUHC">Edit</span>
+                  </div>
+                  <span class="sc-dkPtRN kZdUHC">Edit</span>
                 </button>
               </div>
             </div>
-            <div spacing="2" class="sc-bUbRBg sc-tAExr sc-hZpJaK cNbIkO gxNiaA hLLTdc">
-              <button aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj" @click="addField">
-                <div aria-hidden="true" class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm">
-                  <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div
+              spacing="2"
+              class="sc-bUbRBg sc-tAExr sc-hZpJaK cNbIkO gxNiaA hLLTdc"
+            >
+              <button
+                aria-disabled="false"
+                type="button"
+                class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
+                @click="addField"
+              >
+                <div
+                  aria-hidden="true"
+                  class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm"
+                >
+                  <svg
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <path
                       d="M24 13.604a.3.3 0 01-.3.3h-9.795V23.7a.3.3 0 01-.3.3h-3.21a.3.3 0 01-.3-.3v-9.795H.3a.3.3 0 01-.3-.3v-3.21a.3.3 0 01.3-.3h9.795V.3a.3.3 0 01.3-.3h3.21a.3.3 0 01.3.3v9.795H23.7a.3.3 0 01.3.3v3.21z"
-                      fill="#212134" />
+                      fill="#212134"
+                    />
                   </svg>
-                </div><span class="sc-dkPtRN kZdUHC">Add another field</span>
-              </button><button aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
-                @click="sortField">
-                <div aria-hidden="true" class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm">
-                  <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                </div>
+                <span class="sc-dkPtRN kZdUHC">Add another field</span></button
+              ><button
+                aria-disabled="false"
+                type="button"
+                class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
+                @click="sortField"
+              >
+                <div
+                  aria-hidden="true"
+                  class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm"
+                >
+                  <svg
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <path
                       d="M24 13.604a.3.3 0 01-.3.3h-9.795V23.7a.3.3 0 01-.3.3h-3.21a.3.3 0 01-.3-.3v-9.795H.3a.3.3 0 01-.3-.3v-3.21a.3.3 0 01.3-.3h9.795V.3a.3.3 0 01.3-.3h3.21a.3.3 0 01.3.3v9.795H23.7a.3.3 0 01.3.3v3.21z"
-                      fill="#212134" />
+                      fill="#212134"
+                    />
                   </svg>
-                </div><span class="sc-dkPtRN kZdUHC">Sort field</span>
-              </button><button type="submit" style="align-items: center;" class="sc-eCImPb igeLKl sc-iCfMLu gFLWth"
-                @click="save">
-                <div aria-hidden="true" class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm">
-                  <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                </div>
+                <span class="sc-dkPtRN kZdUHC">Sort field</span></button
+              ><button
+                type="submit"
+                style="align-items: center"
+                class="sc-eCImPb igeLKl sc-iCfMLu gFLWth"
+                @click="save"
+              >
+                <div
+                  aria-hidden="true"
+                  class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm"
+                >
+                  <svg
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <path
                       d="M20.727 2.97a.2.2 0 01.286 0l2.85 2.89a.2.2 0 010 .28L9.554 20.854a.2.2 0 01-.285 0l-9.13-9.243a.2.2 0 010-.281l2.85-2.892a.2.2 0 01.284 0l6.14 6.209L20.726 2.97z"
-                      fill="#212134" />
+                      fill="#212134"
+                    />
                   </svg>
-                </div><span class="sc-dkPtRN kZdUHC">Save</span>
+                </div>
+                <span class="sc-dkPtRN kZdUHC">Save</span>
               </button>
             </div>
           </div>
@@ -164,21 +263,54 @@ function save() {
     <Modal v-model="createShow" title="Create a collection type" width="30%">
       <div class="sc-gsDKAQ eFNFqr">
         <div>
-          <div id="tabs-0-tabpanel" role="tabpanel" tabindex="0" aria-labelledby="tabs-0-tab">
-            <div spacing="6" class="sc-bUbRBg sc-tAExr sc-dSfdvi cNbIkO dnrnLU eKrzGO">
+          <div
+            id="tabs-0-tabpanel"
+            role="tabpanel"
+            tabindex="0"
+            aria-labelledby="tabs-0-tab"
+          >
+            <div
+              spacing="6"
+              class="sc-bUbRBg sc-tAExr sc-dSfdvi cNbIkO dnrnLU eKrzGO"
+            >
               <div class="sc-gsDKAQ kMJSxT">
                 <div class="sc-eZKLwX sc-bhnkmi dlOeuv ifvhOp">
                   <div class="sc-eqUgKp ejzBKL">
                     <div class="sc-eZKLwX dlOeuv">
                       <div>
                         <div>
-                          <div spacing="1" class="sc-bGaVxB sc-fydGpi sc-dcgwPl dYaiIs eQrnpH kNXjGB">
+                          <div
+                            spacing="1"
+                            class="
+                              sc-bGaVxB sc-fydGpi sc-dcgwPl
+                              dYaiIs
+                              eQrnpH
+                              kNXjGB
+                            "
+                          >
                             <label for="displayName" class="sc-gnnDb fKPMiM">
-                              <div class="sc-bGaVxB sc-fydGpi dYaiIs fVgflz">Display name</div>
+                              <div class="sc-bGaVxB sc-fydGpi dYaiIs fVgflz">
+                                Display name
+                              </div>
                             </label>
-                            <div class="sc-bGaVxB sc-fydGpi sc-gHjyzD dYaiIs dobAWM jsDPfk">
-                              <input id="displayName" v-model="name" name="displayName" aria-invalid="false"
-                                aria-disabled="false" placeholder="" type="text" class="sc-JEhMO iRbbcP">
+                            <div
+                              class="
+                                sc-bGaVxB sc-fydGpi sc-gHjyzD
+                                dYaiIs
+                                dobAWM
+                                jsDPfk
+                              "
+                            >
+                              <input
+                                id="displayName"
+                                v-model="name"
+                                name="displayName"
+                                aria-invalid="false"
+                                aria-disabled="false"
+                                placeholder=""
+                                type="text"
+                                class="sc-JEhMO iRbbcP"
+                              />
                             </div>
                           </div>
                         </div>
@@ -195,12 +327,29 @@ function save() {
         <span class="dialog-footer">
           <div class="sc-cTAIfT sc-dYtuZ pmygK bkSVwu">
             <div class="sc-cTAIfT sc-ihINtW oSriV gREqRk">
-              <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="createShow = false"><button
-                  aria-disabled="false" type="button" class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"><span
-                    class="sc-dkPtRN kZdUHC">Cancel</span></button></div>
-              <div class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP" @click="next"><button aria-disabled="false"
-                  type="submit" class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"><span
-                    class="sc-dkPtRN kZdUHC">Continue</span></button>
+              <div
+                class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP"
+                @click="createShow = false"
+              >
+                <button
+                  aria-disabled="false"
+                  type="button"
+                  class="sc-eCImPb igeLKl sc-iCfMLu iGNcld"
+                >
+                  <span class="sc-dkPtRN kZdUHC">Cancel</span>
+                </button>
+              </div>
+              <div
+                class="sc-cTAIfT sc-ihINtW sc-hAWBJg oSriV hhwqdj icqNfP"
+                @click="next"
+              >
+                <button
+                  aria-disabled="false"
+                  type="submit"
+                  class="sc-eCImPb igeLKl sc-iCfMLu hxJchj"
+                >
+                  <span class="sc-dkPtRN kZdUHC">Continue</span>
+                </button>
               </div>
             </div>
           </div>
@@ -212,7 +361,7 @@ function save() {
 
 <style>
 #json_form .Modal__footer {
-  padding: 0 !important
+  padding: 0 !important;
 }
 
 .eRZQkG {
@@ -251,7 +400,7 @@ function save() {
   flex-direction: row;
 }
 
-.hLLTdc>* {
+.hLLTdc > * {
   margin-left: 0px;
   margin-right: 0px;
 }
@@ -297,7 +446,7 @@ function save() {
   pointer-events: none;
 }
 
-.hLLTdc>*+* {
+.hLLTdc > * + * {
   margin-left: 8px;
 }
 
@@ -485,7 +634,7 @@ function save() {
   border: 2px solid transparent;
 }
 
-.kNXjGB>*+* {
+.kNXjGB > * + * {
   margin-top: 4px;
 }
 
@@ -496,7 +645,7 @@ function save() {
   flex-direction: column;
 }
 
-.eKrzGO>* {
+.eKrzGO > * {
   margin-top: 0px;
   margin-bottom: 0px;
 }
@@ -519,7 +668,7 @@ function save() {
   flex-direction: column;
 }
 
-.kNXjGB>* {
+.kNXjGB > * {
   margin-top: 0px;
   margin-bottom: 0px;
 }
@@ -538,11 +687,11 @@ function save() {
   flex-direction: row;
 }
 
-.kNXjGB>*+* {
+.kNXjGB > * + * {
   margin-top: 4px;
 }
 
-.kNXjGB>* {
+.kNXjGB > * {
   margin-top: 0px;
   margin-bottom: 0px;
 }

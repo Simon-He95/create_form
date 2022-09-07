@@ -324,7 +324,7 @@ export default {
       groupOptions: [],
       buttonContent: "",
       groupValue: "",
-      id:"",
+      id: "",
     };
   },
   watch: {
@@ -341,7 +341,7 @@ export default {
   methods: {
     editHandler(row) {
       this.type = "edit";
-      this.id = row.id
+      this.id = row.id;
       if (row.type === "Group" || row.type === "Button") {
         this.cardShow = false;
         this.cardType = row.type;
@@ -530,7 +530,7 @@ export default {
     resetData() {
       this.cardShow = true;
       this.mapKey = "";
-      this.id = ''
+      this.id = "";
       this.cardType = "";
       this.description = "";
       this.groupKey = "";
@@ -678,20 +678,17 @@ export default {
         "Enumeration",
       ].includes(this.cardType);
     },
-    joinShow(){
-      return ["Checkbox", "CheckboxButton", "Cascader", "Enumeration"].includes(this.cardType)
-    }
+    joinShow() {
+      return ["Checkbox", "CheckboxButton", "Cascader", "Enumeration"].includes(
+        this.cardType
+      );
+    },
   },
 };
 </script>
 
 <template>
-  <div
-    id="form_wrapper"
-    font-sans
-    p="x-4 y-10"
-    text="center gray-700 dark:gray-200"
-  >
+  <div id="form_wrapper" font-sans text="center gray-700 dark:gray-200">
     <Modal
       v-model="dialogVisible"
       :title="name"
@@ -724,21 +721,17 @@ export default {
           </div>
 
           <Form>
-            <Tabs v-model="activeName" class="demo-tabs">
+            <Tabs v-model="activeName" class="demo-tabs px-1">
               <TabPane label="基础设置" name="first">
-                <div class="wrapper">
-                  <FormItem label="标签名:" class="w30">
+                <div class="grid grid-cols-3 gap-2">
+                  <FormItem label="标签名:">
                     <Input
                       ref="nameEl"
                       v-model="input"
                       placeholder="Please input Name"
                     />
                   </FormItem>
-                  <FormItem
-                    v-show="cardType === 'Date'"
-                    label="日期类型:"
-                    class="w30"
-                  >
+                  <FormItem v-show="cardType === 'Date'" label="日期类型:">
                     <Select v-model="datetype" placeholder="Pick datetype">
                       <Option
                         v-for="item in dateOptions"
@@ -751,7 +744,6 @@ export default {
                   <FormItem
                     v-show="cardType === 'Date'"
                     label="展示的时间格式:"
-                    class="w30"
                   >
                     <Select
                       v-model="format"
@@ -766,19 +758,19 @@ export default {
                       />
                     </Select>
                   </FormItem>
-                  <FormItem label="占位符:" class="w30">
+                  <FormItem label="占位符:">
                     <Input
                       v-model="placeholder"
                       placeholder="Please input Placeholder"
                     />
                   </FormItem>
-                  <FormItem label="描述:" class="w30">
+                  <FormItem label="描述:">
                     <Input
                       v-model="description"
                       placeholder="Please input Description"
                     />
                   </FormItem>
-                  <FormItem label="尺寸:" class="w30">
+                  <FormItem label="尺寸:">
                     <Select v-model="size" placeholder="Pick Size">
                       <Option
                         v-for="item in sizeOptions"
@@ -788,20 +780,16 @@ export default {
                       />
                     </Select>
                   </FormItem>
-                  <FormItem label="Key:" class="w30">
+                  <FormItem label="Key:">
                     <Input v-model="mapKey" placeholder="Please input Key" />
                   </FormItem>
-                  <FormItem label="标签名可见:" style="margin-left: 10px">
+                  <FormItem label="标签名可见:">
                     <i-switch v-model="labelShow"> </i-switch>
                   </FormItem>
-                  <FormItem label="标题颜色:" class="w30">
+                  <FormItem label="标题颜色:">
                     <ColorPicker v-model="colorTitle" />
                   </FormItem>
-                  <FormItem
-                    v-show="showType.includes(cardType)"
-                    label="类型:"
-                    class="w30"
-                  >
+                  <FormItem v-show="showType.includes(cardType)" label="类型:">
                     <Select v-model="cardType" placeholder="Pick Size">
                       <Option
                         v-for="item in buttonType"
@@ -818,26 +806,14 @@ export default {
                   >
                     <i-switch v-model="multiple" />
                   </FormItem>
-                  <FormItem
-                    v-if="joinShow"
-                    label="开启合并结果:"
-                    style="margin-left: 10px"
-                  >
+                  <FormItem v-if="joinShow" label="开启合并结果:">
                     <i-switch v-model="join" />
                   </FormItem>
 
                   <div style="margin-top: 20px; width: 100%" v-if="jsonShow">
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 5px">
-                      <Input
-                        v-model="option_label"
-                        placeholder="下拉项名"
-                        class="w30"
-                      />
-                      <Input
-                        v-model="option_value"
-                        placeholder="下拉项值"
-                        class="w30"
-                      />
+                      <Input v-model="option_label" placeholder="下拉项名" />
+                      <Input v-model="option_value" placeholder="下拉项值" />
                       <Button type="info" @click="addTag">新增</Button>
                     </div>
                     <Tag
@@ -859,20 +835,20 @@ export default {
               </TabPane>
               <TabPane label="高级设置" name="second">
                 <div class="flex gap-1">
-                  <FormItem label="默认值" flex-col items-start class="w30">
+                  <FormItem label="默认值" flex-col items-start>
                     <Input v-model="defaultvalue" />
                   </FormItem>
-                  <FormItem label="是否必输" style="margin-left: 20px">
+                  <FormItem label="是否必输">
                     <i-switch v-model="required"></i-switch>
                   </FormItem>
                 </div>
                 <!-- <div class="flex flex-col item-start">
                   <h3 text-black text-6>表单组</h3>
                   <div class="wrapper left">
-                    <FormItem label="Group" class="w30">
+                    <FormItem label="Group">
                       <Input v-model="group" />
                     </FormItem>
-                    <FormItem label="GroupKey" class="w30">
+                    <FormItem label="GroupKey">
                       <Input v-model="groupKey" />
                     </FormItem>
                   </div>
@@ -882,8 +858,13 @@ export default {
                   style="margin-bottom: 20px"
                 >
                   <h3 style="margin-bottom: 10px">规则校验</h3>
-                  <div class="wrapper left" v-for="(item, i) in rules" :key="i">
-                    <FormItem label="正则" flex-col items-start class="w40">
+                  <div
+                    class="wrapper"
+                    text-left
+                    v-for="(item, i) in rules"
+                    :key="i"
+                  >
+                    <FormItem label="正则" flex-col items-start w-12>
                       <Input v-model="item.regExp" />
                     </FormItem>
                     <FormItem
@@ -891,7 +872,7 @@ export default {
                       label="错误消息"
                       flex-col
                       items-start
-                      class="w40"
+                      w-12
                     >
                       <Input v-model="item.errMsg" />
                     </FormItem>
@@ -909,7 +890,7 @@ export default {
                 >
                   <h3 text-black text-6>设置</h3>
                   <div class="wrapper left">
-                    <div class="w45" text-left flex flex-col>
+                    <div w-15 text-left flex flex-col>
                       <Checkbox v-model="min" size="large">最小值</Checkbox>
                       <InputNumber
                         v-show="min"
@@ -920,7 +901,7 @@ export default {
                         controls-position="right"
                       />
                     </div>
-                    <div class="w45" text-left flex flex-col>
+                    <div w-15 text-left flex flex-col>
                       <Checkbox v-model="max" size="large">最大值</Checkbox>
                       <InputNumber
                         v-show="max"
@@ -960,12 +941,7 @@ export default {
                       </svg>
                     </div>
                     <div class="wrapper gap-2" style="flex-wrap: nowrap">
-                      <FormItem
-                        label="选择关联字段"
-                        flex-col
-                        items-start
-                        class="w45"
-                      >
+                      <FormItem label="选择关联字段" flex-col items-start w-15>
                         <Select
                           v-model="item.relevancy"
                           placeholder="Select"
@@ -987,7 +963,7 @@ export default {
                         label="选择规则"
                         flex-col
                         items-start
-                        class="w45"
+                        w-15
                       >
                         <Select v-model="item.controlType" placeholder="Select">
                           <Option
@@ -1003,7 +979,7 @@ export default {
                         label="regExp"
                         flex-col
                         items-start
-                        class="w45"
+                        w-15
                       >
                         <Input v-model="item.controlReg" input-style="h-full" />
                       </FormItem>
@@ -1085,83 +1061,15 @@ export default {
   align-items: center;
 }
 
-.left {
-  text-align: left;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.item-start {
-  align-items: flex-start;
-}
-
-.flex {
-  display: flex;
-}
-
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.gap-1 {
-  gap: 0.25rem;
-}
-
-.w45 {
-  width: 45%;
-}
-
-.w30 {
-  width: 30%;
-}
-
-.absolute {
-  position: absolute;
-}
-
-.left-0 {
-  left: 0;
-}
-
-.w40 {
-  width: 40%;
-}
-
-.h-10 {
-  height: 2.5rem;
-}
-
-.lh-10 {
-  line-height: 2.5rem;
-}
-
-.text-5 {
-  font-size: 1.5rem;
-}
-
-.font-600 {
-  font-weight: 600;
-}
-
-.text-black {
-  color: #000;
-}
-
-.top-0 {
-  top: 0;
-}
-
-.relative {
-  position: relative;
-}
-
-.w-full {
-  width: 100%;
-}
-
 .demo-tabs /deep/ .ivu-tabs-nav {
   float: right !important;
+}
+.demo-tabs /deep/ .ivu-form-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.demo-tabs /deep/ .ivu-form-item .ivu-form-item-content {
+  width: 100%;
 }
 </style>
