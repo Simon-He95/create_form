@@ -4,7 +4,7 @@ const findRoot = (which) => {
   let that = which;
   while (!ok) {
     // 根据组件name来判断
-    if (that.$options._componentTag === "vue-drag-tree") {
+    if (that.$options._componentTag === 'vue-drag-tree') {
       ok = true;
       // 交换两者的数据
       break;
@@ -50,7 +50,7 @@ const isLinealRelation = (from, to) => {
     }
     if (
       !parent.$options._componentTag ||
-      parent.$options._componentTag === "vue-drag-tree"
+      parent.$options._componentTag === 'vue-drag-tree'
     ) {
       // 如果检测到这里，就该结束了。
       ok = true;
@@ -87,7 +87,7 @@ const exchangeData = (rootCom, from, to) => {
     const tempParent = to.$parent;
     const toModel = to.model;
 
-    if (tempParent.$options._componentTag === "vue-drag-tree") {
+    if (tempParent.$options._componentTag === 'vue-drag-tree') {
       // 将from节点添加到 根数组中
       tempParent.newData.push(newFrom);
       // 移除to中from节点信息；
@@ -126,7 +126,7 @@ const exchangeData = (rootCom, from, to) => {
   const fromParentModel = from.$parent.model;
   const toModel = to.model;
   // 先将from从其父节点信息移除；
-  if (from.$parent.$options._componentTag === "vue-drag-tree") {
+  if (from.$parent.$options._componentTag === 'vue-drag-tree') {
     /**
      * 找到vue-drag-tree的父组件（数据源头），在这里修改数据。
      */

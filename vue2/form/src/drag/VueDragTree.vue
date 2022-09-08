@@ -18,9 +18,9 @@
 </template>
 
 <script>
-import DragNode from "./DragNode";
+import DragNode from './DragNode';
 export default {
-  name: "VueDragTree",
+  name: 'VueDragTree',
   props: {
     data: Array,
     allowDrag: {
@@ -34,7 +34,7 @@ export default {
     defaultText: {
       // 填加节点时显示的默认文本．
       type: String,
-      default: "New Node",
+      default: 'New Node',
     },
     depth: {
       type: Number,
@@ -64,30 +64,31 @@ export default {
         }
         // 然后利用对象深拷贝（返回target的引用），因此控制台不会报错～
         this.data = Object.assign(this.data, newValue);
+        console.log('22');
       },
     },
   },
   methods: {
     emitCurNodeClicked(model, component) {
-      this.$emit("current-node-clicked", model, component);
+      this.$emit('current-node-clicked', model, component);
     },
     emitDrag(model, component, e) {
-      this.$emit("drag", model, component, e);
+      this.$emit('drag', model, component, e);
     },
     emitDragEnter(model, component, e) {
-      this.$emit("drag-enter", model, component, e);
+      this.$emit('drag-enter', model, component, e);
     },
     emitDragLeave(model, component, e) {
-      this.$emit("drag-leave", model, component, e);
+      this.$emit('drag-leave', model, component, e);
     },
     emitDragOver(model, component, e) {
-      this.$emit("drag-over", model, component, e);
+      this.$emit('drag-over', model, component, e);
     },
     emitDragEnd(model, component, e) {
-      this.$emit("drag-end", model, component, e);
+      this.$emit('drag-end', model, component, e);
     },
     emitDrop(model, component, e) {
-      this.$emit("drop", model, component, e);
+      this.$emit('drop', model, component, e);
     },
   },
   components: {
@@ -95,4 +96,3 @@ export default {
   },
 };
 </script>
-

@@ -1,24 +1,24 @@
 <script>
 export default {
-  name: "MenuWrapper",
-  emits: ["click-list"],
+  name: 'MenuWrapper',
+  emits: ['click-list'],
   data() {
     return {
       current: 0,
     };
   },
   mounted() {
-    const pos = +(localStorage.getItem("json_menuWrapper_pos") || 0);
+    const pos = +(localStorage.getItem('json_menuWrapper_pos') || 0);
     this.clickHandler(pos);
   },
   methods: {
     clickHandler(i) {
       this.current = i;
-      this.$emit("clickMenu", i);
+      this.$emit('clickMenu', i);
       this.saveMenuPosition(i);
     },
     saveMenuPosition(i) {
-      localStorage.setItem("json_menuWrapper_pos", i);
+      localStorage.setItem('json_menuWrapper_pos', i);
     },
   },
 };

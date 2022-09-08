@@ -17,7 +17,7 @@
 </template>
 <script>
 export default {
-  name: "JsonButton",
+  name: 'JsonButton',
   props: {
     options: {
       type: Array,
@@ -25,17 +25,17 @@ export default {
     },
     content: {
       type: String,
-      default: "",
+      default: '',
     },
     group: {
       type: String,
-      default: "",
+      default: '',
     },
   },
   data() {
     return {
-      input: "",
-      groupValue: "",
+      input: '',
+      groupValue: '',
     };
   },
   methods: {

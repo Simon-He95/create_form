@@ -1,36 +1,36 @@
 <script>
 export default {
-  name: "Header",
+  name: 'Header',
   props: {
     name: {
       type: String,
-      default: "",
+      default: '',
     },
     type: {
       type: String,
-      default: "build",
+      default: 'build',
     },
     message: {
       type: String,
-      default: "Build the data architecture of your content",
+      default: 'Build the data architecture of your content',
     },
   },
-  emits: ["add", "save", "drag"],
+  emits: ['add', 'save', 'drag'],
   methods: {
     add() {
-      this.$emit("add");
+      this.$emit('add');
     },
     save() {
-      this.$emit("save");
+      this.$emit('save');
     },
     drag() {
-      this.$emit("drag");
+      this.$emit('drag');
     },
     create() {
-      this.$emit("create");
+      this.$emit('create');
     },
     edit() {
-      this.$emit("edit");
+      this.$emit('edit');
     },
   },
 };
@@ -113,35 +113,35 @@ export default {
                 />
               </svg>
             </div>
-            <span class="sc-dkPtRN kZdUHC">新增</span></button
-          >
+            <span class="sc-dkPtRN kZdUHC">新增</span>
+          </button>
           <!-- <button
-            v-show="type === 'build'"
-            type="submit"
-            class="sc-eCImPb igeLKl sc-iCfMLu gFLWth"
-            @click="drag"
-          >
-            <div aria-hidden="true" class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm">
-              <svg
-                t="1661585043940"
-                class="icon"
-                viewBox="0 0 1024 1024"
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                p-id="3184"
-              >
-                <path
-                  d="M873.28 681.28a32 32 0 0 1 45.44 45.44l-128 128a32 32 0 0 1-45.44-45.44z"
-                  p-id="3185"
-                />
-                <path
-                  d="M800 832a32 32 0 0 1-64 0V256a32 32 0 0 1 64 0zM192 288a32 32 0 0 1 0-64h448a32 32 0 0 1 0 64z m0 192a32 32 0 0 1 0-64h448a32 32 0 0 1 0 64z m0 192a32 32 0 0 1 0-64h448a32 32 0 0 1 0 64z m0 192a32 32 0 0 1 0-64h448a32 32 0 0 1 0 64z"
-                  p-id="3186"
-                />
-              </svg>
-            </div>
-            <span class="sc-dkPtRN kZdUHC">布局</span>
-          </button> -->
+              v-show="type === 'build'"
+              type="submit"
+              class="sc-eCImPb igeLKl sc-iCfMLu gFLWth"
+              @click="drag"
+            >
+              <div aria-hidden="true" class="sc-hKwDye sc-gKclnd gEtyVN bEOvQm">
+                <svg
+                  t="1661585043940"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="3184"
+                >
+                  <path
+                    d="M873.28 681.28a32 32 0 0 1 45.44 45.44l-128 128a32 32 0 0 1-45.44-45.44z"
+                    p-id="3185"
+                  />
+                  <path
+                    d="M800 832a32 32 0 0 1-64 0V256a32 32 0 0 1 64 0zM192 288a32 32 0 0 1 0-64h448a32 32 0 0 1 0 64z m0 192a32 32 0 0 1 0-64h448a32 32 0 0 1 0 64z m0 192a32 32 0 0 1 0-64h448a32 32 0 0 1 0 64z m0 192a32 32 0 0 1 0-64h448a32 32 0 0 1 0 64z"
+                    p-id="3186"
+                  />
+                </svg>
+              </div>
+              <span class="sc-dkPtRN kZdUHC">布局</span>
+            </button> -->
           <button
             v-show="type === 'build'"
             type="submit"
@@ -245,7 +245,7 @@ export default {
   transition-property: all;
   transition-duration: 0.2s;
   border-radius: 8px;
-  content: "";
+  content: '';
   position: absolute;
   inset: -4px;
   border: 2px solid transparent;
@@ -308,7 +308,7 @@ export default {
   border: 1px solid rgb(123, 121, 255);
   background: rgb(123, 121, 255);
 }
-.gFLWth[aria-disabled="true"] {
+.gFLWth[aria-disabled='true'] {
   border: 1px solid rgb(220, 220, 228);
   background: rgb(234, 234, 239);
 }
@@ -325,7 +325,7 @@ export default {
   -webkit-box-align: center;
   align-items: center;
 }
-.igeLKl[aria-disabled="true"] {
+.igeLKl[aria-disabled='true'] {
   pointer-events: none;
 }
 
@@ -366,7 +366,7 @@ export default {
   padding-right: 8px;
 }
 
-.gFLWth[aria-disabled="true"] .sc-dkPtRN {
+.gFLWth[aria-disabled='true'] .sc-dkPtRN {
   color: rgb(102, 102, 135);
 }
 
@@ -408,7 +408,7 @@ export default {
   transition-property: all;
   transition-duration: 0.2s;
   border-radius: 8px;
-  content: "";
+  content: '';
   position: absolute;
   inset: -4px;
   border: 2px solid transparent;
@@ -419,8 +419,8 @@ export default {
   width: 12px;
 }
 
-.gFLWth[aria-disabled="true"] svg > g,
-.gFLWth[aria-disabled="true"] svg path {
+.gFLWth[aria-disabled='true'] svg > g,
+.gFLWth[aria-disabled='true'] svg path {
   fill: rgb(102, 102, 135);
 }
 </style>

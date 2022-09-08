@@ -1,16 +1,16 @@
 <script>
 export default {
-  name: "JsonTabs",
+  name: 'JsonTabs',
   props: {
     types: {
       type: Array,
       default: () => [],
     },
   },
-  emits: ["choose"],
+  emits: ['choose'],
   methods: {
     clickHandler(type) {
-      this.$emit("choose", type);
+      this.$emit('choose', type);
     },
   },
 };

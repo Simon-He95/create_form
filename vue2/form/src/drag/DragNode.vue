@@ -32,7 +32,9 @@
                 : 'no-vue-drag-node-icon',
             ]"
           ></span>
-          <span class="text">{{ model.label }}</span>
+          <span class="text"
+            >{{ model.label }} <Icon type="md-key" /> {{ model.key }}</span
+          >
         </slot>
       </div>
     </div>
@@ -58,9 +60,9 @@ let toData = null;
 let nodeClicked = undefined; // Attention: 递归的所有组件共享同一个＂顶级作用域＂（这个词或许不太正确，但就这个意思）．即：共享上面这几个let变量．这为实现当前节点的高亮提供了基础．
 let rootTree = null; // vue-drag-tree组件引用
 
-import { findRoot, exchangeData } from "./util";
+import { findRoot, exchangeData } from './util';
 export default {
-  name: "DragNode",
+  name: 'DragNode',
   data() {
     return {
       isClicked: false, // 当前节点被点击
@@ -83,7 +85,7 @@ export default {
     defaultText: {
       // 填加节点时显示的默认文本．
       type: String,
-      default: "New Node",
+      default: 'New Node',
     },
     depth: {
       type: Number,
@@ -146,7 +148,7 @@ export default {
         nodeClicked = this.model.id;
       }
       if (!this.isFolder) {
-        this.$set(this.model, "children", []);
+        this.$set(this.model, 'children', []);
         this.addChild();
         this.isClicked = true;
       }
@@ -181,8 +183,8 @@ export default {
       rootTree.emitDrag(this.model, this, e);
     },
     dragStart(e) {
-      e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", "asdad");
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', 'asdad');
       return true;
     },
     dragOver(e) {

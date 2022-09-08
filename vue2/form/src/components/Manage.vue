@@ -85,11 +85,11 @@
 </template>
 
 <script>
-import { nanoid } from "nanoid";
-import Header from "./Header.vue";
-import JsonForm from "./JsonForm.vue";
+import { nanoid } from 'nanoid';
+import Header from './Header.vue';
+import JsonForm from './JsonForm.vue';
 export default {
-  name: "Manage",
+  name: 'Manage',
   components: {
     Header,
     JsonForm,
@@ -97,7 +97,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: "",
+      default: '',
     },
   },
   data() {
@@ -108,90 +108,99 @@ export default {
       tableData: [],
       tableColumns: [
         {
-          type: "selection",
+          type: 'selection',
           width: 60,
-          align: "center",
+          align: 'center',
         },
         {
-          title: "ID",
-          width: 120,
-          type: "index",
-          key: "id",
+          title: '管理员',
+          align: 'center',
+          key: 'member',
         },
         {
-          title: "Text",
-          key: "text",
+          title: '操作记录',
+          align: 'center',
+          key: 'log',
         },
         {
-          title: "EMAIL",
-          key: "email",
+          title: '状态',
+          align: 'center',
+          key: 'status',
         },
         {
-          title: "Action",
+          title: 'Text',
+          key: 'text',
+        },
+        {
+          title: 'EMAIL',
+          key: 'email',
+        },
+        {
+          title: 'Action',
           width: 260,
-          align: "center",
+          align: 'center',
           render: (h, params) => {
             return h(
-              "div",
+              'div',
               {
-                style: "display:flex;justify-content:space-evenly",
+                style: 'display:flex;justify-content:space-evenly',
               },
               [
                 h(
-                  "Button",
+                  'Button',
                   {
                     on: {
                       click: () => this.editRow(params.row, params.index),
                     },
                   },
-                  "edit"
+                  'edit'
                 ),
                 h(
-                  "Button",
+                  'Button',
                   {
                     on: {
                       click: () => this.copyRow(params.row, params.index),
                     },
                   },
-                  "copy"
+                  'copy'
                 ),
                 h(
-                  "Button",
+                  'Button',
                   {
                     on: {
                       click: () => this.deleteRow(params.index),
                     },
                   },
-                  "delete"
+                  'delete'
                 ),
               ]
             );
           },
         },
       ],
-      name: "",
+      name: '',
       deleteShow: false,
       dialogTableVisible: false,
-      type: "add",
-      currentCOl: "",
+      type: 'add',
+      currentCOl: '',
       deleteItems: [],
     };
   },
   mounted() {
-    this.formList = localStorage.getItem("json_form_list")
-      ? JSON.parse(localStorage.getItem("json_form_list"))
+    this.formList = localStorage.getItem('json_form_list')
+      ? JSON.parse(localStorage.getItem('json_form_list'))
       : {};
   },
   watch: {
     name() {
-      this.tableData = localStorage.getItem("json_form_table")
-        ? JSON.parse(localStorage.getItem("json_form_table"))[this.name] || []
+      this.tableData = localStorage.getItem('json_form_table')
+        ? JSON.parse(localStorage.getItem('json_form_table'))[this.name] || []
         : [];
     },
   },
   computed: {
     message() {
-      return (this.tableData ? this.tableData.length : "0") + " entry found";
+      return (this.tableData ? this.tableData.length : '0') + ' entry found';
     },
   },
   methods: {
@@ -202,22 +211,22 @@ export default {
       const store = {
         [this.name]: this.tableData,
       };
-      localStorage.setItem("json_form_table", JSON.stringify(store));
+      localStorage.setItem('json_form_table', JSON.stringify(store));
       this.deleteShow = false;
     },
     editRow(row, i) {
       Object.keys(row).forEach((key) => {
         if (key in this.json.attribs) this.json.attribs[key].default = row[key];
       });
-      this.$refs.formEl.forceUpdate()
-      this.type = "edit";
+      this.$refs.formEl.forceUpdate();
+      this.type = 'edit';
       this.setJson(i);
     },
-    copyRow(row,i) {
+    copyRow(row, i) {
       Object.keys(row).forEach((key) => {
         if (key in this.json.attribs) this.json.attribs[key].default = row[key];
       });
-      this.type = "add";
+      this.type = 'add';
       this.setJson(i);
     },
     deleteRow(i) {
@@ -225,7 +234,7 @@ export default {
       const store = {
         [this.name]: this.tableData,
       };
-      localStorage.setItem("json_form_table", JSON.stringify(store));
+      localStorage.setItem('json_form_table', JSON.stringify(store));
     },
     setJson(i) {
       this.currentCOl = i;
@@ -239,23 +248,23 @@ export default {
     saveForm() {
       this.json.id = nanoid();
       const value = this.$refs.formEl.getFormData();
-      if (this.type === "add") {
+      if (this.type === 'add') {
         this.tableData.push(value);
       } else this.tableData[this.currentCOl] = value;
       this.dialogTableVisible = false;
       const store = {
         [this.name]: this.tableData,
       };
-      localStorage.setItem("json_form_table", JSON.stringify(store));
+      localStorage.setItem('json_form_table', JSON.stringify(store));
     },
     selectAll(selection) {
       this.deleteShow = selection.length;
       this.deleteItems = selection.map((item) => item.id);
     },
     createForm() {
-      if (!this.originJSON) return this.$Message.error("当前还没有可用的模板");
+      if (!this.originJSON) return this.$Message.error('当前还没有可用的模板');
       this.json = JSON.parse(this.originJSON);
-      this.type = "add";
+      this.type = 'add';
       this.dialogTableVisible = true;
     },
   },
@@ -378,7 +387,7 @@ export default {
   transition-property: all;
   transition-duration: 0.2s;
   border-radius: 8px;
-  content: "";
+  content: '';
   position: absolute;
   inset: -4px;
   border: 2px solid transparent;

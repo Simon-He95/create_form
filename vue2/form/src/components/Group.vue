@@ -25,16 +25,15 @@
       ></span>
       <span class="text"
         >{{ slotProps.label }}
-        <span v-if="slotProps.group"
-          ><Icon type="md-key" /> {{ slotProps.key }}
-        </span></span
-      >
+        <Icon type="md-key" />
+        {{ slotProps.key }}
+      </span>
     </vue-drag-tree>
   </div>
 </template>
 <script>
-import VueDragTree from "../drag/VueDragTree.vue";
-import { nanoid } from "nanoid";
+import VueDragTree from '../drag/VueDragTree.vue';
+import { nanoid } from 'nanoid';
 export default {
   components: {
     VueDragTree,
@@ -42,8 +41,8 @@ export default {
   data() {
     return {
       group: [],
-      name: "",
-      key: "",
+      name: '',
+      key: '',
     };
   },
   props: {
@@ -53,7 +52,7 @@ export default {
     },
     type: {
       type: String,
-      default: "add",
+      default: 'add',
     },
     currentGroup: {
       type: Object,
@@ -101,7 +100,7 @@ export default {
   },
   mounted() {
     let _group;
-    if (this.type === "add") {
+    if (this.type === 'add') {
       _group = this.data.filter((item) => !item.group);
       _group.push({
         label: this.name,
@@ -111,6 +110,7 @@ export default {
         id: nanoid(),
       });
     } else {
+      console.log(this.currentGroup);
       const { filters, label, key } = this.currentGroup;
       this.currentGroup.children = this.currentGroup.group;
       this.name = label;
@@ -120,6 +120,7 @@ export default {
       );
       _group.push(this.currentGroup);
     }
+    console.log(_group);
     this.group = _group;
   },
 };

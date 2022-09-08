@@ -1,22 +1,22 @@
 <script>
 export default {
-  name: "Footer",
+  name: 'Footer',
   props: {
     isDelete: {
       type: Boolean,
       default: false,
     },
   },
-  emits: ["cancel", "confirm"],
+  emits: ['cancel', 'confirm'],
   methods: {
     cancel() {
-      this.$emit("cancel");
+      this.$emit('cancel');
     },
     confirm() {
-      this.$emit("confirm");
+      this.$emit('confirm');
     },
     deleteHandler() {
-      this.$emit("delete");
+      this.$emit('delete');
     },
   },
 };
@@ -143,7 +143,7 @@ export default {
   transition-property: all;
   transition-duration: 0.2s;
   border-radius: 8px;
-  content: "";
+  content: '';
   position: absolute;
   inset: -4px;
   border: 2px solid transparent;

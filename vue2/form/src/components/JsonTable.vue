@@ -5,6 +5,7 @@ import Footer from "./Footer.vue";
 import JsonTabs from "./JsonTabs.vue";
 import Drag from "./Drag.vue";
 import Group from "./Group.vue";
+import { formateDate } from "../../utils";
 export default {
   name: "JsonTable",
   components: {
@@ -47,6 +48,30 @@ export default {
           title: "类型",
           key: "type",
           resizable: true,
+        },
+        {
+          title: "默认值",
+          key: "default",
+          resizable: true,
+        },
+        {
+          title: "管理员",
+          key: "member",
+          resizable: true,
+          align: "center",
+        },
+        {
+          title: "创建时间",
+          key: "create_time",
+          resizable: true,
+          align: "center",
+        },
+        {
+          title: "是否必填",
+          key: "required",
+          resizable: true,
+          align: "center",
+          render: (h, params) => h("span", params.row.required ? "是" : "否"),
         },
         {
           title: "操作",
@@ -107,7 +132,7 @@ export default {
       group: "",
       groupKey: "",
       multiple: false,
-      controllers: [{ relevancy: "", controlType: "", controlReg: "" }],
+      controllers: [],
       buttonType: ["Radio", "RadioButton"],
       sizeOptions: ["default", "small", "large"],
       formatOptions: [
@@ -322,6 +347,7 @@ export default {
       groupValue: "",
       currentGroup: {},
       id: "",
+      create_time: "",
     };
   },
   watch: {
@@ -337,9 +363,9 @@ export default {
   },
   methods: {
     editHandler(row) {
-      console.log(row, this.tableData);
       this.type = "edit";
       this.id = row.id;
+      this.create_time = row.create_time;
       if (row.type === "Group") {
         this.cardShow = false;
         this.cardType = row.type;
@@ -353,9 +379,7 @@ export default {
         this.datetype = row.date.type;
         this.format = row.date.format;
       }
-      this.controllers = row.show || [
-        { relevancy: "", controlType: "", controlReg: "" },
-      ];
+      this.controllers = row.show || [];
       this.multiple = row.multiple;
       this.current = this.input = row.label;
       this.key = row.key;
@@ -400,14 +424,14 @@ export default {
       this.$emit("change", this.$refs.dragEl.save());
       this.dragShow = false;
     },
-    getAllname() {
-      return this.tableData.map((item) => item.label);
+    getAllKeys() {
+      return this.tableData.map((item) => item.keys);
     },
     confirm() {
       if (this.cardType === "Group") return this.groupConfirm();
       if (
         this.current !== this.input &&
-        this.getAllname().includes(this.input)
+        this.getAllKeys().includes(this.input)
       ) {
         return this.$Message.error("该字段名已存在.");
       }
@@ -438,6 +462,8 @@ export default {
         len: this.len,
         multiple: this.multiple,
         join: this.join,
+        create_time:
+          this.create_time || formateDate(new Date(), "yyyy-MM-dd hh:mm:ss"),
       };
       if (this.cardType === "Date") {
         data.date = {
@@ -535,7 +561,7 @@ export default {
       this.min = false;
       this.max = false;
       this.required = false;
-      this.controllers = [{ relevancy: "", controlType: "", controlReg: "" }];
+      this.controllers = [];
       this.activeName = "first";
       this.type = "add";
       this.multiple = false;
@@ -629,14 +655,9 @@ export default {
   },
 };
 </script>
-    
-    <template>
-  <div
-    id="form_wrapper"
-    font-sans
-    p="x-4 y-10"
-    text="center gray-700 dark:gray-200"
-  >
+
+<template>
+  <div id="form_wrapper" font-sans text="center gray-700 dark:gray-200">
     <Modal
       v-model="dialogVisible"
       :title="name"
@@ -728,11 +749,11 @@ export default {
                     <Input v-model="key" placeholder="Please input Key" />
                   </FormItem>
                   <!-- <FormItem label="标签名可见:">
-                    <i-switch v-model="labelShow"> </i-switch>
-                  </FormItem> -->
+                      <i-switch v-model="labelShow"> </i-switch>
+                    </FormItem> -->
                   <!-- <FormItem label="标题颜色:">
-                    <ColorPicker v-model="colorTitle" />
-                  </FormItem> -->
+                      <ColorPicker v-model="colorTitle" />
+                    </FormItem> -->
                   <FormItem v-show="showType.includes(cardType)" label="类型:">
                     <Select v-model="cardType" placeholder="Pick Size">
                       <Option
@@ -765,11 +786,11 @@ export default {
                       >
                     </div>
                     <!-- <VueJsonEditor
-                  style="margin-top: 20px; text-align: left"
-                  v-model="options"
-                  :expanded-on-start="true"
-                  :mode="mode"
-                /> -->
+                    style="margin-top: 20px; text-align: left"
+                    v-model="options"
+                    :expanded-on-start="true"
+                    :mode="mode"
+                  /> -->
                   </FormItem>
                   <FormItem v-if="joinShow" label="开启合并结果:">
                     <i-switch v-model="join" />
@@ -788,7 +809,7 @@ export default {
                 <div mb4>
                   <h3 mb2>设置</h3>
                   <div grid gap-2 grid-cols-2>
-                    <div>
+                    <div flex="~" v-if="cardType === 'Number'">
                       <Checkbox v-model="min" size="large">最小值</Checkbox>
                       <InputNumber
                         v-show="min"
@@ -796,17 +817,21 @@ export default {
                         :min="0"
                         :max="30"
                         size="small"
+                        ml-2
                         controls-position="right"
                       />
                     </div>
-                    <div>
-                      <Checkbox v-model="max" size="large">最大值</Checkbox>
+                    <div flex="~">
+                      <Checkbox v-model="max" size="large">{{
+                        cardType === "Number" ? "最大值" : "最大输入长度"
+                      }}</Checkbox>
                       <InputNumber
                         v-show="max"
                         v-model="len.max"
                         :min="0"
                         :max="30"
                         size="small"
+                        ml-2
                         controls-position="right"
                       />
                     </div>
@@ -814,7 +839,12 @@ export default {
                 </div>
                 <div mb4>
                   <h3 mb2>规则校验</h3>
-                  <div v-for="(item, i) in rules" :key="i" flex="~ gap-2">
+                  <div
+                    v-for="(item, i) in rules"
+                    :key="i"
+                    flex="~ gap-2"
+                    relative
+                  >
                     <FormItem label="正则" class="w-45%">
                       <Input v-model="item.regExp" />
                     </FormItem>
@@ -825,8 +855,8 @@ export default {
                     >
                       <Input v-model="item.errMsg" />
                     </FormItem>
-                    <div text-right>
-                      <Icon type="md-close" size="20" @click="deleteReg(i)" />
+                    <div absolute top-2 right-0 @click="deleteReg(i)">
+                      <Icon type="md-close" size="20" />
                     </div>
                   </div>
 
@@ -840,7 +870,6 @@ export default {
                   <h3 mb2>显隐关联</h3>
                   <div v-for="(item, idx) in controllers" :key="idx" relative>
                     <div
-                      v-show="idx >= 0"
                       absolute
                       class="right-0 top-2"
                       @click="controllers.splice(idx, 1)"
@@ -867,11 +896,11 @@ export default {
                         >
                           <Option
                             v-for="i in tableData.filter(
-                              (item) => item.id && item.label !== input
+                              (item) => !item.group && item.label !== input
                             )"
                             :key="i.name"
-                            :label="i.label"
-                            :value="i.label"
+                            :label="i.key"
+                            :value="i.key"
                           />
                         </Select>
                       </FormItem>
@@ -926,11 +955,11 @@ export default {
         <Footer @cancel="dragShow = false" @confirm="sortEnd" />
       </template>
     </Modal>
-    <Table :data="tableData" :columns="tableColumns"> </Table>
+    <Table :data="tableData" :columns="tableColumns" w-full> </Table>
   </div>
 </template>
-    
-    <style scoped>
+
+<style scoped>
 /deep/ .ivu-modal-footer {
   padding: 0;
   position: sticky;
@@ -986,4 +1015,3 @@ export default {
   padding-right: 8px;
 }
 </style>
-    

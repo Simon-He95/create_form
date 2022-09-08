@@ -1,28 +1,28 @@
 <script>
-import Footer from "./Footer";
+import Footer from './Footer';
 export default {
-  name: "Menu",
+  name: 'Menu',
   components: {
     Footer,
   },
   props: {
     title: {
       type: String,
-      default: "",
+      default: '',
     },
   },
-  emits: ["click-list"],
+  emits: ['click-list'],
   data() {
     return {
-      list: localStorage.getItem("store_json")
-        ? JSON.parse(localStorage.getItem("store_json"))
+      list: localStorage.getItem('store_json')
+        ? JSON.parse(localStorage.getItem('store_json'))
         : [],
-      current: "",
+      current: '',
       collpase: true,
       createShow: false,
-      name: "",
+      name: '',
       isDelete: false,
-      type: "add",
+      type: 'add',
     };
   },
   watch: {
@@ -31,7 +31,7 @@ export default {
     },
   },
   mounted() {
-    const pos = +(localStorage.getItem("json_menu_pos") || 0);
+    const pos = +(localStorage.getItem('json_menu_pos') || 0);
     this.clickList(pos, this.list[pos]);
   },
   methods: {
@@ -40,40 +40,40 @@ export default {
     },
     clickList(i, name) {
       this.current = i;
-      this.$emit("click-list", name);
+      this.$emit('click-list', name);
       this.saveMenuPosition();
     },
     saveMenuPosition() {
-      localStorage.setItem("json_menu_pos", this.current);
+      localStorage.setItem('json_menu_pos', this.current);
     },
     createHandler() {
-      this.type = "add";
+      this.type = 'add';
       this.createShow = true;
-      this.name = "";
+      this.name = '';
     },
     confirm() {
       if (this.list.includes(this.name))
-        return this.$Message.error("已存在该名称");
-      if (this.type === "add") this.list.push(this.name);
+        return this.$Message.error('已存在该名称');
+      if (this.type === 'add') this.list.push(this.name);
       else this.list[this.current] = this.name;
-      localStorage.setItem("store_json", JSON.stringify(this.list));
+      localStorage.setItem('store_json', JSON.stringify(this.list));
       this.createShow = false;
       this.isDelete = false;
     },
     edit(name) {
-      this.type = "edit";
+      this.type = 'edit';
       this.name = name;
       this.createShow = true;
       this.isDelete = true;
     },
     deleteHandler() {
       this.list.splice(this.current, 1);
-      localStorage.setItem("store_json", JSON.stringify(this.list));
-      const data = localStorage.getItem("json_form_list")
-        ? JSON.parse(localStorage.getItem("json_form_list"))
+      localStorage.setItem('store_json', JSON.stringify(this.list));
+      const data = localStorage.getItem('json_form_list')
+        ? JSON.parse(localStorage.getItem('json_form_list'))
         : {};
       delete data[this.name];
-      localStorage.setItem("json_form_list", JSON.stringify(data));
+      localStorage.setItem('json_form_list', JSON.stringify(data));
       this.isDelete = false;
       this.createShow = false;
       const pos = this.current - 1;
@@ -88,7 +88,7 @@ export default {
     <nav aria-label="Content-Type Builder" class="sc-kBHgYv dEPNRG">
       <div class="sc-bcGyXE erdTfC">
         <div class="sc-bcGyXE sc-kiowOE hyPoxK bwmCs">
-          <h2 class="sc-ijeLaK heUJcp">{{ title || "Content" }}</h2>
+          <h2 class="sc-ijeLaK heUJcp">{{ title || 'Content' }}</h2>
         </div>
         <div class="sc-bcGyXE epXjzL">
           <hr class="sc-bcGyXE sc-dbqYyY gdIlBK lexqVX sc-dBGsNe cyIHrr" />
@@ -341,7 +341,7 @@ export default {
   transition-property: all;
   transition-duration: 0.2s;
   border-radius: 8px;
-  content: "";
+  content: '';
   position: absolute;
   inset: -4px;
   border: 2px solid transparent;

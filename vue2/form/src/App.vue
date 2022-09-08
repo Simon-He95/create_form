@@ -71,12 +71,12 @@ export default {
   },
 };
 </script>
-
-<template>
+  
+  <template>
   <div id="json_form">
     <div class="sc-dvQaRk sc-TBWPX dPOXkr hAgEcW">
       <MenuWrapper @clickMenu="clickMenu" />
-      <div class="fzVfup" style="width: 100%">
+      <div class="fzVfup" w-full>
         <Menu ref="menuEl" :title="title" @click-list="setName" />
         <div v-if="title === 'Content-Type Builder' && name" class="right">
           <Header
@@ -102,8 +102,8 @@ export default {
     </div>
   </div>
 </template>
-
-<style scoped>
+  
+  <style scoped>
 .hAgEcW {
   align-items: flex-start;
   display: flex;
@@ -123,3 +123,4 @@ export default {
   overflow-y: auto;
 }
 </style>
+  

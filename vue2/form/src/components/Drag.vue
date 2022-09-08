@@ -1,8 +1,8 @@
 <script>
-import draggable from "vuedraggable";
-import { nanoid } from "nanoid";
+import draggable from 'vuedraggable';
+import { nanoid } from 'nanoid';
 export default {
-  name: "Drag",
+  name: 'Drag',
   components: {
     Draggable: draggable,
   },
@@ -34,11 +34,11 @@ export default {
         const max = Math.max(lis1, lis2, lis3);
         for (let i = 0; i < max - lis2 - 1; i++) {
           const id = `${nanoid()}empty`;
-          this.list2.push({ label: "", id });
+          this.list2.push({ label: '', id });
         }
         for (let i = 0; i < max - lis3 - 1; i++) {
           const id = `${nanoid()}empty-1`;
-          this.list3.push({ label: "", id });
+          this.list3.push({ label: '', id });
         }
       },
       immediate: true,
@@ -51,16 +51,16 @@ export default {
         const { attribs } = this.data;
         const map = Object.keys(attribs).map((key) => attribs[key]);
         const l1 = map
-          .filter((item) => item.position.startsWith("0-"))
+          .filter((item) => item.position.startsWith('0-'))
           .sort(sortIndex);
         const l2 = map
-          .filter((item) => item.position.startsWith("1-"))
+          .filter((item) => item.position.startsWith('1-'))
           .sort(sortIndex);
         const l3 = map
-          .filter((item) => item.position.startsWith("2-"))
+          .filter((item) => item.position.startsWith('2-'))
           .sort(sortIndex);
         function sortIndex(a, b) {
-          return a.position.split("-")[1] - b.position.split("-")[1];
+          return a.position.split('-')[1] - b.position.split('-')[1];
         }
         this.list1 = this.transformData(l1);
         this.list2 = this.transformData(l2);
@@ -70,11 +70,11 @@ export default {
     },
     transformData(data) {
       if (!data.length) return data;
-      const [col, n] = data[0].position.split("-");
+      const [col, n] = data[0].position.split('-');
       if (+n === 0) return data;
       for (let i = +n - 1; i >= 0; i--) {
         data.unshift({
-          label: "",
+          label: '',
           id: nanoid(),
         });
       }
@@ -99,9 +99,9 @@ export default {
       const lis3 = this.list3.length;
       const max = Math.max(lis1, lis2, lis3);
       for (let i = 0; i <= max; i++) {
-        const l1 = this.list1[i] ? this.list1[i].label : "";
-        const l2 = this.list2[i] ? this.list2[i].label : "";
-        const l3 = this.list3[i] ? this.list3[i].label : "";
+        const l1 = this.list1[i] ? this.list1[i].label : '';
+        const l2 = this.list2[i] ? this.list2[i].label : '';
+        const l3 = this.list3[i] ? this.list3[i].label : '';
         if (!l1 && !l2 && !l3) {
           this.list1.splice(i, 1);
           this.list2.splice(i, 1);

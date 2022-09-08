@@ -1,21 +1,21 @@
 <script>
-import { nanoid } from "nanoid";
+import { nanoid } from 'nanoid';
 function addStyle(str) {
-  const s = document.createElement("style");
-  s.type = "text/css";
+  const s = document.createElement('style');
+  s.type = 'text/css';
   s.innerHTML = str;
   document.head.appendChild(s);
   return () => document.head.removeChild(s);
 }
 
 function isPlanObject(obj) {
-  return Object.prototype.toString.call(obj) === "[object Object]";
+  return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
 let remove;
-let styles = "";
+let styles = '';
 export default {
-  name: "JsonForm",
+  name: 'JsonForm',
   props: {
     schema: {
       type: Object,
@@ -28,7 +28,7 @@ export default {
       rules: {},
       groupData: {},
       dialogShow: false,
-      previewSrc: "",
+      previewSrc: '',
       count: 0,
       groupKeys: [],
     };
@@ -42,20 +42,20 @@ export default {
     judgeShow(formItemClass, show) {
       const el = document.querySelector(`.${formItemClass}`);
       if (!el) return;
-      if (!show) return (el.style.display = "block");
+      if (!show) return (el.style.display = 'block');
       for (let i = 0; i < show.length; i++) {
         const item = show[i];
         const val = this.model[item.relevancy];
         const type = item.controlType;
-        if (type === "value") {
-          if (!val) return (el.style.display = "none");
+        if (type === 'value') {
+          if (!val) return (el.style.display = 'none');
         } else {
           if (!item.controlReg) continue;
           const reg = new RegExp(item.controlReg);
-          if (!reg.test(val)) return (el.style.display = "none");
+          if (!reg.test(val)) return (el.style.display = 'none');
         }
       }
-      return (el.style.display = "block");
+      return (el.style.display = 'block');
     },
     getFormData() {
       this.groupKeys.forEach((key) => {
@@ -67,6 +67,7 @@ export default {
           return item;
         });
       });
+      console.log(this.model);
       return this.model;
     },
     validators(validator, key, rules) {
@@ -146,8 +147,8 @@ export default {
         return this.renderGroup(group, h, form, model, key);
       }
       const typeComponent = {
-        Text: (type = "text") =>
-          h("Input", {
+        Text: (type = 'text') =>
+          h('Input', {
             props: {
               value: model[key],
               type,
@@ -162,16 +163,16 @@ export default {
             },
           }),
         Email: () => typeComponent.Text(),
-        RichText: () => typeComponent.Text("textarea"),
-        Password: () => typeComponent.Text("password"),
+        RichText: () => typeComponent.Text('textarea'),
+        Password: () => typeComponent.Text('password'),
         Date: () => {
           const { type, format } = date || {};
           switch (type) {
-            case "time":
-              return h("TimePicker", {
+            case 'time':
+              return h('TimePicker', {
                 props: {
-                  value: model[key] || "",
-                  type: "time",
+                  value: model[key] || '',
+                  type: 'time',
                   confirm: true,
                   placeholder,
                   disabled,
@@ -180,11 +181,11 @@ export default {
                   input: (val) => this.modelValue(val, model, key),
                 },
               });
-            case "timezone":
-              return h("TimePicker", {
+            case 'timezone':
+              return h('TimePicker', {
                 props: {
                   value: model[key] || [],
-                  type: "timerange",
+                  type: 'timerange',
                   confirm: true,
                   disabled,
                 },
@@ -192,11 +193,11 @@ export default {
                   input: (val) => this.modelValue(val, model, key),
                 },
               });
-            case "datetime":
-              return h("DatePicker", {
+            case 'datetime':
+              return h('DatePicker', {
                 props: {
-                  value: model[key] || "",
-                  type: "datetime",
+                  value: model[key] || '',
+                  type: 'datetime',
                   format,
                   placeholder,
                 },
@@ -204,11 +205,11 @@ export default {
                   input: (val) => this.modelValue(val, model, key),
                 },
               });
-            case "datetimezone":
-              return h("DatePicker", {
+            case 'datetimezone':
+              return h('DatePicker', {
                 props: {
                   value: model[key] || [],
-                  type: "datetimerange",
+                  type: 'datetimerange',
                   format,
                   disabled,
                 },
@@ -216,11 +217,11 @@ export default {
                   input: (val) => this.modelValue(val, model, key),
                 },
               });
-            case "datezone":
-              return h("DatePicker", {
+            case 'datezone':
+              return h('DatePicker', {
                 props: {
                   value: model[key],
-                  type: "daterange",
+                  type: 'daterange',
                   format,
                   disabled,
                 },
@@ -229,10 +230,10 @@ export default {
                 },
               });
             default:
-              return h("DatePicker", {
+              return h('DatePicker', {
                 props: {
                   value: model[key],
-                  type: "date",
+                  type: 'date',
                   placeholder,
                   format,
                   disabled,
@@ -244,7 +245,7 @@ export default {
           }
         },
         Number: () =>
-          h("InputNumber", {
+          h('InputNumber', {
             props: {
               value: model[key] ? model[key] : null,
               class: className,
@@ -261,7 +262,7 @@ export default {
           }),
         Enumeration: () =>
           h(
-            "Select",
+            'Select',
             {
               props: {
                 value: isPlanObject(model[key]) ? model[key].value : model[key],
@@ -273,11 +274,11 @@ export default {
                 labelInValue: true,
               },
               on: {
-                "on-change": (val) => this.modelValue(val, model, key),
+                'on-change': (val) => this.modelValue(val, model, key),
               },
             },
             (options || []).map((item, i) =>
-              h("Option", {
+              h('Option', {
                 props: {
                   value: item.value,
                   label: item.label,
@@ -287,7 +288,7 @@ export default {
             )
           ),
         Boolean: () =>
-          h("i-switch", {
+          h('i-switch', {
             props: {
               value: model[key] || false,
               class: className,
@@ -298,9 +299,9 @@ export default {
               input: (val) => this.modelValue(val, model, key),
             },
           }),
-        Radio: (type = "radio") =>
+        Radio: (type = 'radio') =>
           h(
-            "RadioGroup",
+            'RadioGroup',
             {
               props: {
                 value: model[key],
@@ -314,7 +315,7 @@ export default {
             },
             (options || []).map((item) =>
               h(
-                type === "radio" ? "Radio" : "Radio-button",
+                type === 'radio' ? 'Radio' : 'Radio-button',
                 {
                   props: {
                     label: item.label,
@@ -326,9 +327,9 @@ export default {
               )
             )
           ),
-        Checkbox: (type = "checkbox") =>
+        Checkbox: (type = 'checkbox') =>
           h(
-            "CheckboxGroup",
+            'CheckboxGroup',
             {
               props: {
                 value: model[key] || [],
@@ -343,7 +344,7 @@ export default {
 
             (options || []).map((item, i) =>
               h(
-                type === "checkbox" ? "Checkbox" : "Checkbox-button",
+                type === 'checkbox' ? 'Checkbox' : 'Checkbox-button',
                 {
                   props: {
                     label: item.label,
@@ -356,10 +357,10 @@ export default {
               )
             )
           ),
-        CheckboxButton: () => typeComponent.Checkbox("checkboxButton"),
-        RadioButton: () => typeComponent.Radio("radioButton"),
+        CheckboxButton: () => typeComponent.Checkbox('checkboxButton'),
+        RadioButton: () => typeComponent.Radio('radioButton'),
         Cascader: () =>
-          h("Cascader", {
+          h('Cascader', {
             props: {
               value: model[key] || [],
               class: className,
@@ -370,7 +371,7 @@ export default {
               multiple: cascader.multiple,
               placeholder,
               filterable: true,
-              "collapse-tags-tooltip": true,
+              'collapse-tags-tooltip': true,
             },
             on: {
               input: (val) => this.modelValue(val, model, key),
@@ -378,40 +379,40 @@ export default {
           }),
         Upload: () => [
           h(
-            "Upload",
+            'Upload',
             {
               props: {
                 fileList: model[key] || [],
                 class: className,
-                action: upload.action || "#",
+                action: upload.action || '#',
                 autoUpload: false,
                 multiple: !!upload.multiple,
                 headers: upload.headers || {},
                 data: upload.data || {},
                 maxSize: upload.maxSize,
                 accept: upload.accept,
-                type: "drag",
+                type: 'drag',
                 disabled,
                 onChange: this.uploadChange,
                 onRemove: this.removeFile,
                 onPreview: this.onPreview,
               },
-              style: "display: inline-block;width:58px;",
+              style: 'display: inline-block;width:58px;',
               on: {
                 input: this.modelValue,
               },
             },
             [
               h(
-                "div",
+                'div',
                 {
-                  style: "width: 58px;height:58px;line-height: 58px;",
+                  style: 'width: 58px;height:58px;line-height: 58px;',
                 },
                 [
-                  h("Icon", {
-                    type: "ios-camera",
+                  h('Icon', {
+                    type: 'ios-camera',
                     props: {
-                      type: "ios-camera",
+                      type: 'ios-camera',
                       size: 20,
                     },
                   }),
@@ -420,7 +421,7 @@ export default {
             ]
           ),
           h(
-            "Modal",
+            'Modal',
             {
               props: {
                 visible: this.dialogShow,
@@ -434,10 +435,10 @@ export default {
             },
 
             [
-              h("img", {
-                class: "w-full",
+              h('img', {
+                class: 'w-full',
                 attrs: {
-                  alt: "Preview Image",
+                  alt: 'Preview Image',
                   src: this.previewSrc,
                 },
               }),
@@ -448,7 +449,7 @@ export default {
 
       return flag
         ? h(
-            "FormItem",
+            'FormItem',
             {
               props: {
                 label,
@@ -459,10 +460,10 @@ export default {
             },
             [
               h(
-                "div",
+                'div',
                 {
                   style:
-                    "width:100%;font-size:0.25rem;display:flex;line-height:1rem;color: rgba(75, 85, 99, 0.5); margin-bottom: 0.25rem;",
+                    'width:100%;font-size:0.25rem;display:flex;line-height:1rem;color: rgba(75, 85, 99, 0.5); margin-bottom: 0.25rem;',
                 },
                 description
               ),
@@ -475,15 +476,15 @@ export default {
           )
         : typeComponent[type]
         ? typeComponent[type]()
-        : "";
+        : '';
     },
     renderGroup(group, h, form, model, key) {
-      return h("div", [
+      return h('div', [
         group.map((item) =>
           this.getTypeComponent(h, item, this.groupData[key], true)
         ),
         h(
-          "Button",
+          'Button',
           {
             on: {
               click: () => {
@@ -491,26 +492,26 @@ export default {
                   JSON.parse(JSON.stringify(this.groupData[key]))
                 );
                 Object.keys(this.groupData[key]).forEach(
-                  (k) => (this.groupData[key][k] = "")
+                  (k) => (this.groupData[key][k] = '')
                 );
                 this.forceUpdate();
               },
             },
           },
-          "新增"
+          '新增'
         ),
         model[key]
           ? h(
-              "div",
+              'div',
               model[key].map((item, i) =>
                 h(
-                  "Tag",
+                  'Tag',
                   {
                     props: {
                       closable: true,
                     },
                     on: {
-                      "on-close": () => {
+                      'on-close': () => {
                         model[form[key].key].splice(i, 1);
                         this.forceUpdate();
                       },
@@ -519,12 +520,12 @@ export default {
                   item
                     ? Object.values(item)
                         .map((i) => (isPlanObject(i) ? i.label : i))
-                        .join(" / ")
-                    : ""
+                        .join(' / ')
+                    : ''
                 )
               )
             )
-          : "",
+          : '',
       ]);
     },
     renderForm(h, form = {}) {
@@ -562,7 +563,7 @@ export default {
 
         formList.push(
           h(
-            "FormItem",
+            'FormItem',
             {
               props: {
                 label,
@@ -573,9 +574,9 @@ export default {
             },
             [
               h(
-                "div",
+                'div',
                 {
-                  class: "mb1 w-full text-1 flex lh-1 text-gray-500",
+                  class: 'mb1 w-full text-1 flex lh-1 text-gray-500',
                 },
                 description
               ),
@@ -592,23 +593,23 @@ export default {
     },
     insertStyle(colorTitle, formItemClass, labelShow) {
       styles += `
-      .${formItemClass} .ivu-form-item-label{
-          padding:0!important;
-          margin-bottom:4px;
-        }
-      `;
+        .${formItemClass} .ivu-form-item-label{
+            padding:0!important;
+            margin-bottom:4px;
+          }
+        `;
       if (colorTitle) {
         styles += `
-                .${formItemClass} .ivu-form-item-label{
-                  color:${colorTitle};
-                  ${!labelShow ? "visibility: hidden" : ""}
-                }
-                `;
+                  .${formItemClass} .ivu-form-item-label{
+                    color:${colorTitle};
+                    ${!labelShow ? 'visibility: hidden' : ''}
+                  }
+                  `;
       } else if (!labelShow) {
         styles += `.${formItemClass} .ivu-form-item-label{
-            visibility: hidden;
-                }
-                `;
+              visibility: hidden;
+                  }
+                  `;
       }
     },
     forceUpdate() {
@@ -619,33 +620,33 @@ export default {
     this.count;
     return this.schema
       ? h(
-          "div",
+          'div',
           {
             style: {
-              textAlign: "left",
+              textAlign: 'left',
             },
-            class: "json_schema",
+            class: 'json_schema',
           },
           [
             h(
-              "h3",
+              'h3',
               {
-                class: "text-2xl mb-2",
+                class: 'text-2xl mb-2',
               },
               this.schema.name
             ),
             h(
-              "h1",
+              'h1',
               {
-                class: "text-sm mb-3",
+                class: 'text-sm mb-3',
               },
               this.schema.description
             ),
             h(
-              "Form",
+              'Form',
               {
                 props: {
-                  ref: "formEl",
+                  ref: 'formEl',
                   model: this.model,
                   rules: this.rules,
                   class: this.schema.class,
@@ -655,7 +656,7 @@ export default {
             ),
           ]
         )
-      : "";
+      : '';
 
     function wrapper(data = []) {
       if (remove) remove();
@@ -665,17 +666,17 @@ export default {
       remove = addStyle(styles);
       const g1 = transformData(
         data
-          .filter((item) => item.data.props.position.startsWith("0-"))
+          .filter((item) => item.data.props.position.startsWith('0-'))
           .sort(sortIndex)
       );
       const g2 = transformData(
         data
-          .filter((item) => item.data.props.position.startsWith("1-"))
+          .filter((item) => item.data.props.position.startsWith('1-'))
           .sort(sortIndex)
       );
       const g3 = transformData(
         data
-          .filter((item) => item.data.props.position.startsWith("2-"))
+          .filter((item) => item.data.props.position.startsWith('2-'))
           .sort(sortIndex)
       );
       const result = Array.from({
@@ -689,7 +690,7 @@ export default {
         l_1 &&
           col.push(
             h(
-              "Col",
+              'Col',
               { props: { span: level === 3 ? 8 : level === 2 ? 12 : 24 } },
               [g1[i]]
             )
@@ -697,7 +698,7 @@ export default {
         l_2 &&
           col.push(
             h(
-              "Col",
+              'Col',
               { props: { span: level === 3 ? 8 : level === 2 ? 12 : 24 } },
               [g2[i]]
             )
@@ -705,20 +706,20 @@ export default {
         l_3 &&
           col.push(
             h(
-              "Col",
+              'Col',
               { props: { span: level === 3 ? 8 : level === 2 ? 12 : 24 } },
               [g3[i]]
             )
           );
         const group = g1[i].data ? g1[i].data.props.group : undefined;
-        const data = h("Row", { props: { gutter: 10 } }, col);
+        const data = h('Row', { props: { gutter: 10 } }, col);
         return group
-          ? h("div", [
+          ? h('div', [
               h(
-                "div",
+                'div',
                 {
                   attrs: {
-                    style: "height:40px;line-height:40px;",
+                    style: 'height:40px;line-height:40px;',
                   },
                 },
                 group
@@ -732,16 +733,16 @@ export default {
       function sortIndex(a, b) {
         return !b
           ? -1
-          : a.data.props.position.split("-")[1] -
-              b.data.props.position.split("-")[1];
+          : a.data.props.position.split('-')[1] -
+              b.data.props.position.split('-')[1];
       }
       function transformData(data) {
         if (!data.length) return [];
-        const [col, n] = data[0].data.props.position.split("-");
+        const [col, n] = data[0].data.props.position.split('-');
         if (+n === 0) return data;
         for (let i = +n - 1; i >= 0; i--) {
           data.unshift({
-            label: "",
+            label: '',
             id: nanoid(),
           });
         }
