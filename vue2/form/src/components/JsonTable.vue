@@ -5,7 +5,6 @@ import Footer from "./Footer.vue";
 import JsonTabs from "./JsonTabs.vue";
 import Drag from "./Drag.vue";
 import Group from "./Group.vue";
-import JsonButton from "./JsonButton.vue";
 export default {
   name: "JsonTable",
   components: {
@@ -13,7 +12,6 @@ export default {
     JsonTabs,
     Drag,
     Group,
-    JsonButton,
     // VueJsonEditor: vueJsonEditor,
   },
   props: {
@@ -38,6 +36,11 @@ export default {
         {
           title: "标签名",
           key: "label",
+          resizable: true,
+        },
+        {
+          title: "键名",
+          key: "key",
           resizable: true,
         },
         {
@@ -75,11 +78,11 @@ export default {
           },
         },
       ],
-      labelShow: true,
       dragShow: false,
       dialogVisible: false,
       tableData: [],
       current: "",
+      map: "",
       cardType: "",
       cardShow: true,
       type: "add",
@@ -106,7 +109,6 @@ export default {
       multiple: false,
       controllers: [{ relevancy: "", controlType: "", controlReg: "" }],
       buttonType: ["Radio", "RadioButton"],
-      key: 0,
       sizeOptions: ["default", "small", "large"],
       formatOptions: [
         {
@@ -245,7 +247,6 @@ export default {
         },
       ],
       mode: "code",
-      json: "",
       types: [
         {
           name: "文本",
@@ -303,11 +304,6 @@ export default {
           value: "Cascader",
         },
         {
-          name: "按钮",
-          description: "按钮",
-          value: "Button",
-        },
-        {
           name: "组",
           description: "组合",
           value: "Group",
@@ -317,13 +313,14 @@ export default {
       controlTypes: ["value", "regExp"],
       showType: ["Radio", "RadioButton", "Checkbox", "CheckboxButton"],
       join: false,
-      mapKey: "",
+      key: "",
       options: [],
       option_label: "",
       option_value: "",
       groupOptions: [],
       buttonContent: "",
       groupValue: "",
+      currentGroup: {},
       id: "",
     };
   },
@@ -340,16 +337,13 @@ export default {
   },
   methods: {
     editHandler(row) {
+      console.log(row, this.tableData);
       this.type = "edit";
       this.id = row.id;
-      if (row.type === "Group" || row.type === "Button") {
+      if (row.type === "Group") {
         this.cardShow = false;
         this.cardType = row.type;
-        if (row.button) {
-          this.groupValue = row.button.value;
-          this.buttonContent = row.button.content;
-          this.getGroupOptions();
-        }
+        this.currentGroup = row;
         return (this.dialogVisible = true);
       }
       if (row.type === "Checkbox")
@@ -364,7 +358,7 @@ export default {
       ];
       this.multiple = row.multiple;
       this.current = this.input = row.label;
-      this.mapKey = row.mapKey;
+      this.key = row.key;
       this.group = row.group;
       this.groupKey = row.groupKey;
       if (row.rules) {
@@ -376,7 +370,6 @@ export default {
       this.options = row.options;
       this.cardShow = false;
       this.cardType = row.type;
-      this.labelShow = row.labelShow;
       this.join = !!row.join;
       this.defaultvalue = row.default;
       this.placeholder = row.placeholder;
@@ -411,7 +404,6 @@ export default {
       return this.tableData.map((item) => item.label);
     },
     confirm() {
-      if (this.cardType === "Button") return this.buttonConfirm();
       if (this.cardType === "Group") return this.groupConfirm();
       if (
         this.current !== this.input &&
@@ -419,8 +411,8 @@ export default {
       ) {
         return this.$Message.error("该字段名已存在.");
       }
-      if (!this.input) {
-        return this.$Message.error("Name 是必输项");
+      if (!this.key) {
+        return this.$Message.error("键名 是必输项");
       }
       const r = this.controllers
         .map((item) => ({
@@ -439,11 +431,9 @@ export default {
         rules: this.rules,
         default: this.defaultvalue || null,
         required: this.required,
-        position: `0-${this.key - 1}`,
         colorTitle: this.colorTitle,
         size: this.size,
-        labelShow: this.labelShow,
-        mapKey: this.mapKey || this.input,
+        key: this.key || this.input,
         options: this.options,
         len: this.len,
         multiple: this.multiple,
@@ -459,7 +449,6 @@ export default {
       if (this.group) data["group"] = this.group;
       if (this.groupKey) data["groupKey"] = this.groupKey;
 
-      this.key++;
       if (this.type === "add") {
         this.tableData = [...this.tableData, data];
       } else {
@@ -483,10 +472,7 @@ export default {
         id: nanoid(),
       };
       this.tableData.reduce((result, item) => {
-        if (item.type === "Button") {
-          result.button = result.button || {};
-          result.button[item.button.value] = item.button.content;
-        } else result[item.label] = item;
+        result[item.key] = item;
         return result;
       }, result.attribs);
       return result;
@@ -511,11 +497,10 @@ export default {
       if (this.cardType === "Checkbox")
         this.buttonType = ["Checkbox", "CheckboxButton"];
       if (this.cardType === "Radio") this.buttonType = ["Radio", "RadioButton"];
-      if (this.cardType === "Button") this.getGroupOptions();
       this.focusName();
     },
     focusName() {
-      if (this.cardType === "Group" || this.cardType === "Button") return;
+      if (this.cardType === "Group") return;
       this.$nextTick(() => {
         this.$refs.nameEl.focus();
       });
@@ -529,14 +514,13 @@ export default {
     },
     resetData() {
       this.cardShow = true;
-      this.mapKey = "";
+      this.key = "";
       this.id = "";
       this.cardType = "";
       this.description = "";
       this.groupKey = "";
       this.placeholder = "";
       this.group = "";
-      this.labelShow = true;
       this.join = false;
       this.rules = [];
       this.options = [];
@@ -545,6 +529,8 @@ export default {
       this.input = "";
       this.colorTitle = "";
       this.size = "default";
+      this.buttonContent = "";
+      this.groupValue = "";
       this.defaultvalue = "";
       this.min = false;
       this.max = false;
@@ -554,7 +540,6 @@ export default {
       this.type = "add";
       this.multiple = false;
       this.datetype = "";
-      this.key = this.key + 1;
       this.option_label = "";
       this.option_value = "";
       this.len = {
@@ -571,21 +556,7 @@ export default {
     },
     restoreData() {
       const attribs = JSON.parse(JSON.stringify(this.schema.attribs));
-      this.tableData = Object.keys(attribs).map((key) => {
-        if (key === "button") {
-          const value = Object.keys(attribs[key])[0];
-          const content = attribs[key][value];
-          return {
-            label: "button",
-            type: "Button",
-            button: {
-              content,
-              value,
-            },
-          };
-        }
-        return attribs[key] || {};
-      });
+      this.tableData = Object.keys(attribs).map((key) => attribs[key] || {});
     },
     deleteReg(i) {
       this.rules.splice(i, 1);
@@ -605,62 +576,34 @@ export default {
     },
     groupConfirm() {
       const { filters, group } = this.$refs.GroupEl.save();
+      const { id, children } = group;
       const data = {
         type: "Group",
-        label: "group",
+        label: group.label,
+        key: group.key,
         filters,
-        group,
+        id,
+        group: children,
       };
       if (this.type === "add") {
-        if (this.hasGroup()) return this.$Message.error("只能添加一个分组");
-        this.tableData = [...this.tableData, data];
+        this.tableData.push(data);
       } else {
-        const idx = this.tableData.findIndex((item) => item.type === "Group");
+        const idx = this.tableData.findIndex(
+          (item) => item.id === this.currentGroup.id
+        );
         this.$set(this.tableData, idx, data);
         this.current = null;
       }
       this.dialogVisible = false;
     },
     getGroupOptions() {
-      this.groupOptions = this.tableData
-        .map((item) => item.type === "Group" && (item.group[0] || []))
-        .filter(Boolean)
-        .map((item) => ({ label: item.label, value: item.key }));
-    },
-    hasGroup() {
-      for (let i = 0; i < this.tableData.length; i++) {
-        if (this.tableData[i].type === "Group") return true;
-      }
-      return false;
-    },
-    buttonConfirm() {
-      const { content, group } = this.$refs.JsonButtonEl.save();
-      if (!group || !content)
-        return this.$Message.error("按钮需要指定一个分组和内容");
-      const data = {
-        type: "Button",
-        label: "button",
-        button: {
-          value: group,
-          content,
-        },
-      };
-      if (this.type === "add") {
-        this.tableData = [...this.tableData, data];
-      } else {
-        const idx = this.tableData.findIndex(
-          (item) => item.label === this.current
-        );
-        this.$set(
-          this.tableData,
-          idx,
-          Object.assign(data, { position: this.tableData[idx].position })
-        );
-        this.current = null;
-      }
-      this.groupValue = "";
-      this.buttonContent = "";
-      this.dialogVisible = false;
+      const groups = this.tableData.filter((item) => item.type === "Group")[0];
+      this.groupOptions = groups
+        ? groups.group.map((item) => {
+            return { label: item.label, value: item.key };
+          })
+        : [];
+      console.log(this.groupOptions);
     },
   },
   computed: {
@@ -686,9 +629,14 @@ export default {
   },
 };
 </script>
-
-<template>
-  <div id="form_wrapper" font-sans text="center gray-700 dark:gray-200">
+    
+    <template>
+  <div
+    id="form_wrapper"
+    font-sans
+    p="x-4 y-10"
+    text="center gray-700 dark:gray-200"
+  >
     <Modal
       v-model="dialogVisible"
       :title="name"
@@ -696,32 +644,28 @@ export default {
       :modal="false"
       :before-close="handleClose"
     >
-      <div v-show="cardShow" style="margin-bottom: 24px">
+      <div v-show="cardShow" mb6>
         <div class="sc-dvQaRk sc-TBWPX exyKSe fkEccH">
           <h2 class="sc-bvFjSx inqAba">请选择一个模板类型</h2>
         </div>
         <hr class="sc-ljMRFG sc-jwQYvw fYRdMc goLodl" />
       </div>
       <JsonTabs v-show="cardShow" :types="types" @choose="choose" />
-      <json-button
-        v-if="cardType === 'Button'"
-        :options="groupOptions"
-        :group="groupValue"
-        :content="buttonContent"
-        ref="JsonButtonEl"
+      <Group
+        v-if="cardType === 'Group'"
+        :data="tableData"
+        ref="GroupEl"
+        :currentGroup="currentGroup"
+        :type="type"
       />
-      <Group v-else-if="cardType === 'Group'" :data="tableData" ref="GroupEl" />
-
       <template v-else>
-        <div v-if="cardType" class="relative">
-          <div
-            class="absolute left-0 top-0 h-10 lh-10 text-5 font-600 text-black"
-          >
+        <div v-if="cardType" relative>
+          <div absolute left-0 top-0 h-10 lh-10 text-4 font-600 text-black>
             {{ type === "add" ? "新增" : "编辑" }}{{ cardType }}项
           </div>
 
           <Form>
-            <Tabs v-model="activeName" class="demo-tabs px-1">
+            <Tabs v-model="activeName" class="demo-tabs" px1>
               <TabPane label="基础设置" name="first">
                 <div class="grid grid-cols-3 gap-2">
                   <FormItem label="标签名:">
@@ -780,15 +724,15 @@ export default {
                       />
                     </Select>
                   </FormItem>
-                  <FormItem label="Key:">
-                    <Input v-model="mapKey" placeholder="Please input Key" />
+                  <FormItem label="键名:">
+                    <Input v-model="key" placeholder="Please input Key" />
                   </FormItem>
-                  <FormItem label="标签名可见:">
+                  <!-- <FormItem label="标签名可见:">
                     <i-switch v-model="labelShow"> </i-switch>
-                  </FormItem>
-                  <FormItem label="标题颜色:">
+                  </FormItem> -->
+                  <!-- <FormItem label="标题颜色:">
                     <ColorPicker v-model="colorTitle" />
-                  </FormItem>
+                  </FormItem> -->
                   <FormItem v-show="showType.includes(cardType)" label="类型:">
                     <Select v-model="cardType" placeholder="Pick Size">
                       <Option
@@ -799,98 +743,52 @@ export default {
                       />
                     </Select>
                   </FormItem>
-                  <FormItem
-                    v-if="multipleShow"
-                    label="是否多选:"
-                    style="margin-left: 10px"
-                  >
+                  <FormItem v-if="multipleShow" label="是否多选:">
                     <i-switch v-model="multiple" />
                   </FormItem>
-                  <FormItem v-if="joinShow" label="开启合并结果:">
-                    <i-switch v-model="join" />
-                  </FormItem>
-
-                  <div style="margin-top: 20px; width: 100%" v-if="jsonShow">
-                    <div style="display: flex; gap: 0.5rem; margin-bottom: 5px">
+                  <FormItem
+                    v-if="jsonShow"
+                    label="选项"
+                    style="grid-column-start: span 2"
+                  >
+                    <div flex="~ gap-2">
                       <Input v-model="option_label" placeholder="下拉项名" />
                       <Input v-model="option_value" placeholder="下拉项值" />
                       <Button type="info" @click="addTag">新增</Button>
+                      <Tag
+                        v-for="(item, i) in options"
+                        :key="item.value"
+                        :name="item.label"
+                        closable
+                        @on-close="closeTag(i)"
+                        >{{ item.label }}/{{ item.value }}</Tag
+                      >
                     </div>
-                    <Tag
-                      v-for="(item, i) in options"
-                      :key="item.value"
-                      :name="item.label"
-                      closable
-                      @on-close="closeTag(i)"
-                      >{{ item.label }}/{{ item.value }}</Tag
-                    >
                     <!-- <VueJsonEditor
                   style="margin-top: 20px; text-align: left"
                   v-model="options"
                   :expanded-on-start="true"
                   :mode="mode"
                 /> -->
-                  </div>
+                  </FormItem>
+                  <FormItem v-if="joinShow" label="开启合并结果:">
+                    <i-switch v-model="join" />
+                  </FormItem>
                 </div>
               </TabPane>
               <TabPane label="高级设置" name="second">
-                <div class="flex gap-1">
-                  <FormItem label="默认值" flex-col items-start>
+                <div grid gap-2 grid-cols-3>
+                  <FormItem label="默认值">
                     <Input v-model="defaultvalue" />
                   </FormItem>
                   <FormItem label="是否必输">
                     <i-switch v-model="required"></i-switch>
                   </FormItem>
                 </div>
-                <!-- <div class="flex flex-col item-start">
-                  <h3 text-black text-6>表单组</h3>
-                  <div class="wrapper left">
-                    <FormItem label="Group">
-                      <Input v-model="group" />
-                    </FormItem>
-                    <FormItem label="GroupKey">
-                      <Input v-model="groupKey" />
-                    </FormItem>
-                  </div>
-                </div> -->
-                <div
-                  class="flex flex-col item-start"
-                  style="margin-bottom: 20px"
-                >
-                  <h3 style="margin-bottom: 10px">规则校验</h3>
-                  <div
-                    class="wrapper"
-                    text-left
-                    v-for="(item, i) in rules"
-                    :key="i"
-                  >
-                    <FormItem label="正则" flex-col items-start w-12>
-                      <Input v-model="item.regExp" />
-                    </FormItem>
-                    <FormItem
-                      v-show="item.regExp"
-                      label="错误消息"
-                      flex-col
-                      items-start
-                      w-12
-                    >
-                      <Input v-model="item.errMsg" />
-                    </FormItem>
-                    <FormItem label=" " flex-col items-start>
-                      <Button @click="deleteReg(i)">删除</Button>
-                    </FormItem>
-                  </div>
-                  <Button @click="rules.push({ regExp: '', errMsg: '' })"
-                    >新增规则</Button
-                  >
-                </div>
-                <div
-                  class="flex flex-col item-start"
-                  style="margin-bottom: 20px"
-                >
-                  <h3 text-black text-6>设置</h3>
-                  <div class="wrapper left">
-                    <div w-15 text-left flex flex-col>
+                <div mb4>
+                  <h3 mb2>设置</h3>
+                  <div grid gap-2 grid-cols-2>
+                    <div>
                       <Checkbox v-model="min" size="large">最小值</Checkbox>
                       <InputNumber
                         v-show="min"
@@ -901,7 +799,7 @@ export default {
                         controls-position="right"
                       />
                     </div>
-                    <div w-15 text-left flex flex-col>
+                    <div>
                       <Checkbox v-model="max" size="large">最大值</Checkbox>
                       <InputNumber
                         v-show="max"
@@ -914,18 +812,37 @@ export default {
                     </div>
                   </div>
                 </div>
-                <div class="wrapper">
-                  <h3 text-black text-6>显隐关联</h3>
-                  <div
-                    v-for="(item, idx) in controllers"
-                    :key="idx"
-                    class="wrapper gap-2 relative"
+                <div mb4>
+                  <h3 mb2>规则校验</h3>
+                  <div v-for="(item, i) in rules" :key="i" flex="~ gap-2">
+                    <FormItem label="正则" class="w-45%">
+                      <Input v-model="item.regExp" />
+                    </FormItem>
+                    <FormItem
+                      v-show="item.regExp"
+                      label="错误消息"
+                      class="w-45%"
+                    >
+                      <Input v-model="item.errMsg" />
+                    </FormItem>
+                    <div text-right>
+                      <Icon type="md-close" size="20" @click="deleteReg(i)" />
+                    </div>
+                  </div>
+
+                  <Button
+                    icon="md-add"
+                    @click="rules.push({ regExp: '', errMsg: '' })"
+                    >新增规则</Button
                   >
+                </div>
+                <div>
+                  <h3 mb2>显隐关联</h3>
+                  <div v-for="(item, idx) in controllers" :key="idx" relative>
                     <div
-                      v-show="idx > 0"
+                      v-show="idx >= 0"
                       absolute
-                      right-0
-                      top-2
+                      class="right-0 top-2"
                       @click="controllers.splice(idx, 1)"
                     >
                       <svg
@@ -940,8 +857,8 @@ export default {
                         />
                       </svg>
                     </div>
-                    <div class="wrapper gap-2" style="flex-wrap: nowrap">
-                      <FormItem label="选择关联字段" flex-col items-start w-15>
+                    <div grid grid-cols-3 gap-2>
+                      <FormItem label="选择关联字段">
                         <Select
                           v-model="item.relevancy"
                           placeholder="Select"
@@ -958,13 +875,7 @@ export default {
                           />
                         </Select>
                       </FormItem>
-                      <FormItem
-                        v-show="item.relevancy"
-                        label="选择规则"
-                        flex-col
-                        items-start
-                        w-15
-                      >
+                      <FormItem v-show="item.relevancy" label="选择规则">
                         <Select v-model="item.controlType" placeholder="Select">
                           <Option
                             v-for="i in controlTypes"
@@ -976,16 +887,14 @@ export default {
                       </FormItem>
                       <FormItem
                         v-show="item.controlType === 'regExp'"
-                        label="regExp"
-                        flex-col
-                        items-start
-                        w-15
+                        label="正则"
                       >
                         <Input v-model="item.controlReg" input-style="h-full" />
                       </FormItem>
                     </div>
                   </div>
                   <Button
+                    icon="md-add"
                     @click="
                       controllers.push({
                         relevancy: '',
@@ -1020,8 +929,8 @@ export default {
     <Table :data="tableData" :columns="tableColumns"> </Table>
   </div>
 </template>
-
-<style scoped>
+    
+    <style scoped>
 /deep/ .ivu-modal-footer {
   padding: 0;
   position: sticky;
@@ -1053,14 +962,6 @@ export default {
   background: rgb(234, 234, 239);
 }
 
-.wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  width: 100%;
-  align-items: center;
-}
-
 .demo-tabs /deep/ .ivu-tabs-nav {
   float: right !important;
 }
@@ -1072,4 +973,17 @@ export default {
 .demo-tabs /deep/ .ivu-form-item .ivu-form-item-content {
   width: 100%;
 }
+.demo-tabs /deep/ .ivu-tabs-nav .ivu-tabs-tab {
+  font-size: 12px;
+  padding: 16px;
+}
+.demo-tabs /deep/ .ivu-checkbox-wrapper.ivu-checkbox-large {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+.demo-tabs /deep/ .ivu-checkbox-wrapper.ivu-checkbox-large .ivu-checkbox {
+  padding-right: 8px;
+}
 </style>
+    

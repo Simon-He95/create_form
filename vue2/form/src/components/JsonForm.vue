@@ -8,8 +8,8 @@ function addStyle(str) {
   return () => document.head.removeChild(s);
 }
 
-function isPlanObject(obj){
-  return Object.prototype.toString.call(obj) === '[object Object]'
+function isPlanObject(obj) {
+  return Object.prototype.toString.call(obj) === "[object Object]";
 }
 
 let remove;
@@ -29,8 +29,8 @@ export default {
       groupData: {},
       dialogShow: false,
       previewSrc: "",
-      count:0,
-      groupKeys:[]
+      count: 0,
+      groupKeys: [],
     };
   },
   watch: {
@@ -58,17 +58,16 @@ export default {
       return (el.style.display = "block");
     },
     getFormData() {
-      this.groupKeys.forEach(key=>{
-        this.model[key] = this.model[key].map(item=>{
-          Object.keys(item).forEach(_key=>{
-            const value = item[_key]
-            if(isPlanObject(value) && value.value)
-              item[_key] = value.value
-          })
-          return item
-        })
-      })
-      return this.model
+      this.groupKeys.forEach((key) => {
+        this.model[key] = this.model[key].map((item) => {
+          Object.keys(item).forEach((_key) => {
+            const value = item[_key];
+            if (isPlanObject(value) && value.value) item[_key] = value.value;
+          });
+          return item;
+        });
+      });
+      return this.model;
     },
     validators(validator, key, rules) {
       if (validator) {
@@ -111,6 +110,11 @@ export default {
       // this.schema.attribs[key].default = val;
     },
     getTypeComponent(h, form, model, key) {
+      let flag = false;
+      if (key === true) {
+        flag = true;
+        key = undefined;
+      }
       const {
         type,
         cascader,
@@ -129,61 +133,17 @@ export default {
         debounce = 300,
         placeholder,
         group,
-        mapKey,
+        key: mapKey,
         label,
+        customRender,
+        description,
+        required,
       } = form[key] || form;
       if (key && value) model[key] = value;
-      key = key || mapKey || label;
+      key = key || mapKey;
       const { min, max } = len || {};
-      if (key === "button") return;
       if (group) {
-        const button = form.button ? form.button[key] : undefined;
-        if (!this.groupData[form[key].key]) {
-          this.$set(this.groupData, form[key].key, {});
-        }
-        return h("div", [
-          form[key].children.map((item) =>
-            this.getTypeComponent.call(this,h, item, this.groupData[form[key].key])
-          ),
-          button
-            ? h(
-                "Button",
-                {
-                  on: {
-                    click: () => {
-                      if(!this.model[form[key].key])this.$set(this.model,form[key].key,[])
-                      this.model[form[key].key].push({
-                        ...JSON.parse(JSON.stringify(this.groupData[form[key].key])),
-                      });
-                      this.groupData[form[key].key] = Object.keys(
-                        this.groupData[form[key].key]
-                      ).forEach((k) => (this.groupData[form[key].key][k] = ""));
-                    },
-                  },
-                },
-                button
-              )
-            : "",
-          this.model[form[key].key]
-            ? h(
-                "div",
-                this.model[form[key].key].map((item, i) =>
-                  h(
-                    "Tag",
-                    {
-                      props: {
-                        closable: true,
-                      },
-                      on: {
-                        "on-close": () => this.model[form[key].key].splice(i, 1),
-                      },
-                    },
-                    item ? Object.values(item).map(i=>isPlanObject(i)?i.label:i).join(' / ') : ""
-                  )
-                )
-              )
-            : "",
-        ]);
+        return this.renderGroup(group, h, form, model, key);
       }
       const typeComponent = {
         Text: (type = "text") =>
@@ -304,18 +264,16 @@ export default {
             "Select",
             {
               props: {
-                value: isPlanObject(model[key])
-                ? model[key].value
-                : model[key],
+                value: isPlanObject(model[key]) ? model[key].value : model[key],
                 class: className,
                 style,
                 disabled,
                 placeholder,
                 multiple,
-                labelInValue:true
+                labelInValue: true,
               },
               on: {
-                'on-change': (val) => this.modelValue(val, model, key),
+                "on-change": (val) => this.modelValue(val, model, key),
               },
             },
             (options || []).map((item, i) =>
@@ -487,30 +445,107 @@ export default {
           ),
         ],
       };
-      return typeComponent[type]();
 
+      return flag
+        ? h(
+            "FormItem",
+            {
+              props: {
+                label,
+                prop: key,
+                required: !!required,
+              },
+              class: `json_${nanoid()} mb4!`,
+            },
+            [
+              h(
+                "div",
+                {
+                  style:
+                    "width:100%;font-size:0.25rem;display:flex;line-height:1rem;color: rgba(75, 85, 99, 0.5); margin-bottom: 0.25rem;",
+                },
+                description
+              ),
+              customRender
+                ? customRender(h, function (val) {
+                    model[key] = val;
+                  })
+                : typeComponent[type](),
+            ]
+          )
+        : typeComponent[type]
+        ? typeComponent[type]()
+        : "";
+    },
+    renderGroup(group, h, form, model, key) {
+      return h("div", [
+        group.map((item) =>
+          this.getTypeComponent(h, item, this.groupData[key], true)
+        ),
+        h(
+          "Button",
+          {
+            on: {
+              click: () => {
+                model[key].push(
+                  JSON.parse(JSON.stringify(this.groupData[key]))
+                );
+                Object.keys(this.groupData[key]).forEach(
+                  (k) => (this.groupData[key][k] = "")
+                );
+                this.forceUpdate();
+              },
+            },
+          },
+          "新增"
+        ),
+        model[key]
+          ? h(
+              "div",
+              model[key].map((item, i) =>
+                h(
+                  "Tag",
+                  {
+                    props: {
+                      closable: true,
+                    },
+                    on: {
+                      "on-close": () => {
+                        model[form[key].key].splice(i, 1);
+                        this.forceUpdate();
+                      },
+                    },
+                  },
+                  item
+                    ? Object.values(item)
+                        .map((i) => (isPlanObject(i) ? i.label : i))
+                        .join(" / ")
+                    : ""
+                )
+              )
+            )
+          : "",
+      ]);
     },
     renderForm(h, form = {}) {
-      const { filters = [], group = [] } = form.group || [];
-      filters.forEach((item) => delete form[item]);
-      group.forEach((item) => {
-        form[item.key] = item;
-        if(!this.model[item.key])
-        this.$set(this.model, item.key, []);
-        if(!this.groupKeys.includes(item.key))
-          this.groupKeys.push(item.key)
-        if (item.key) this.$set(this.groupData, item.key, {});
+      let filters = [];
+      const groupKeys = [];
+      Object.keys(form).forEach((key) => {
+        const item = form[key];
+        if (!item.group) return;
+        groupKeys.push(item.key);
+        filters = [...new Set([...filters, ...item.filters])];
+        if (!this.groupData[item.key]) this.$set(this.groupData, item.key, {});
+        this.model[item.key] = this.model[item.key] || [];
       });
-      delete form.group;
+      this.groupKeys = groupKeys;
+      filters.forEach((filter) => delete form[filter]);
       return Object.keys(form).reduce((formList, key) => {
         const {
-          group,
           colorTitle,
           label,
           rules = [],
           required,
-          labelShow,
-          position,
           description,
           show,
           validator,
@@ -523,7 +558,7 @@ export default {
         this.validators(validator, key, rules);
 
         // 注入style
-        this.insertStyle(colorTitle, formItemClass, labelShow);
+        this.insertStyle(colorTitle, formItemClass, label);
 
         formList.push(
           h(
@@ -533,8 +568,6 @@ export default {
                 label,
                 prop: key,
                 required: !!required,
-                position,
-                group,
               },
               class: formItemClass,
             },
@@ -542,8 +575,7 @@ export default {
               h(
                 "div",
                 {
-                  style:
-                    "width:100%;font-size:0.25rem;display:flex;line-height:1rem;color: rgba(75, 85, 99, 0.5); margin-bottom: 0.25rem;",
+                  class: "mb1 w-full text-1 flex lh-1 text-gray-500",
                 },
                 description
               ),
@@ -559,6 +591,12 @@ export default {
       }, []);
     },
     insertStyle(colorTitle, formItemClass, labelShow) {
+      styles += `
+      .${formItemClass} .ivu-form-item-label{
+          padding:0!important;
+          margin-bottom:4px;
+        }
+      `;
       if (colorTitle) {
         styles += `
                 .${formItemClass} .ivu-form-item-label{
@@ -573,12 +611,12 @@ export default {
                 `;
       }
     },
-    forceUpdate(){
-      this.count++
-    }
+    forceUpdate() {
+      this.count++;
+    },
   },
   render(h) {
-    this.count
+    this.count;
     return this.schema
       ? h(
           "div",
@@ -613,16 +651,15 @@ export default {
                   class: this.schema.class,
                 },
               },
-              wrapper.call(
-                this,
-                this.renderForm.call(this, h, this.schema.attribs)
-              )
+              wrapper.call(this, this.renderForm(h, this.schema.attribs))
             ),
           ]
         )
       : "";
 
     function wrapper(data = []) {
+      if (remove) remove();
+      remove = addStyle(styles);
       return data;
       if (remove) remove();
       remove = addStyle(styles);
